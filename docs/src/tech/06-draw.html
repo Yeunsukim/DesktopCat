@@ -1,0 +1,105 @@
+<section class="panel reveal" id="draw" data-toc="그리기 — 사진 컷 엔진">
+  <h2>그리기 — <em>사진 컷</em>을 넘기는 엔진</h2>
+  <p class="lead">고양이는 3D 모델이 아니라 <b>실제 고양이 사진 컷 331장</b>을 상황에 맞게 골라 넘겨 보여 줘요. 두뇌(<code>CatBrain</code>)가 "지금 무엇을 하는가(동작 이름·경과 시간·걸음 위상)"를 정하면, 그리개(<code>PhotoRig</code>)는 그 동작에 맞는 <b>컷 번호(소수 포함)</b>를 계산해서 두 컷을 섞어 그려요.</p>
+
+  <div class="flow">
+    <div class="f">brain.state<small>S.WALK · S.SIT …</small></div>
+    <div class="f">_anim_choice()<small>(동작, 매개변수, 섞는 시간)</small></div>
+    <div class="f">Animator.play/update<small>동작 시계 t · 걸음 위상 u</small></div>
+    <div class="f">PhotoRig._select<small>(사진 폴더, 컷 번호)</small></div>
+    <div class="f">_pick<small>두 컷 + 섞는 비율</small></div>
+    <div class="f">draw<small>QPixmap 겹쳐 그리기</small></div>
+  </div>
+
+  <h3>상태 → 동작 → 사진 폴더 (재생 방식)</h3>
+  <p><code>behavior.STATE_ANIM</code> 와 <code>CatBrain._anim_choice</code> 가 상태를 동작 이름으로 바꾸고, <code>PhotoRig._select</code> 가 동작 이름을 사진 폴더와 재생 방식으로 바꿔요.</p>
+  <div class="tbl-wrap"><table class="tbl fit" id="anim-table"><thead><tr><th>두뇌 상태</th><th>동작 이름</th><th>사진 폴더</th><th>재생 방식</th></tr></thead><tbody>
+    <tr><td>WALK / KICK_WALK / RUN / SNEAK</td><td><code>walk</code> · <code>trot</code> · <code>run</code> · <code>sneak</code></td><td>같은 이름</td><td><b>걸음 위상</b>: 움직인 거리만큼 컷이 넘어가 발이 미끄러지지 않음</td></tr>
+    <tr><td>IDLE · SIT · SITTILT · LOAF</td><td><code>stand sit sit_tilt loaf</code></td><td>같은 이름</td><td><b>가만히 있다 옮겨 가기(drift)</b>: 1.2~4초 정지 → 이웃 1~2컷으로 초당 1.6컷 속도</td></tr>
+    <tr><td>SLEEP</td><td><code>sleep_curl sleep_side sleep_nap</code> / <code>sleep_doze</code></td><td>같은 이름</td><td>왕복(0.7컷/초) / 순환(0.8컷/초)</td></tr>
+    <tr><td>GROOM · GROOMLEG · SCRATCHNECK · GROOMFACE · SCRATCH · KNEAD · TAILPLAY</td><td><code>groom groom_leg scratch_neck groom_face scratch knead tail_play</code></td><td>같은 이름</td><td><b>순환</b>(컷/초: 1.9 · 1.6 · 2.2 · 1.7 · 3.4 · 6.0 · 2.6)</td></tr>
+    <tr><td>YAWN / STRETCH</td><td><code>yawn</code> / <code>stretch</code></td><td>같은 이름</td><td><b>한 번 재생</b>: 시간(2.4초 / 3.6초)에 부드러운 곡선을 곱해 첫 컷→끝 컷</td></tr>
+    <tr><td>EAT / STROKE</td><td><code>eat</code> / <code>stroke</code></td><td>같은 이름</td><td>컷 1~끝 왕복(2.4컷/초) / 처음 1.6초는 앞으로, 이후 끝 두 컷 왕복</td></tr>
+    <tr><td>JUMP / KICK_LEAP</td><td><code>crouch</code> → <code>jump</code>(p, down)</td><td><code>crouch</code>, <code>jump_up</code> / <code>jump_down</code></td><td>웅크림 컷 2→5(0.28초) 후, 도약 진행도 p(0~1)에 컷을 맞춤</td></tr>
+    <tr><td>FALL / IDLE(착지 직후)</td><td><code>fall</code> · <code>land</code></td><td><code>jump_down</code> · <code>land</code></td><td>떨어지기 시작은 컷 2→3, 이후 3~5 왕복 / 착지는 0.3초 안에 0→5</td></tr>
+    <tr><td>KICK_HIT</td><td><code>swat</code></td><td><code>swat</code></td><td>시각 구간 보간: 0/0.26/0.36/0.9초 → 컷 0/2/3.4/5</td></tr>
+    <tr><td>PLAY(wiggle · pounce · bat · chase · hug)</td><td><code>wiggle hop bat run bunny</code></td><td>같은 이름</td><td>왕복 5.0 / 진행도 / 보간 0/0.24/0.34/0.7초 / 달리기 / 순환 6.5</td></tr>
+    <tr><td>HELD</td><td><code>hold</code></td><td><code>hold</code></td><td>왕복 2.5컷/초 (발버둥)</td></tr>
+    <tr><td>HUNT(spot · chase · pounce · proud)</td><td><code>sit_tilt run swat sit</code></td><td>같은 이름</td><td>위 동작을 그대로 재사용</td></tr>
+  </tbody></table></div>
+
+  <h3>재생 방식 눈으로 보기</h3>
+  <div class="diagram" id="draw-modes">
+    <div class="bar"><b>컷 번호가 시간에 따라 어떻게 움직이나</b>
+      <button class="btn on" data-mode="pingpong">왕복</button><button class="btn" data-mode="loop">순환</button><button class="btn" data-mode="drift">가만히 있다 옮겨 가기</button><button class="btn" data-mode="gait">걸음 위상</button></div>
+    <svg viewBox="0 0 1000 250" role="img" aria-label="컷 번호 재생 방식"></svg>
+    <div class="caption"></div>
+  </div>
+
+  <h3>컷 사이 섞기 (blend)</h3>
+  <p>컷이 바뀌는 순간 두 사진을 섞으면 부드럽지만, 자세 차이가 크면 두 자세가 겹쳐 <b>안개 같은 잔상</b>이 생겨요. 그래서 이웃 컷의 <b>실루엣 차이(gap)</b>를 미리 재서(<code>tools/frame_gaps.py</code> → <code>sprites.json</code> 의 <code>gaps</code>) 섞는 길이를 줄여요.</p>
+  <div class="diagram">
+    <div class="sim">
+      <div class="ctl">
+        <label>이웃 컷 실루엣 차이 gap: <b id="bl-gap-v">0.06</b><input type="range" id="bl-gap" min="0" max="0.2" step="0.005" value="0.06"></label>
+        <div class="muted" style="font-size:13px"><code>GAP_FULL=0.04</code> 이하 → 최대로 섞음<br><code>GAP_ZERO=0.09</code> 이상 → 섞지 않고 선명하게 바꿈<br><code>BLEND_SPAN=0.45</code> 컷 사이 시간의 뒤쪽 45%까지만</div>
+      </div>
+      <div class="view">
+        <svg id="bl-svg" viewBox="0 0 560 130" style="width:100%;height:auto"></svg>
+        <div class="out" id="bl-out"></div>
+      </div>
+    </div>
+  </div>
+  <div class="code" data-lang="py" data-file="photocat.PhotoRig._pick — 컷 번호(소수)를 두 컷과 섞는 비율로"><pre>
+GAP_FULL, GAP_ZERO, BLEND_SPAN = 0.04, 0.09, 0.45
+def _pick(key, idx, wrap):
+    total = len(meta[key]["frames"])
+    pos = idx * meta[key].get("mult", 1)          # 중간 컷을 만든 동작은 저장된 컷이 mult 배 많다
+    i0 = floor(pos); fr = pos - i0
+    i0 = i0 % total if wrap else clamp(i0, 0, total-1)
+    i1 = (i0 + 1) % total if wrap else min(total-1, i0 + 1)
+    if i1 == i0: return i0, i0, 0.0
+    gp = gaps[key][i0] if gaps.get(key) and i0 &lt; len(gaps[key]) else 1.0
+    w = BLEND_SPAN * clamp((GAP_ZERO - gp) / (GAP_ZERO - GAP_FULL), 0, 1)
+    if w &lt;= 0: return i0, i0, 0.0                 # 섞지 않고 선명하게
+    k = clamp((fr - (1 - w)) / w, 0, 1)           # 시간의 '뒤쪽 w' 구간에서만 섞는다
+    return i0, i1, k*k*(3 - 2*k)                  # smoothstep
+</pre></div>
+
+  <h3>한 프레임을 그리는 순서 (<code>PhotoRig.draw</code>)</h3>
+  <ol class="steps-list">
+    <li><b>컷 고르기</b> <code>_select</code> → <code>_pick</code> → <code>_frame(key, i)</code> 로 두 컷의 <code>_Frame</code> 객체(QPixmap + 크기·중심·머리 위치)를 얻어요. 컷은 <b>처음 쓸 때 만들고 캐시</b>해요: PNG 읽기 → (털색이 갈색이 아니면 색 바꾸기) → 눈 다시 그리기 → <code>premultiplied</code> 변환 → 화면 크기(<code>store→scale·dpr</code>)로 축소.</li>
+    <li><b>전환 겹침</b> 동작(사진 폴더)이나 바라보는 방향이 바뀌면 직전 그림을 기억해 두었다가 0.10초(빠른 동작 0.05초) 동안 서서히 사라지게 하고 새 그림을 나타나게 해요. 사라지는 쪽은 <code>(1−fade)²</code> 로 빨리 옅어져 잔상이 오래 남지 않아요.</li>
+    <li><b>좌표 맞추기</b> 발바닥 기준점 <code>origin</code> 으로 이동(물리 픽셀에 맞춰 반올림), 왼쪽을 보면 <code>scale(-1, 1)</code>.</li>
+    <li><b>바닥에 걸치기(sink)</b> 발을 바닥에 딱 맞추면 오히려 떠 보여서 <code>SINK=2.5</code>px 아래로 걸쳐 그려요. 누운 자세는 <code>rest</code>(몸 아랫선이 맨 아래보다 몇 줄 위인가)에 <code>0.9</code> 를 곱해 최대 8px 더 내려요. 공중 자세(<code>jump_up jump_down hold hop</code>)는 0. 작업 표시줄이 없는 화면 맨 아래에서는 <code>room−1</code> 로 제한.</li>
+    <li><b>그림자·소품(아래)</b> 타원형 그라데이션 그림자(<code>scale(1, 0.10)</code>), 꾹꾹이 방석, 밥그릇, 안은 털실공.</li>
+    <li><b>고양이</b> 컷 하나 또는 둘(<code>fr</code> 만큼 투명도) → <b>소품(위)</b> 굴러다니는 털실공.</li>
+    <li><b>말풍선·쥐</b> 고양이 창이 머리 위에 한 줄 말풍선을 붙이고, 쥐 잡기 연출 중이면 쥐를 같은 높이(<code>sink_now</code>)에 그려요.</li>
+  </ol>
+
+  <h3>걸음이 미끄러지지 않는 비결</h3>
+  <p><code>Animator.update(dt, dist/scale)</code> 가 걸음 위상 <code>u</code> 를 <b>실제로 이동한 거리</b>만큼 올려요(<code>u += dist·d/S</code>). 사진 컷 한 바퀴의 이동 거리는 뼈대 방식과 달라서 비율로 바꿔요.</p>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>걸음</th><th>뼈대 주기</th><th>사진 한 바퀴</th><th>비율 = 뼈대÷사진</th></tr></thead><tbody>
+    <tr><td>walk</td><td>54.8</td><td>70</td><td>0.783</td></tr><tr><td>trot</td><td>92.0</td><td>70</td><td>1.314</td></tr><tr><td>run</td><td>194.0</td><td>150</td><td>1.293</td></tr><tr><td>sneak</td><td>30.6</td><td>36</td><td>0.850</td></tr>
+  </tbody></table></div>
+  <p>그림에서 <code>_phase = (_phase + Δu·비율) mod 1</code>, 컷 위치 = <code>_phase × 원래 컷 수</code>, 끝에서 처음으로 이어져요(wrap). 속도는 <code>ACCEL_T=0.35초</code> 동안 올라가고 <code>DECEL_T=0.30초</code> 동안 줄어서 출발·멈춤이 자연스러워요.</p>
+
+  <h3>털색 바꾸기 (<code>coats.py</code>, numpy 만 사용)</h3>
+  <div class="grid g2">
+    <div class="card"><h4>핵심 아이디어</h4><p>사진의 <b>털 부분만</b> 골라 밝기(줄무늬·털결)는 그대로 두고 색만 바꿔요. 눈동자·코·귀 안쪽 분홍·혀는 털이 아니라서 색상(hue)으로 걸러져요. 흰 수염·하이라이트는 채도가 낮아 제외.</p></div>
+    <div class="card"><h4>단계</h4><p>① 털일 확률 <code>w</code> = 색상이 8~72° 범위(분홍·초록 제외)이고 채도 0.09~0.19 이상(<code>_fur_weight</code>) ② 밝기 <code>ln=(luma−0.08)/0.80</code> ③ 색 띠(<code>_RAMPS</code>)에서 밝기에 맞는 색 ④ <code>out = 원본·(1−w) + 새 색·w</code>.</p></div>
+  </div>
+  <div class="diagram" id="draw-coat">
+    <div class="bar"><b>털색 띠(밝기 → 색)</b><span id="coat-btns" style="display:flex;gap:6px;flex-wrap:wrap"></span></div>
+    <svg viewBox="0 0 1000 110" role="img" aria-label="털색 띠"></svg>
+    <div class="caption"></div>
+  </div>
+  <ul>
+    <li><b>삼색(calico)</b> 몸통에서 얼룩 '자리 점수'를 순위로 매겨 <b>주황 50% · 검정 20% · 흰색 30%</b> 가 나오게 해요(자세가 달라도 비율 유지). 점수는 값 잡음(<code>_vnoise/_fbm</code>)+위쪽 가산점. 얼굴은 흰 바탕에 이마·귀·뺨에만 주황, 검정은 얼굴에서 먼 곳에만. 무늬 위치가 컷마다 같게 하려고 <b>동작 전체의 합친 범위</b> 기준 좌표 <code>uv_grid</code> 를 써요.</li>
+    <li><b>눈 다시 그리기(<code>paint_eyes</code>)</b> 털색을 바꾸면 노란 홍채가 털로 칠해지므로, <code>sprites.json</code> 의 <code>eyes</code> 좌표에 털색과 상관없이 같은 올리브~연두 홍채+동공+반짝임을 다시 그려요(<code>EYE_RX=4.4, EYE_RY=3.5</code> 저장 픽셀).</li>
+    <li>털색을 바꾸면 <code>_cache</code> 와 전환 기억을 비워 새 색으로 다시 만들어요(메뉴 → 고양이 색 → <code>pet.coat</code> 저장 → 트레이 아이콘도 갱신).</li>
+  </ul>
+
+  <h3>예비 그리개와 아이콘</h3>
+  <p>사진 컷을 못 불러오면 <code>catrig.CatRig</code>(뼈대+사진 질감 스킨, <code>assets/skin/*.png</code>)로 대신 그려요. 트레이·창 아이콘은 <code>cute.app_icon()</code>(분홍 동그라미 속 고양이 비서 얼굴, 크기별로 따로 그림)이고, 앱 아이콘 파일 <code>assets/cat.ico</code> 는 <code>tools/make_icon.py</code> 가 만들어요.</p>
+</section>

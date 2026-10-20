@@ -1,0 +1,78 @@
+<section class="hero reveal" style="min-height:430px;padding-bottom:110px">
+  <h1 class="giant" style="font-size:clamp(54px,11vw,150px)"><span>Tech</span><span>Docs</span></h1>
+  <p class="sub">데스크탑 고양이의 구성·실행 흐름·데이터·알고리즘·상수를 모았어요.<br>이 문서만 보고 같은 프로그램을 다시 만들 수 있게 단계와 함께 적었어요.</p>
+  <div class="stage">
+    <div class="deco" style="left:52%;top:10%;width:62px;--r:-8deg" data-deco="yarn"></div>
+    <div class="deco" style="left:66%;top:48%;width:74px;--r:10deg;animation-delay:-2s" data-deco="bone"></div>
+    <div class="deco" style="left:40%;top:60%;width:50px;--r:14deg;animation-delay:-4s" data-deco="paw"></div>
+    <div class="mascot-big mascot" data-mood="normal" data-bubble="코드를 읽는 중이다냥" style="width:min(290px,34vw)"></div>
+  </div>
+  <div class="stats">
+    <span class="pill">파이썬 파일 <b class="gen-files">46</b>개</span>
+    <span class="pill">코드 <b class="gen-lines">13,000</b>줄</span>
+    <span class="pill">프로세스 <b>3</b>종</span>
+    <span class="pill">JSON 파일 <b>17</b>종</span>
+  </div>
+</section>
+
+<section class="panel reveal" id="overview" data-toc="무엇을 하는 프로그램인가">
+  <h2>무엇을 하는 <em>프로그램</em>인가</h2>
+  <p class="lead">윈도우 바탕화면 위에 <b>투명한 창</b>으로 사는 고양이 비서예요. 고양이는 스스로 걷고 쉬고 자고, 정해 둔 시각이 되면 풍선으로 일정·소식·새 메일을 알려 주고, 뒤에서 랜섬웨어 같은 수상한 행동을 지켜봐요. 설치형이라 관리자 권한이 필요 없어요.</p>
+
+  <div class="grid g3">
+    <div class="card hover"><span class="tag pink">고양이</span><h4>살아 있는 그림</h4><p>실제 고양이 사진 컷(동작 33가지·컷 331장)을 상황에 맞게 넘겨 가며 보여 줘요. 바닥·창 윗변 위를 걷고, 뛰어오르고, 떨어지고, 바탕화면 아이콘을 차요.</p></div>
+    <div class="card hover"><span class="tag pink">생활</span><h4>하루 리듬</h4><p>배고픔·기분, 잠자는 시간(22~07시), 밥 시간 3번, 놀아 달라는 요구. 쓰다듬고 집어 올리고 털색도 바꿀 수 있어요.</p></div>
+    <div class="card hover"><span class="tag pink">런처</span><h4>반원 앱 런처</h4><p>고양이를 누르면 머리 위에 반원이 열려요. 캘린더·Gmail과 내가 등록한 프로그램·웹·명령·윈도우 도구를 바로 열어요.</p></div>
+    <div class="card hover"><span class="tag blue">알림</span><h4>캘린더·소식·메일·어제 한 일</h4><p>하루 한 번 또는 매시 정각에, 보조 프로세스가 인터넷에서 가져온 내용을 풍선과 창으로 알려 줘요. Gemini는 정리만 해요.</p></div>
+    <div class="card hover"><span class="tag green">경비</span><h4>경비 고양이</h4><p>랜섬웨어(미끼 파일·대량 변경), 새 자동 시작·수상한 프로그램, 카메라·마이크, 다운로드 파일을 지켜보고 <b>알리기만</b> 해요. VirusTotal 조회는 선택이에요.</p></div>
+    <div class="card hover"><span class="tag gray">바탕</span><h4>지킴이·설정·설치</h4><p>고양이가 죽으면 살리는 지킴이, 분홍 설정 창, PyInstaller 로 묶은 설치·삭제 프로그램이 있어요.</p></div>
+  </div>
+
+  <h3>설계 원칙 다섯 가지</h3>
+  <p>코드의 모든 선택은 아래 다섯 가지로 설명돼요. 다시 만들 때도 이 원칙이 우선이에요.</p>
+  <div class="grid g3">
+    <div class="card pink"><h4>1. 가볍게</h4><p>며칠씩 켜 두는 프로그램이에요. 평소 CPU는 코어 1개의 약 1%, 메모리는 약 110MB. 무거운 일(인터넷·서명 확인)은 <b>짧게 살다 사라지는 보조 프로세스</b>에서 해요.</p></div>
+    <div class="card pink"><h4>2. 안 죽게</h4><p>지킴이가 따로 지켜보고(하트비트 90초), 프레임 오류는 한 프레임 단위로 가두고, 자원이 새면 스스로 다시 시작해요.</p></div>
+    <div class="card pink"><h4>3. 비밀은 비밀로</h4><p>API 키·앱 비밀번호·캘린더 주소는 윈도우 계정 암호화(DPAPI)로 저장하고, 명령줄 대신 표준 입력으로만 넘기고, 로그에 남기지 않아요.</p></div>
+    <div class="card pink"><h4>4. 알리기만</h4><p>경비 고양이는 파일을 지우거나 프로그램을 끄거나 막지 않아요. 사용자가 경보 창의 버튼을 직접 누를 때만 조치해요.</p></div>
+    <div class="card pink"><h4>5. 고양이 말투</h4><p>고양이가 하는 말은 <code>~냥</code>·<code>~옹</code>으로 끝내요. 단, 날씨·뉴스·시세처럼 <b>밖에서 가져온 정보</b>와 경보 문구는 또렷한 존댓말로 써요.</p></div>
+  </div>
+</section>
+
+<section class="panel reveal" id="stack" data-toc="기술 스택과 요구사항">
+  <h2>기술 스택과 <em>요구사항</em></h2>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>구성 요소</th><th>쓰는 곳</th><th>비고</th></tr></thead><tbody>
+    <tr><td>Windows 10/11 (64비트)</td><td>전체</td><td>Win32 API(창·레지스트리·DPAPI·ReadDirectoryChangesW)를 직접 써서 윈도우 전용이에요. 관리자 권한 불필요.</td></tr>
+    <tr><td>Python 3.14 (3.10 이상이면 동작)</td><td>전체</td><td>개발·시험은 3.14에서 했어요. <code>X | None</code> 타입 표기를 써서 3.10 이상이 필요해요.</td></tr>
+    <tr><td>PyQt6</td><td>창·그리기·메뉴·트레이·타이머</td><td>본체의 유일한 GUI 라이브러리. 글꼴 엔진은 GDI로 지정(메모리 약 70MB 절약).</td></tr>
+    <tr><td>pywin32</td><td>창 열거·뮤텍스·이벤트·DPAPI·폴더 감시·프로세스 정보</td><td><code>win32gui, win32api, win32con, win32event, win32process, win32file, win32crypt, pywintypes</code></td></tr>
+    <tr><td>numpy</td><td>털색 바꾸기(coats), 울음소리 합성(catsound), 사진 컷 처리</td><td>설치본에 포함돼요.</td></tr>
+    <tr><td>icalendar · recurring-ical-events · tzdata</td><td>캘린더 일정 해석(반복 일정·시간대)</td><td>보조 프로세스 안에서만 불러와요.</td></tr>
+    <tr><td>표준 라이브러리만</td><td>지킴이, 네트워크(urllib), 메일(imaplib), 파일 저장(json)</td><td>지킴이는 PyQt를 불러오지 않아 아주 튼튼해요.</td></tr>
+    <tr><td>PowerShell (윈도우 기본)</td><td>디지털 서명 확인, 예약 작업·서비스 목록</td><td>점검 때만 잠깐 실행.</td></tr>
+    <tr><td>PyInstaller</td><td>설치 파일 만들기 (개발용)</td><td>실행 파일 3개(본체 폴더·삭제기·설치기).</td></tr>
+    <tr><td>Pillow · scipy · OpenCV</td><td>그림 자료 만들기 도구(tools/) — <b>앱에는 안 들어가요</b></td><td>컷 자르기·눈 찾기·중간 컷 만들기.</td></tr>
+  </tbody></table></div>
+  <div class="code" data-lang="py" data-file="requirements.txt (실행에 필요한 것)"><pre>
+PyQt6
+pywin32
+numpy
+icalendar
+recurring-ical-events
+tzdata
+</pre></div>
+  <div class="callout tip"><b>실행해 보기</b> 소스 폴더에서 <code>pythonw launcher.py</code> 를 실행하면 지킴이와 고양이가 함께 떠요. 콘솔이 필요하면 <code>python cat.py</code> (지킴이 없이 본체만).</div>
+
+  <h3>용어 풀이</h3>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>용어</th><th>뜻</th></tr></thead><tbody>
+    <tr><td>지킴이 (guard)</td><td><code>launcher.py</code> 가 하는 일. 고양이 프로세스를 띄워 두고 죽거나 멈추면 다시 살린다.</td></tr>
+    <tr><td>본체 · worker</td><td><code>cat.py</code> 의 <code>main()</code>. 창·그리기·행동·알림·경비가 모두 이 프로세스 안에 있다.</td></tr>
+    <tr><td>보조 프로세스 (net-helper)</td><td><code>nethelper.py</code>. 요청 하나를 받아 처리하고 결과를 돌려준 뒤 사라지는 프로세스. 끝나면 메모리가 그대로 돌아온다.</td></tr>
+    <tr><td>컷 (sprite frame)</td><td>한 동작의 사진 한 장. <code>assets/sprites/동작이름/f0.png …</code></td></tr>
+    <tr><td>하트비트</td><td>본체가 5초마다 현재 시각을 적는 공유 메모리. 지킴이가 읽어서 멈췄는지 판단한다.</td></tr>
+    <tr><td>미끼 (canary)</td><td>폴더에 두는 숨김 가짜 문서. 사람은 건드릴 일이 없어서, 바뀌면 랜섬웨어 신호로 본다.</td></tr>
+    <tr><td>사건 (event)</td><td>경비 고양이가 기록한 경보 한 건 <code>{id, ts, kind, level, title, text, data, status}</code>.</td></tr>
+    <tr><td>발판</td><td>고양이가 올라설 수 있는 곳: 모니터 바닥, 열린 창의 윗변.</td></tr>
+    <tr><td>논리 픽셀 / 물리 픽셀</td><td>Qt 좌표(배율 적용 후)와 실제 화면 픽셀. 바탕화면 아이콘 위치만 물리 픽셀이라 배율로 나눠 쓴다.</td></tr>
+  </tbody></table></div>
+</section>

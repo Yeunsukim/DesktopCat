@@ -1,0 +1,93 @@
+{
+ "name": "1-이동-뛰어내리기",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    12,
+    66,
+    385,
+    285
+   ],
+   "size": [
+    373,
+    219
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    437,
+    101,
+    779,
+    280
+   ],
+   "size": [
+    342,
+    179
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    819,
+    41,
+    1163,
+    408
+   ],
+   "size": [
+    344,
+    367
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    38,
+    458,
+    366,
+    831
+   ],
+   "size": [
+    328,
+    373
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    451,
+    451,
+    763,
+    854
+   ],
+   "size": [
+    312,
+    403
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    875,
+    471,
+    1163,
+    857
+   ],
+   "size": [
+    288,
+    386
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

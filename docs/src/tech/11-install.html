@@ -1,0 +1,50 @@
+<section class="panel reveal" id="deploy" data-toc="빌드·설치·삭제">
+  <h2>빌드, <em>설치</em>, 삭제</h2>
+  <p class="lead">나눠 줄 파일은 <code>DesktopCat_Setup.exe</code> <b>하나</b>예요. 관리자 권한이 필요 없고(내 계정 폴더에 설치), 설치/삭제 프로그램은 파이썬 없이 돌아가요. 만드는 도구는 <code>build_installer.py</code> 한 파일이에요.</p>
+
+  <h3>빌드 단계 (<code>python build_installer.py</code>)</h3>
+  <div class="stepper" data-auto="4500">
+    <div class="step" data-title="깨끗이 비우기"><p><code>build/</code> 폴더를 지우고 다시 만들어요. 백신이 파일을 붙잡고 있으면 지우기가 실패할 수 있어서 최대 5번(2초 간격) 다시 시도해요.</p></div>
+    <div class="step" data-title="아이콘 만들기"><p><code>tools/make_icon.py</code> 가 <code>cute.app_icon_pixmap</code> 을 크기별로 따로 그려서 <code>assets/cat.ico</code> 와 <code>cat_icon.png</code> 를 만들어요(설치 파일·바로가기·시작 메뉴에서 같은 아이콘).</p></div>
+    <div class="step" data-title="① 고양이 프로그램 (폴더형)"><p>PyInstaller <code>--onedir --windowed --name DesktopCat --icon cat.ico launcher.py</code>. 폴더형이라 켤 때마다 압축을 푸는 시간이 없어요. 자원 포함: <code>--add-data assets/skin</code>, <code>assets/sprites</code>. 보조 프로세스에서만 불러오는 모듈은 자동 분석이 못 찾으므로 <code>--hidden-import</code> 로 명시(<code>calendar_ics gemini_client news_sources activity_log nethelper security sec_* vt_client mail_imap favicon flow routine cute theme win32file win32event</code> …), 라이브러리 자료는 <code>--collect-all icalendar recurring_ical_events x_wr_timezone</code>, <code>--collect-data tzdata</code>, <code>--collect-submodules dateutil</code>. 제외: <code>scipy PIL tkinter matplotlib pytest unittest</code>.</p></div>
+    <div class="step" data-title="② 삭제 프로그램"><p><code>--onefile --windowed --name uninstall installer/uninstall_app.py</code> (numpy·PyQt6 제외). 만들어진 <code>uninstall.exe</code> 를 ①의 폴더 안으로 복사해요 → 설치 폴더에 삭제 프로그램이 함께 들어가요.</p></div>
+    <div class="step" data-title="Qt 군살 빼기 (약 30MB)"><p>쓰지 않는 Qt 파일을 지워요: <code>opengl32sw.dll</code>(소프트웨어 그래픽), <code>Qt6Pdf.dll</code>, <code>imageformats/qpdf.dll</code>, <code>platforms/qminimal.dll</code>, <code>platforms/qoffscreen.dll</code>, <code>plugins/generic</code>, <code>translations</code>. 고양이는 일반 창 그리기만 써요.</p></div>
+    <div class="step" data-title="③ 압축 (LZMA)"><p>① 폴더의 모든 파일을 <code>zipfile.ZIP_LZMA</code> 로 <code>build/payload.zip</code> 에(용량이 가장 작게).</p></div>
+    <div class="step" data-title="④ 설치 프로그램"><p><code>--onefile --windowed --name DesktopCat_Setup installer/setup_app.py</code> + <code>--add-data payload.zip;.</code> <code>--add-data cat.ico;.</code> (numpy·PyQt6·scipy 제외 — 설치 화면은 tkinter). 결과: <code>build/dist/DesktopCat_Setup.exe</code> ← 이것만 나눠 주면 돼요.</p></div>
+  </div>
+  <div class="callout warn"><b>개발 중 팁</b> 코드를 고칠 때마다 설치 파일을 다시 만들 필요는 없어요. 개발용 고양이를 재시작하면(<code>python cat.py --quit</code> 후 <code>pythonw launcher.py</code>) 바로 반영돼요. 설치 파일 빌드는 나눠 줄 때만 하세요(몇 분 걸려요).</div>
+
+  <h3>설치 프로그램이 하는 일 (<code>installer/setup_app.py</code>, <code>ops.py</code>)</h3>
+  <div class="flow">
+    <div class="f">실행 중인 고양이 끄기<small>stop_app: 종료 이벤트 → 20초 → taskkill</small></div>
+    <div class="f">파일 풀기<small>.installing 폴더에 → 바꿔치기</small></div>
+    <div class="f">삭제 정보 등록<small>HKCU Uninstall</small></div>
+    <div class="f">자동 실행 등록<small>HKCU Run</small></div>
+    <div class="f">바로가기<small>시작 메뉴(·바탕화면)</small></div>
+    <div class="f">실행<small>detached</small></div>
+  </div>
+  <ul>
+    <li><b>기본 설치 위치</b> 이전에 설치한 곳(레지스트리 <code>InstallLocation</code>)이 있으면 거기, 없으면 <code>%LOCALAPPDATA%\Programs\DesktopCat</code>. 데이터는 <code>%LOCALAPPDATA%\DesktopCat</code>.</li>
+    <li><b>중간에 실패해도 이전 설치가 남게</b>: <code>이름.installing</code> 에 모두 풀고 → 기존 폴더를 <code>이름.old</code> 로 → 새 폴더로 → <code>.old</code> 삭제.</li>
+    <li><b>실행 중인지 판단</b>: 뮤텍스 <code>Local\DesktopCatGuardMutex</code>, <code>Local\DesktopCatPetMutex</code> 를 <code>OpenMutexW</code> 로 열어 봐요. 끄기는 <code>request_quit()</code>(이벤트) → 최대 20초 기다림 → 안 꺼지면 <code>taskkill /F /T /IM DesktopCat.exe</code>.</li>
+    <li><b>등록하는 것</b>(모두 내 계정, 관리자 권한 불필요)
+      <ul>
+        <li><code>HKCU\Software\Microsoft\Windows\CurrentVersion\Uninstall\DesktopCat</code>: DisplayName, DisplayVersion(1.0.0), Publisher, InstallLocation, DisplayIcon, UninstallString, QuietUninstallString(<code>--silent</code>), NoModify, NoRepair, EstimatedSize.</li>
+        <li><code>HKCU\…\CurrentVersion\Run</code> 의 <code>DesktopCat</code> = 실행 파일 경로(선택, 기본 켬) → 윈도우를 켜면 지킴이가 자동 시작.</li>
+        <li>시작 메뉴 바로가기 <code>데스크탑 고양이.lnk</code>(기본), 바탕화면 바로가기(선택) — PowerShell <code>WScript.Shell</code> COM 으로 만들어요(<code>-EncodedCommand</code> 로 따옴표 문제 회피).</li>
+      </ul></li>
+    <li><b>무인 설치</b>: <code>DesktopCat_Setup.exe --silent [--dir 폴더] [--no-shortcut] [--no-startup] [--desktop] [--no-run]</code>. 실패하면 <code>%TEMP%\DesktopCat_setup_error.log</code> 에 스택을 쓰고 종료 코드 1.</li>
+    <li>설치 후 실행은 <code>DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP | CREATE_NO_WINDOW</code> 로 설치 프로그램과 분리해요.</li>
+  </ul>
+
+  <h3>삭제 프로그램이 하는 일</h3>
+  <ol>
+    <li>(창 모드) "삭제할까요?" → "기록도 함께 지울까요?" (기록 = 배고픔·기분, 설정, 암호화한 키, 활동 기록, 경비 기록·VirusTotal 키). '아니요'면 나중에 다시 설치할 때 이어서 써요. 무인 모드는 <code>--silent</code> (+ <code>--purge</code> 면 기록까지).</li>
+    <li>고양이 끄기(바탕화면 아이콘 원위치) → 자동 실행 해제 → 바로가기 삭제 → <b>숨김 미끼 파일 삭제</b>(<code>remove_canaries</code>: 기록해 둔 것 중 이름에 "고양이미끼"가 든 것만; 기록을 남기는 삭제에서도 항상) → 삭제 정보 등록 해제 → (purge 면 데이터 폴더 삭제).</li>
+    <li>실행 중인 자기 자신이 들어 있는 폴더는 못 지우므로, <b>끝난 뒤에 지우는 배치 파일</b>(<code>rmdir</code> 를 30번까지 반복)을 띄워요.</li>
+    <li>마지막 안내는 삭제 프로그램 밖의 작은 별도 프로세스(<code>wscript</code> + 임시 .vbs)로 띄워요. 안내창이 다른 창 뒤에 숨으면 삭제 프로그램이 클릭을 기다리며 끝나지 않는 문제가 있었기 때문이에요(안내창은 항상 맨 앞 플래그).</li>
+  </ol>
+
+  <h3>시험 설치</h3>
+  <p>환경 변수 <code>DESKTOPCAT_APP_ID</code> 를 다른 이름으로 주면 실제 설치와 따로 "(시험)" 이름으로 설치·삭제해 볼 수 있어요(레지스트리 키·바로가기·폴더 이름이 모두 바뀜).</p>
+</section>

@@ -1,0 +1,93 @@
+{
+ "name": "2-쉬기-식빵자세",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    57,
+    15,
+    519,
+    278
+   ],
+   "size": [
+    462,
+    263
+   ],
+   "cut_by_edge": true
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    675,
+    14,
+    1140,
+    277
+   ],
+   "size": [
+    465,
+    263
+   ],
+   "cut_by_edge": true
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    56,
+    309,
+    527,
+    572
+   ],
+   "size": [
+    471,
+    263
+   ],
+   "cut_by_edge": true
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    669,
+    308,
+    1142,
+    572
+   ],
+   "size": [
+    473,
+    264
+   ],
+   "cut_by_edge": true
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    63,
+    602,
+    537,
+    865
+   ],
+   "size": [
+    474,
+    263
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    666,
+    602,
+    1142,
+    864
+   ],
+   "size": [
+    476,
+    262
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

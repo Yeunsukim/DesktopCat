@@ -1,0 +1,86 @@
+<section class="panel reveal" id="play" data-toc="고양이와 놀기">
+  <h2>고양이와 <em>놀기</em></h2>
+  <p class="lead">고양이는 혼자서도 잘 놀아요. 하지만 여러분이 해 줄 수 있는 일도 많아요. 아래 <b>연습장</b>에서 먼저 눌러 보고 끌어 보세요 — 실제 고양이와 같은 방식이에요.</p>
+
+  <div class="diagram" id="pg">
+    <div class="bar"><b>조작 연습장</b><button class="btn" data-act="feed">밥 주기</button><button class="btn" data-act="play">놀아주기</button><button class="btn" data-act="rest">한쪽에서 쉬기</button><button class="btn" data-act="reset">처음으로</button></div>
+    <div id="pg-desk" style="position:relative;height:300px;background:linear-gradient(#FFE6EE,#FFD3E0);overflow:hidden;touch-action:none;user-select:none">
+      <div style="position:absolute;left:18px;top:14px;width:170px;height:92px;background:#fff;border:3px solid #5A3A47;border-radius:12px;opacity:.85"><div style="height:20px;border-bottom:3px solid #5A3A47;background:#FFF7FA;border-radius:8px 8px 0 0"></div><div style="padding:6px 10px;font-size:12px;color:#A8728A">내 작업 창 (고양이가 올라설 수 있어요)</div></div>
+      <div style="position:absolute;left:0;right:0;bottom:0;height:34px;background:#5A3A47;opacity:.9"></div>
+      <div id="pg-launcher" style="position:absolute;display:none;left:0;top:0;pointer-events:auto"></div>
+      <div id="pg-cat" style="position:absolute;width:120px;left:60%;bottom:30px;cursor:grab"><div id="pg-mascot" data-mood="normal" data-bubble="눌러 보세요!"></div></div>
+      <div id="pg-ball" style="position:absolute;display:none;width:30px;height:30px;bottom:34px;border-radius:50%;background:#E4605F;border:3px solid #5A3A47"></div>
+      <div id="pg-fish" style="position:absolute;display:none;width:52px;bottom:34px" data-deco="fish"></div>
+    </div>
+    <div class="caption" id="pg-cap">고양이를 <b>클릭</b>하면 앱 런처가 열려요. <b>끌어서 놓으면</b> 떨어지고, 몸 위에서 <b>쓱쓱</b> 문지르면 좋아해요.</div>
+  </div>
+
+  <h3>조작 한눈에 보기</h3>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>이렇게 하면</th><th>이런 일이 일어나요</th></tr></thead><tbody>
+    <tr><td><b>클릭</b></td><td>고양이가 앉아서 고개를 갸웃(생각하는 척)하고, 머리 위에 <b>반원 앱 런처</b>가 열려요. 다시 클릭하면 닫혀요.</td></tr>
+    <tr><td><b>몸 위에서 쓱쓱 문지르기</b> (클릭 아님)</td><td>쓰다듬기예요. 눈을 감고 골골골 하며 기분이 좋아져요. 자고 있을 땐 "…깼냐옹…" 하고 투덜대요.</td></tr>
+    <tr><td><b>끌어서 놓기</b></td><td>고양이가 대롱대롱 매달리고("냥?! 뭐냐옹?!"), 놓으면 떨어져요. <b>끌면서 놓으면 던져져요</b>. 창 윗변·작업 표시줄 위에 내려앉아요.</td></tr>
+    <tr><td><b>우클릭</b></td><td>메뉴가 열려요 (아래 설명). 트레이 아이콘을 우클릭해도 같은 메뉴예요.</td></tr>
+    <tr><td>가만히 두기</td><td>고양이가 알아서 걷고, 앉고, 그루밍하고, 하품·기지개, 낮잠을 자요. 해 뜰 때와 질 때는 활발하고 한낮엔 낮잠을 많이 자요.</td></tr>
+  </tbody></table></div>
+
+  <h3>배고픔과 기분</h3>
+  <p>고양이는 <b>배고픔</b>과 <b>기분</b>이 있어요(메뉴 맨 위에 퍼센트로 보여요). 시간이 지나면 배고파지고, 배가 고프면 기분이 나빠지고 걸음이 느려져요. 밥을 주면 좋아지고, 놀아 주면 기분이 크게 올라요.</p>
+  <div class="grid g3">
+    <div class="card"><h4>밥 주기</h4><p>간식은 배고픔이 10% 아래(배부름)면 거절해요("배부르당..옹~"). <b>밥 시간에 조를 때</b>는 배불러도 먹어요(정식 식사는 더 많이 먹어요).</p></div>
+    <div class="card"><h4>놀아주기 (털실공)</h4><p>엉덩이를 씰룩하다 털실공을 덮치고, 툭 치고, 쫓아가고, 세 번 놀면 끌어안고 뒷발킥! 끝나면 기분이 크게 올라요.</p></div>
+    <div class="card"><h4>꺼 둔 동안</h4><p>컴퓨터를 꺼 둔 동안에도 시간이 흘러요. 단 굶어 죽지는 않아요(배고픔 최대 85%).</p></div>
+  </div>
+  <div class="callout tip"><b>고양이가 가끔 말을 걸어요</b> 40~90초 간격으로 기분에 맞는 혼잣말을 해요. 배고프면 "밥 줘랑..옹~", 기분이 좋으면 "♪ 랄라냐옹~", 우울하면 "… 냐앙…".</div>
+</section>
+
+<section class="panel reveal" id="menu" data-toc="우클릭 메뉴와 트레이">
+  <h2>우클릭 <em>메뉴</em>와 트레이</h2>
+  <p class="lead">고양이를 <b>우클릭</b>하거나 작업 표시줄 오른쪽 아래의 <b>고양이 아이콘</b>을 우클릭하면 메뉴가 열려요. 항목에 마우스를 올려 보세요.</p>
+  <div class="sim" id="menu-sim">
+    <div class="ctl" style="padding:0;background:transparent;border:none;max-width:300px">
+      <div class="mock" style="box-shadow:var(--shadow)"><div class="mb" style="padding:8px">
+        <div style="display:flex;gap:8px;align-items:center;padding:6px 8px;background:#fff;border-radius:12px;border:2px solid #F6C5D5;margin-bottom:6px"><span style="width:30px;height:30px;border-radius:50%;background:#F67499;display:inline-block"></span><div><b style="font-size:13px">오늘도 반갑다냥~</b><div style="font-size:11px;color:#A8728A">배고픔 48% · 기분 62%</div></div></div>
+        <div id="menu-items"></div>
+      </div></div>
+    </div>
+    <div class="view" id="menu-desc"><h4 style="margin:0 0 6px">메뉴 맨 위</h4><p class="muted">고양이 얼굴, 한마디, 지금 배고픔·기분이 나와요. 아래 항목에 마우스를 올려 보세요.</p></div>
+  </div>
+
+  <h3>트레이 아이콘이 안 보여요</h3>
+  <p>작업 표시줄 오른쪽 아래에서 <b>위쪽 화살표(^)</b> 를 눌러 숨겨진 아이콘을 보세요. 아이콘을 작업 표시줄로 끌어다 놓으면 항상 보여요. 탐색기가 다시 시작되어 아이콘이 사라져도 고양이가 1분 안에 다시 만들어요.</p>
+</section>
+
+<section class="panel reveal" id="launcher" data-toc="앱 런처와 앱 등록">
+  <h2>앱 <em>런처</em>와 앱 등록</h2>
+  <p class="lead">고양이를 클릭하면 머리 위에 <b>반원 모양</b>으로 아이콘이 펼쳐져요. 기본으로 <b>구글 캘린더 · Gmail · 구글 · 유튜브</b>가 있고, 내가 쓰는 프로그램·웹·명령·윈도우 도구를 더할 수 있어요.</p>
+  <div class="grid g2">
+    <div class="card"><h4>런처 쓰는 법</h4><ul>
+      <li>아이콘에 마우스를 올리면 <b>이름</b>이 아치 위에 나와요.</li>
+      <li>아이콘을 <b>누르면</b> 열리고 런처가 닫혀요.</li>
+      <li>한 쪽에 <b>5개</b>. 더 있으면 양 끝 <b>‹ ›</b> 화살표로 쪽을 넘겨요(아이콘이 굴러가요).</li>
+      <li>닫기: 고양이를 다시 클릭 · 바깥 클릭 · <kbd>Esc</kbd> · 8초 동안 마우스가 아치 위에 없을 때.</li>
+    </ul></div>
+    <div class="card"><h4>이럴 땐 안 열려요</h4><p>고양이가 점프·낙하·집어 올려지는 중일 때는 열리지 않아요. 잠깐 뒤 다시 눌러 보세요. 잠자는 시간에는 구석에서 자고 있어서 눌러도 일어나기만 해요.</p></div>
+  </div>
+
+  <h3>앱 등록하기 (우클릭 → "앱 등록…")</h3>
+  <div class="stepper" data-auto="4200">
+    <div class="step" data-title="메뉴에서 앱 등록"><p>고양이를 우클릭 → <b>앱 등록…</b> 을 누르면 분홍색 등록 창이 열려요. 고양이 창 위에 떠서 다른 창 뒤에 숨지 않아요.</p></div>
+    <div class="step" data-title="종류 고르기"><p>네 가지 중 하나를 골라요.</p>
+      <div class="mock" style="max-width:480px"><div class="mt"><i></i>앱 등록</div><div class="mb">
+        <div>고양이 아이콘에 앱 추가하기</div>
+        <div class="row2" style="margin:6px 0"><span class="mbtn p">프로그램·파일</span><span class="mbtn">웹 주소</span></div>
+        <div class="row2"><span class="mbtn">명령 실행 (cmd·PowerShell)</span><span class="mbtn">윈도우 도구 (제어판 등)</span></div></div></div></div>
+    <div class="step" data-title="내용 넣기"><p>종류마다 넣을 것이 달라요. 아래 표를 보세요. 이름은 비우면 대상 이름을 써요.</p></div>
+    <div class="step" data-title="등록!"><p>"등록했다옹~" 하고 말해요. 이미 같은 것이 있으면 "이미 있는 앱이다냥~" 이라고 해요. 웹 주소는 몇 초 뒤 사이트 아이콘을 받아 와요.</p></div>
+  </div>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>종류</th><th>넣는 것</th><th>눌렀을 때</th><th>아이콘 모양</th></tr></thead><tbody>
+    <tr><td><b>프로그램·파일</b></td><td>exe·바로가기·문서·.bat 등 (찾아보기 버튼)</td><td>더블클릭한 것처럼 열려요</td><td>그 프로그램의 아이콘을 동그란 스티커 안에</td></tr>
+    <tr><td><b>웹 주소</b></td><td><code>https://…</code></td><td>기본 브라우저로 열려요</td><td>사이트의 대표 아이콘(없으면 귀여운 지구본)</td></tr>
+    <tr><td><b>명령 실행</b></td><td>명령 한 줄 + cmd/PowerShell 고르기 + "창 유지"</td><td>새 명령 창이 열려 명령을 쳐 줘요 (유지하면 결과를 볼 수 있어요)</td><td>고양이 귀 달린 터미널</td></tr>
+    <tr><td><b>윈도우 도구</b></td><td>목록에서 고르기: 제어판·윈도우 설정·프로그램 및 기능·장치 관리자·작업 관리자·네트워크·Wi-Fi·소리·디스플레이·블루투스·전원·시스템 속성·디스크 관리·서비스·이벤트 뷰어·파일 탐색기·계산기·메모장 등</td><td>해당 도구가 열려요</td><td>톱니바퀴·도구 모양</td></tr>
+  </tbody></table></div>
+  <h4>등록한 앱 지우기</h4>
+  <p>고양이를 우클릭 → <b>등록한 앱 지우기</b> → 지울 앱 이름을 고르면 바로 지워져요(되돌릴 수 없어요). 기본 아이콘 4개는 지울 수 없어요.</p>
+</section>

@@ -1,0 +1,93 @@
+{
+ "name": "5-먹기놀기-털실공2-덥치기",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    70,
+    69,
+    391,
+    238
+   ],
+   "size": [
+    321,
+    169
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    638,
+    69,
+    1132,
+    229
+   ],
+   "size": [
+    494,
+    160
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    40,
+    349,
+    551,
+    536
+   ],
+   "size": [
+    511,
+    187
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    636,
+    361,
+    1118,
+    554
+   ],
+   "size": [
+    482,
+    193
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    24,
+    683,
+    524,
+    837
+   ],
+   "size": [
+    500,
+    154
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    639,
+    676,
+    1141,
+    840
+   ],
+   "size": [
+    502,
+    164
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

@@ -1,0 +1,42 @@
+<section class="panel reveal" id="arch" data-toc="한눈에 보는 구성도">
+  <h2>한눈에 보는 <em>구성도</em></h2>
+  <p class="lead">프로세스는 세 종류예요. <b>지킴이</b>가 <b>본체</b>를 띄워 지켜보고, 본체는 인터넷·무거운 일이 필요할 때마다 <b>보조 프로세스</b>를 잠깐 띄워요. 그림의 상자를 눌러 보세요.</p>
+
+  <div class="diagram" id="arch-diagram">
+    <div class="bar"><b>프로세스 구성도</b><button class="btn primary" id="arch-play">▶ 데이터 흘려보기</button><button class="btn" id="arch-reset">처음으로</button></div>
+    <svg viewBox="0 0 1000 600" role="img" aria-label="프로세스 구성도"></svg>
+    <div class="caption" id="arch-caption">상자를 눌러 보세요. 선(점선)은 데이터·신호가 흐르는 길이에요.</div>
+  </div>
+
+  <h3>왜 프로세스를 나눴나</h3>
+  <div class="grid g3">
+    <div class="card"><h4>지킴이를 따로</h4><p>PyQt 같은 큰 라이브러리를 불러오지 않고 표준 라이브러리만 써서 거의 죽을 일이 없어요. 본체가 죽거나 멈추면 되살리는 것이 유일한 일이에요.</p></div>
+    <div class="card"><h4>보조 프로세스</h4><p>SSL·캘린더 라이브러리는 불러오기만 해도 메모리를 20~30MB 써요. 몇 초만 살게 하면 끝나는 순간 메모리가 그대로 돌아와요. 키·주소는 표준 입력으로만 받아 프로세스 목록에 안 보여요.</p></div>
+    <div class="card"><h4>본체 안 스레드</h4><p>화면 스레드(24fps 타이머) 하나, 그리고 알림 작업·폴더 감시·점검·카메라 감시 같은 <b>작업 스레드</b>가 있어요. 작업 스레드의 결과는 Qt 신호로만 화면 스레드에 넘겨요.</p></div>
+  </div>
+
+  <h3>시스템 흐름 한 줄 요약</h3>
+  <div class="flow">
+    <div class="f">지킴이<small>launcher.py</small></div>
+    <div class="f">본체 시작<small>cat.main()</small></div>
+    <div class="f">24fps 루프<small>행동 → 그리기</small></div>
+    <div class="f">스케줄러<small>정해 둔 시각</small></div>
+    <div class="f">보조 프로세스<small>인터넷·서명</small></div>
+    <div class="f">풍선·창<small>결과 보여 주기</small></div>
+  </div>
+</section>
+
+<section class="panel reveal" id="modules" data-toc="파일과 모듈 지도">
+  <h2>파일과 <em>모듈</em> 지도</h2>
+  <p class="lead">소스는 <b class="gen-files">46</b>개 파일, 약 <b class="gen-lines">13,000</b>줄이에요. 묶음별로 걸러서 볼 수 있고, 표는 코드에서 자동으로 만든 것이라 줄 수가 항상 맞아요.</p>
+  <div class="row2" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0" id="mod-filters"></div>
+  <div class="tbl-wrap"><table class="tbl fit" id="mod-table"><thead><tr><th>파일</th><th>줄</th><th>묶음</th><th>하는 일</th></tr></thead><tbody></tbody></table></div>
+
+  <h3>모듈 사이의 의존 관계</h3>
+  <p>상자를 누르면 그 모듈이 <b>부르는 것</b>(파랑)과 <b>부르는 곳</b>(분홍)이 강조돼요. 점선은 함수 안에서 필요할 때만 불러오는 <b>늦은 import</b>예요(시작을 가볍게 하려는 선택).</p>
+  <div class="diagram" id="import-graph">
+    <div class="bar"><b>import 그래프</b><span class="muted" id="ig-info">모듈을 눌러 보세요</span></div>
+    <svg viewBox="0 0 1000 640" role="img" aria-label="모듈 의존 그래프"></svg>
+  </div>
+  <div class="callout tip"><b>의존의 방향 규칙</b> 아래 층은 위 층을 몰라요. <code>flow.py</code>·<code>routine.py</code>·<code>pet.py</code> 는 화면 라이브러리를 전혀 불러오지 않아서 가짜 시계·가짜 입력으로 바로 시험할 수 있어요. <code>cat.py</code> 한 곳에서만 모든 부품을 조립해요.</div>
+</section>

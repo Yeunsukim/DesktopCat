@@ -1,0 +1,88 @@
+<section class="hero reveal" style="min-height:430px;padding-bottom:110px">
+  <h1 class="giant" style="font-size:clamp(48px,9vw,124px)"><span>User</span><span>Manual</span></h1>
+  <p class="sub">바탕화면 고양이를 설치하고, 놀고, 알림을 받고, 안전하게 쓰는 방법을 처음부터 차근차근 적었어요.<br>그림과 움직이는 연습장으로 직접 해 보면서 읽어 보세요.</p>
+  <div class="stage">
+    <div class="deco" style="left:52%;top:10%;width:62px;--r:-8deg" data-deco="fish"></div>
+    <div class="deco" style="left:66%;top:50%;width:70px;--r:10deg;animation-delay:-2s" data-deco="paw"></div>
+    <div class="deco" style="left:40%;top:62%;width:50px;--r:14deg;animation-delay:-4s" data-deco="star"></div>
+    <div class="mascot-big mascot" data-mood="happy" data-bubble="처음이면 여기부터다냥" style="width:min(290px,34vw)"></div>
+  </div>
+  <div class="stats">
+    <span class="pill">설치 <b>5</b>분</span>
+    <span class="pill">관리자 권한 <b>필요 없음</b></span>
+    <span class="pill">알림 <b>4</b>가지</span>
+    <span class="pill">경비 <b>4</b>가지 쥐</span>
+  </div>
+</section>
+
+<section class="panel reveal" id="intro" data-toc="어떤 프로그램인가요">
+  <h2>어떤 <em>프로그램</em>인가요</h2>
+  <p class="lead">윈도우 바탕화면 위에서 <b>돌아다니고, 졸고, 밥 달라고 조르는 고양이</b>예요. 귀엽기만 한 것이 아니라, 정해 둔 시각이 되면 <b>일정·소식·새 메일</b>을 풍선으로 알려 주고, 뒤에서 <b>수상한 행동</b>을 지켜보는 <b>비서 겸 경비원</b>이에요.</p>
+  <div class="grid g3">
+    <div class="card hover"><span class="tag pink">놀기</span><h4>살아 있는 고양이</h4><p>혼자 걷고, 창 위로 뛰어오르고, 하품하고, 잠자요. 쓰다듬고 집어 올리고 던질 수도 있어요. 털색은 여섯 가지.</p></div>
+    <div class="card hover"><span class="tag pink">런처</span><h4>반원 앱 런처</h4><p>고양이를 누르면 머리 위에 반원이 열려요. 캘린더·Gmail·구글·유튜브와 내가 등록한 프로그램을 바로 열어요.</p></div>
+    <div class="card hover"><span class="tag blue">알림</span><h4>정해 둔 시각의 알림</h4><p>오늘 일정, 오늘의 소식(날씨·뉴스·시세), 어제 한 일 요약, 매시 정각의 일정과 새 메일.</p></div>
+    <div class="card hover"><span class="tag pink">생활</span><h4>하루 리듬</h4><p>22시~7시에는 구석에서 자고, 밥 시간(아침·점심·저녁)에는 밥 달라고 조르고, 일하다 쉬라고 놀아 달라고 해요.</p></div>
+    <div class="card hover"><span class="tag green">경비</span><h4>경비 고양이</h4><p>랜섬웨어, 새 자동 시작·수상한 프로그램, 카메라·마이크를 쓰는 낯선 프로그램, 내려받은 파일을 지켜보고 알려요.</p></div>
+    <div class="card hover"><span class="tag gray">안심</span><h4>죽지 않게 지켜봐요</h4><p>고양이가 멈추면 작은 지킴이가 몇 초 안에 다시 살려요. 설치도 삭제도 관리자 권한이 필요 없어요.</p></div>
+  </div>
+  <div class="callout tip"><b>꼭 알아 두세요</b> 경비 고양이는 <b>백신을 대신하지 않아요</b>. 파일을 지우거나 프로그램을 끄거나 막지 않고, "수상하다"고 <b>알려 주기만</b> 해요. 조치는 경보 창의 버튼을 <b>직접 눌렀을 때만</b> 해요.</div>
+
+  <h3>내 컴퓨터에서 되나요?</h3>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>항목</th><th>필요한 것</th></tr></thead><tbody>
+    <tr><td>윈도우</td><td>Windows 10 / 11 (64비트). 맥·리눅스는 안 돼요.</td></tr>
+    <tr><td>권한</td><td>일반 사용자 계정이면 돼요 (관리자 권한 필요 없음).</td></tr>
+    <tr><td>자원</td><td>평소 CPU 코어 1개의 약 1%, 메모리 약 110MB 정도로 가볍게 설계했어요.</td></tr>
+    <tr><td>인터넷</td><td>알림 기능(일정·소식·메일)에만 필요해요. 고양이와 노는 것, 경비의 대부분은 인터넷 없이 돼요.</td></tr>
+    <tr><td>모니터</td><td>여러 개여도 돼요. 고양이가 걸어서 건너가요. (배율이 서로 다르면 보조 모니터에서 위치가 살짝 어긋날 수 있어요.)</td></tr>
+  </tbody></table></div>
+</section>
+
+<section class="panel reveal" id="install" data-toc="설치하기">
+  <h2><em>설치</em>하기</h2>
+  <p class="lead">나눠 받은 <code>DesktopCat_Setup.exe</code> 파일 <b>하나</b>면 돼요. 아래 순서를 눌러 보세요.</p>
+
+  <div class="stepper" data-auto="4500">
+    <div class="step" data-title="설치 파일 실행"><p><code>DesktopCat_Setup.exe</code> 를 더블클릭하세요. 윈도우가 "알 수 없는 게시자" 같은 경고를 보여 주면, 믿을 수 있는 곳에서 받은 파일인지 확인한 뒤 <b>추가 정보 → 실행</b> 을 눌러요.</p></div>
+    <div class="step" data-title="설치 위치와 옵션 고르기"><p>기본 위치는 내 계정 폴더라서 그대로 두면 돼요. 아래 네 가지 중 고르세요.</p>
+      <div class="mock" style="max-width:480px"><div class="mt"><i></i>데스크탑 고양이 설치</div><div class="mb">
+        <div>설치할 위치</div><div class="field">C:\Users\내이름\AppData\Local\Programs\DesktopCat</div>
+        <div><span class="mcheck">✓</span>윈도우를 켤 때 자동으로 실행 (추천)</div>
+        <div><span class="mcheck">✓</span>시작 메뉴에 바로가기 만들기</div>
+        <div><span class="mcheck" style="background:#fff;color:#fff;border-color:#F2B8CB">&nbsp;</span>바탕화면에 바로가기 만들기</div>
+        <div><span class="mcheck">✓</span>설치가 끝나면 바로 실행</div>
+        <div class="row2" style="margin-top:8px"><span class="mbtn p">설치</span><span class="mbtn">닫기</span></div></div></div></div>
+    <div class="step" data-title="설치 버튼 누르기"><p>진행 막대가 차오르고 "실행 중인 고양이를 끄는 중 → 파일을 설치하는 중 → 바로가기와 설정을 만드는 중" 순서로 알려 줘요. 이미 설치되어 있으면 새 버전으로 <b>바꿔치기</b>하고, 도중에 실패해도 이전 설치가 남아요. 보통 몇 초~1분이면 끝나요.</p></div>
+    <div class="step" data-title="트레이에서 고양이 찾기"><p>끝나면 "설치가 끝났냐옹~" 이라고 나와요. 바탕화면에 고양이가 나타나고, 작업 표시줄 <b>오른쪽 아래(트레이)</b>에 분홍 동그라미 속 고양이 아이콘이 생겨요. 안 보이면 위쪽 화살표(^)를 눌러 숨은 아이콘을 확인하세요.</p></div>
+    <div class="step" data-title="처음 인사"><p>고양이가 "냐옹~" 하고 말풍선을 띄워요. 이제 놀 준비 끝! 다음 장 <b>"고양이와 놀기"</b> 로 가세요.</p></div>
+  </div>
+
+  <h3>설치 옵션 설명</h3>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>옵션</th><th>하는 일</th><th>나중에 바꾸려면</th></tr></thead><tbody>
+    <tr><td>윈도우를 켤 때 자동 실행</td><td>컴퓨터를 켜면 고양이도 같이 나와요. 꺼지면 스스로 다시 켜져요.</td><td>다시 설치할 때 끄거나, 윈도우 설정 → 앱 → 시작 프로그램</td></tr>
+    <tr><td>시작 메뉴 바로가기</td><td>시작 메뉴에서 "데스크탑 고양이"로 켤 수 있어요.</td><td>시작 메뉴에서 바로가기를 지워요</td></tr>
+    <tr><td>바탕화면 바로가기</td><td>바탕화면에 아이콘을 하나 더 만들어요.</td><td>아이콘을 지워요</td></tr>
+    <tr><td>설치 후 바로 실행</td><td>설치가 끝나면 바로 고양이를 불러와요.</td><td>—</td></tr>
+  </tbody></table></div>
+  <details class="fold"><summary>고급: 창 없이 설치하기 (명령줄)</summary>
+    <div class="code" data-lang="bash" data-file="명령 프롬프트"><pre>
+DesktopCat_Setup.exe --silent                       # 기본 위치, 시작 메뉴 바로가기 + 자동 실행 포함
+DesktopCat_Setup.exe --silent --dir D:\Cat          # 설치 위치 지정
+DesktopCat_Setup.exe --silent --no-startup --desktop --no-run
+</pre></div>
+    <p>실패하면 <code>%TEMP%\DesktopCat_setup_error.log</code> 에 이유가 적혀요.</p>
+  </details>
+  <div class="callout warn"><b>설치가 안 될 때</b> "실행 중인 고양이를 끌 수 없습니다" 라고 나오면 트레이의 고양이 아이콘을 <b>우클릭 → 종료</b> 한 뒤 다시 설치하세요.</div>
+</section>
+
+<section class="panel reveal" id="first" data-toc="처음 켜면">
+  <h2>처음 켜면 <em>이런 일</em>이 있어요</h2>
+  <div class="timeline">
+    <div class="t"><b>바로</b> 고양이가 화면 아래(작업 표시줄 위)에 나타나 "냐옹~" 하고 인사해요. 크기는 평소 실제 고양이의 80% 정도예요.</div>
+    <div class="t"><b>8초 뒤</b> 웹 주소로 등록한 앱이 있으면 그 사이트의 아이콘을 인터넷에서 조용히 받아 와요.</div>
+    <div class="t"><b>1~2분 뒤</b> 경비 고양이가 <b>첫 점검</b>을 해요. 지금 컴퓨터에 있는 자동 시작 항목을 "평소 것"으로 기억만 하고 알리지 않아요. 그 뒤 새로 생긴 것만 알려요.</div>
+    <div class="t"><b>처음 24시간</b> 카메라·마이크를 쓰는 프로그램은 알림 없이 "평소 쓰던 프로그램"으로 기억만 해요(배우는 기간).</div>
+    <div class="t"><b>다음 정각부터</b> 매시 정각 알림이 켜져 있어요(캘린더가 연결되어 있을 때). 그 밖의 알림은 아직 꺼져 있어서 <b>설정에서 켜야</b> 와요.</div>
+  </div>
+  <div class="callout tip"><b>바탕화면 아이콘을 발로 차요?</b> 처음에는 <b>꺼져 있어요</b>. 우클릭 메뉴의 "아이콘 차기"를 켜야 해요. 켜도 종료하거나 "아이콘 원래대로"를 누르면 아이콘이 모두 제자리로 돌아와요.</div>
+</section>

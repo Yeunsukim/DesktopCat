@@ -1,0 +1,93 @@
+{
+ "name": "1-이동-달리기",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    21,
+    56,
+    561,
+    249
+   ],
+   "size": [
+    540,
+    193
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    650,
+    47,
+    1125,
+    264
+   ],
+   "size": [
+    475,
+    217
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    133,
+    339,
+    466,
+    560
+   ],
+   "size": [
+    333,
+    221
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    643,
+    337,
+    1099,
+    554
+   ],
+   "size": [
+    456,
+    217
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    32,
+    641,
+    472,
+    854
+   ],
+   "size": [
+    440,
+    213
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    631,
+    649,
+    1156,
+    840
+   ],
+   "size": [
+    525,
+    191
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

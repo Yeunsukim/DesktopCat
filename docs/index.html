@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>데스크탑 고양이 문서</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="progress"></div>
+<header class="topbar">
+  <a class="brand" href="index.html"><span class="mini mascot" data-mood="happy"></span>데스크탑 고양이 <small>문서</small></a>
+  <div class="spacer"></div>
+  <nav class="tabs-top"><a class="on" href="index.html">처음</a><a href="manual.html">사용자 매뉴얼</a><a href="tech.html">기술 문서</a></nav>
+</header>
+
+<div style="max-width:1380px;margin:0 auto;padding:84px 22px 20px">
+  <section class="hero">
+    <h1 class="giant"><span>Desktop</span><span>Cat</span></h1>
+    <p class="sub">바탕화면에 사는 고양이 비서의 설명서예요.<br>무엇이 어떻게 움직이는지, 어떻게 쓰는지 한눈에 볼 수 있게 모았어요.</p>
+    <div class="stage">
+      <div class="deco" style="left:44%;top:12%;width:70px;--r:-10deg" data-deco="yarn"></div>
+      <div class="deco" style="left:58%;top:46%;width:84px;--r:8deg;animation-delay:-2s" data-deco="fish"></div>
+      <div class="deco" style="left:30%;top:56%;width:58px;--r:14deg;animation-delay:-4s" data-deco="paw"></div>
+      <div class="deco" style="left:70%;top:14%;width:52px;--r:0deg;animation-delay:-1s" data-deco="star"></div>
+      <div class="deco" style="left:54%;bottom:16%;width:96px;--r:-4deg;animation-delay:-3s" data-deco="mouse"></div>
+      <div class="mascot-big mascot" data-mood="normal" data-bubble="Huh!?"></div>
+    </div>
+    <div class="stats">
+      <span class="pill">파이썬 파일 <b id="st-files">46</b>개</span>
+      <span class="pill">코드 <b id="st-lines">13,000</b>줄</span>
+      <span class="pill">고양이 동작 <b>33</b>가지</span>
+      <span class="pill">경비 감시 <b>5</b>종</span>
+    </div>
+  </section>
+
+  <div class="home-cards">
+    <a class="big-card reveal" href="manual.html">
+      <div class="art" data-deco="paw"></div>
+      <span class="tag pink">처음 쓰는 분께</span>
+      <h3>사용자 매뉴얼</h3>
+      <p>설치부터 알림 연결, 경비 고양이 경보 읽는 법까지. 단계마다 그림과 함께 따라 하면 돼요. 알림이 언제 오는지 직접 시험해 볼 수 있는 시뮬레이터도 있어요.</p>
+      <ul style="margin:0;padding-left:20px"><li>설치 · 첫 실행 · 고양이와 놀기</li><li>캘린더·소식·메일·어제 한 일 연결하기</li><li>경비 고양이 경보 읽는 법 · 자주 묻는 질문</li></ul>
+      <span class="pill go">읽으러 가기 ▶</span>
+    </a>
+    <a class="big-card reveal" href="tech.html" style="transition-delay:.08s">
+      <div class="art" data-deco="shield"></div>
+      <span class="tag blue">만들거나 고치는 분께</span>
+      <h3>기술 문서</h3>
+      <p>구성·실행 흐름·데이터 파일·알고리즘·상수까지. 이 문서만 보고 같은 프로그램을 다시 만들 수 있도록 단계와 함께 정리했어요. 움직이는 그림으로 흐름을 보여 줘요.</p>
+      <ul style="margin:0;padding-left:20px"><li>프로세스 구성도 · 실행 순서 · 프레임 루프</li><li>JSON 파일 지도 · 알림·경비 동작 원리</li><li>재구현 체크리스트 · 상수표 · 시험 방법</li></ul>
+      <span class="pill go">읽으러 가기 ▶</span>
+    </a>
+  </div>
+  <div class="callout tip reveal" style="margin-top:26px"><b>팁</b> 마스코트를 눌러 보세요. 눈이 마우스를 따라오고, 누르면 한마디 해요. 문서 안의 그림도 대부분 눌러 보거나 ▶ 버튼으로 움직여 볼 수 있어요.</div>
+  <footer class="foot">데스크탑 고양이 · 문서 · 코드가 바뀌면 <code>python docs/build_docs.py</code> 로 숫자와 그래프를 다시 맞춰요</footer>
+</div>
+<script src="assets/gen-data.js"></script>
+<script src="assets/common.js"></script>
+<script>
+window.PageInit = function () {
+  const d = window.DOCDATA; if (!d) return;
+  document.getElementById("st-files").textContent = d.totals.files;
+  document.getElementById("st-lines").textContent = d.totals.lines.toLocaleString("ko-KR");
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+PyQt6
+pywin32
+numpy
+icalendar
+recurring-ical-events
+tzdata

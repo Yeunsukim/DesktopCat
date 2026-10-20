@@ -1,0 +1,63 @@
+<section class="panel reveal" id="ui" data-toc="화면과 디자인 시스템">
+  <h2>화면 부품과 <em>디자인 시스템</em></h2>
+  <p class="lead">화면 부품은 두 종류예요. <b>직접 그리는 투명 창</b>(고양이·풍선·런처)과 <b>Qt 위젯 창</b>(설정·앱 등록·소식·경보·메뉴). 앞쪽은 <code>QPainter</code> 로 모두 직접 그리고, 뒤쪽은 공통 스타일시트(<code>theme.py</code>)로 같은 분위기를 내요.</p>
+
+  <h3>창 목록</h3>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>창</th><th>파일·클래스</th><th>성격</th><th>핵심 동작</th></tr></thead><tbody>
+    <tr><td>고양이</td><td><code>cat.Overlay</code></td><td>투명·최상위·포커스 안 가짐·클릭 통과(몸 위만 받음)</td><td>사진 컷 그림, 머리 위 한 줄 말풍선, 끌기/놓기/클릭/우클릭</td></tr>
+    <tr><td>여러 줄 풍선</td><td><code>balloon.Balloon</code></td><td>투명·최상위·포커스 안 가짐</td><td>머리 위를 따라다님, 얼굴 아바타가 입을 오물오물(처음 2.2초 "talk")</td></tr>
+    <tr><td>반원 런처</td><td><code>launcher_ui.LauncherBubble</code></td><td>투명·최상위·포커스 안 가짐, <code>setMask</code> 로 아치 모양만 마우스 받음</td><td>항목 호 배치, 이름 알약, 쪽 넘기기, 8초 무반응·Esc·바깥 클릭·다시 클릭으로 닫힘</td></tr>
+    <tr><td>소식 창</td><td><code>notice_window.NoticeWindow</code></td><td>일반 창이지만 뜰 때 포커스 안 가짐</td><td>Markdown 보기, 출처 링크(http/https 만)</td></tr>
+    <tr><td>경보 창</td><td><code>sec_ui.AlertWindow</code></td><td>일반 창</td><td>상세·"지금 해야 할 일" 카드·의심 프로그램 줄(위치 열기·종료…)·확인/무시/허용</td></tr>
+    <tr><td>설정</td><td><code>settings_dialog.SettingsDialog</code></td><td>비모달(다른 창을 막지 않음)</td><td>탭 6개(캘린더·소식·메일·어제 한 일·생활·경비), 저장해도 닫지 않음</td></tr>
+    <tr><td>앱 등록</td><td><code>app_register.AppRegisterDialog</code></td><td>고양이 창을 부모로(다른 창 뒤에 안 숨음)</td><td>종류 4가지 라디오, 파일/주소/명령/도구</td></tr>
+    <tr><td>메뉴·트레이</td><td><code>QMenu</code> + <code>cute.MenuHeader</code></td><td>둥근 메뉴(<code>theme.round_menu</code>)</td><td>맨 위에 고양이 얼굴+한마디+상태(배고픔·기분)</td></tr>
+  </tbody></table></div>
+
+  <h3>디자인 토큰</h3>
+  <p>모든 색은 <code>theme.py</code> 와 <code>cute.py</code> 의 상수예요. 문서의 색도 같은 값이에요.</p>
+  <div class="grid g4" id="tokens"></div>
+  <ul>
+    <li><b>검정 대신 자두색</b>: 글씨·윤곽선은 <code>#5A3A47</code>. 부드럽지만 또렷해요.</li>
+    <li>모서리는 둥글게(카드 10px, 버튼 15px, 풍선 18px). 윤곽선은 굵게(풍선 2.4px, 카드 1px 분홍).</li>
+    <li>이모티콘은 <b>화면 글자에서 빼요</b>: 풍선은 <code>cute.strip_emoji</code>, 설정은 버튼·그룹 제목·탭 이름에서 이모지를 지우고 탭에는 직접 그린 아이콘(<code>cute.tab_icon</code>: calendar, news, mail, clock, paw, shield)을 달아요. 고양이가 직접 하는 말(말풍선·시스템 트레이 메시지)에는 이모티콘이 있어도 돼요.</li>
+    <li>QSS 식별자(<code>setObjectName</code>)로 모양을 정해요: <code>page</code>(창 바탕) <code>help</code>(옅은 글) <code>warn</code> <code>ok</code> <code>title</code> <code>card</code> <code>cardtitle</code> <code>stepnum</code> <code>factkey</code> <code>facts</code> <code>primary</code> <code>ghost</code> <code>url</code> <code>fold</code> <code>link</code>. 체크·화살표 그림은 시작할 때 한 번 PNG 로 만들어 데이터 폴더에 둬요(스타일시트는 파일 그림만 받음).</li>
+  </ul>
+
+  <h3>반원 런처의 기하</h3>
+  <p>항목은 반지름 98px 호 위에, <b>왼쪽 끝(큰 각도)에서 오른쪽 끝으로 고르게</b> 놓여요. 한 쪽에 5개이고, 쪽이 둘 이상이면 양 끝에 화살표가 붙어 항목이 3개씩+화살표 2개가 돼요. 기본 항목 4개(구글 캘린더·Gmail·구글·유튜브)에 내가 등록한 앱이 이어져요.</p>
+  <div class="diagram" id="launcher-geo">
+    <div class="sim">
+      <div class="ctl">
+        <label>등록한 앱 수: <b id="lg-n-v">3</b><input type="range" id="lg-n" min="0" max="16" value="3"></label>
+        <label>보는 쪽: <b id="lg-p-v">1</b><input type="range" id="lg-p" min="1" max="4" value="1"></label>
+        <div class="muted" style="font-size:13px"><code>R_MID=98 BAND=25 ICON=32 PER_PAGE=5 ANG0=12 ANG1=168</code><br>각도 = <code>ANG1 − 8 − (ANG1 − ANG0 − 16)·(i/(m−1))</code></div>
+      </div>
+      <div class="view"><svg id="lg-svg" viewBox="0 0 320 190" style="width:100%;height:auto"></svg><div class="out" id="lg-out"></div></div>
+    </div>
+  </div>
+
+  <h3>설정 창 — 탭별로 무엇을 저장하나</h3>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>탭</th><th>화면 요소</th><th>저장 위치</th><th>"지금 시험" 이 부르는 작업</th></tr></thead><tbody>
+    <tr><td>캘린더</td><td>켜기, 연결 방법 카드(접힘), 비공개 주소(가려 쓰는 칸 + "보이기" 체크), 시각 목록(<code>TimesEditor</code>), 매시 정각 일정(앞으로 1~8시간)</td><td><code>schedules.calendar</code>, 비밀 <code>calendar_url</code>, <code>hourly_opts</code></td><td><code>calendar</code>, <code>hourly(part=calendar)</code></td></tr>
+    <tr><td>소식</td><td>켜기, Gemini 키·모델, 연결 시험, 날씨 지역(자동+56개 도시), 시세 목록, 정리 프롬프트, 구글 검색 사용, 시각</td><td><code>schedules.news</code>, 비밀 <code>gemini_key</code>, <code>gemini_model</code>, <code>news_opts</code>, <code>prompts.news</code></td><td><code>news</code>, <code>gemini_ping</code></td></tr>
+    <tr><td>메일</td><td>켜기, Gmail 주소, 앱 비밀번호(16자리, 공백 허용)</td><td><code>hourly_opts.mail</code>, <code>mail.address</code>, 비밀 <code>gmail_pass</code>, <code>mail_state</code></td><td><code>hourly(part=mail)</code></td></tr>
+    <tr><td>어제 한 일</td><td>기록 켜기(처음에 동의 확인), 제외 단어, 폴더 열기, 모두 지우기, 날짜 고르기(AI 요약 / 기록 그대로), 시각, 프롬프트</td><td><code>activity</code>, <code>schedules.yesterday</code>, <code>prompts.yesterday</code></td><td><code>yesterday(날짜)</code></td></tr>
+    <tr><td>생활</td><td>잠자는 시간, 밥 시간 3개, 놀아주기 간격(10~240분), 쉬는 구석(오른쪽/왼쪽)</td><td><code>care</code></td><td>—</td></tr>
+    <tr><td>경비</td><td>켜기, 랜섬웨어(미끼·민감도·지키는 폴더), 시험 경보, 점검 간격(5/10/30/60분)·지금 점검, 다운로드, 카메라·마이크, 허용 목록 지우기, VirusTotal, 잡은 쥐 기록</td><td><code>security</code>, 비밀 <code>vt_key</code></td><td>—</td></tr>
+  </tbody></table></div>
+  <ul>
+    <li><b>저장 버튼</b>은 창을 닫지 않아요(다른 탭을 계속 볼 수 있게). 저장하면 <code>on_saved()</code> = <code>scheduler.mark_past_done()</code> + <code>apply_mode()</code>(생활 바뀐 것 반영) + <code>guard.reload()</code>(경비 켜기/끄기 반영).</li>
+    <li>비밀 칸은 <b>화면에 값을 다시 보여 주지 않아요</b>. 저장되어 있으면 "저장돼 있다냥" 상태 줄을 보여 주고, 새로 입력했을 때만 덮어써요. "저장된 … 지우기" 링크 버튼으로 지워요.</li>
+    <li>"지금 시험"은 먼저 현재 입력값을 저장(<code>_apply()</code>)한 뒤 <code>run_test(이름)</code> → 결과가 <b>직접 시험</b>으로 처리돼 즉시 풍선/창으로 보여 줘요.</li>
+    <li>안내 카드(<code>FoldCard</code>): 제목 + 번호 단계 + 바로가기 링크 버튼 + "사실 표(facts)". 이미 연결돼 있으면 접힌 채로, 아니면 펼쳐진 채로 열려요.</li>
+  </ul>
+
+  <h3>앱 등록 4종</h3>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>kind</th><th>입력</th><th>실행 (<code>launcher_ui.launch</code>)</th><th>아이콘</th></tr></thead><tbody>
+    <tr><td><code>file</code></td><td>프로그램·문서·바로가기 경로</td><td><code>os.startfile(경로)</code></td><td>윈도우가 주는 아이콘을 동그란 스티커 안에</td></tr>
+    <tr><td><code>url</code></td><td>웹 주소</td><td><code>os.startfile(주소)</code></td><td>사이트 파비콘(없으면 귀여운 지구본). 등록 8초 뒤 백그라운드로 받아 <code>icons/주소.img</code> 에 보관, 실패하면 3일 뒤 재시도</td></tr>
+    <tr><td><code>cmd</code></td><td>명령, <code>shell</code>(cmd|powershell), <code>keep</code>(창 유지)</td><td><code>cmd /k 명령</code> 또는 <code>powershell -NoExit -Command 명령</code>, <code>CREATE_NEW_CONSOLE</code></td><td>고양이 귀 터미널</td></tr>
+    <tr><td><code>sys</code></td><td>윈도우 도구 19종 목록에서 고름(제어판·작업 관리자·장치 관리자·서비스·계산기 …)</td><td><code>control appwiz.cpl</code> 처럼 두 단어면 <code>Popen(분리)</code>, <code>ms-settings:…</code> 이나 한 단어면 <code>os.startfile</code></td><td>톱니바퀴/도구</td></tr>
+  </tbody></table></div>
+</section>

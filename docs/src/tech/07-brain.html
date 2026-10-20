@@ -1,0 +1,175 @@
+<section class="panel reveal" id="brain" data-toc="행동 두뇌 (CatBrain)">
+  <h2>행동 <em>두뇌</em> — 상태 기계와 물리</h2>
+  <p class="lead"><code>behavior.py</code> 가 고양이의 "무엇을 할까"를 정해요. 구조는 세 층이에요. <b>흐름(flow.py)</b>이 다음 행동 후보와 개연성을 주고, <b>상태 기계(CatBrain)</b>가 그 행동을 매 프레임 진행시키고, <b>월드(World)</b>가 바닥과 창 윗변을 알려 줘요. 좌표는 모두 <b>논리 픽셀</b>(Qt 좌표), 고양이 위치는 <code>(x = 가로 중심, feet = 발바닥 y)</code> 예요.</p>
+
+  <h3>상태(<code>S</code>) 27가지</h3>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>묶음</th><th>상태</th><th>끝나는 조건 / 다음</th></tr></thead><tbody>
+    <tr><td>쉬기</td><td><code>IDLE SIT SITTILT LOAF</code></td><td><code>t ≥ dur</code> → <code>_after_rest()</code> → <code>_pick_next()</code>. 런처가 열려 있으면 SITTILT 는 계속 기다림</td></tr>
+    <tr><td>잠</td><td><code>SLEEP</code></td><td>같음. 깨면 "후아암~ 누구냥.." 말풍선(밤 모드가 아닐 때)</td></tr>
+    <tr><td>몸단장</td><td><code>GROOM GROOMLEG GROOMFACE SCRATCHNECK SCRATCH</code></td><td>같음</td></tr>
+    <tr><td>하품·기지개·꾹꾹이·꼬리</td><td><code>YAWN STRETCH KNEAD TAILPLAY</code></td><td>같음</td></tr>
+    <tr><td>이동</td><td><code>WALK RUN SNEAK</code></td><td><code>t ≥ dur</code> 후 서서히 멈춤(최대 0.6초) → <code>_pick_next</code>. WALK 는 <code>gait</code>(WALK/RUN)로 걷기·종종걸음 구분</td></tr>
+    <tr><td>공중</td><td><code>JUMP KICK_LEAP FALL</code></td><td>도약 보간 끝 → <code>_land</code> / 발판이 없으면 FALL</td></tr>
+    <tr><td>아이콘 차기</td><td><code>KICK_WALK KICK_LEAP KICK_HIT</code></td><td>KICK_HIT 0.3초에 아이콘 발사, 0.9초에 끝</td></tr>
+    <tr><td>사용자와</td><td><code>EAT STROKE PLAY HELD</code></td><td>EAT 4.5초 / STROKE: 마지막 쓰다듬은 뒤 1.3초 / PLAY: 단계 끝 / HELD: 놓을 때까지</td></tr>
+    <tr><td>경비</td><td><code>HUNT</code></td><td>spot → chase → pounce → proud (쥐 잡기 연출)</td></tr>
+  </tbody></table></div>
+
+  <h3><code>CatBrain.update(dt)</code> — 한 프레임에 하는 일</h3>
+  <ol>
+    <li>안전장치: 좌표가 NaN/무한이거나 화면 아래로 300px 넘게, 위로 −600px 넘게 벗어나면 <code>reset()</code> (현재 모니터 바닥에 세움).</li>
+    <li><code>world.refresh()</code> (창 목록 갱신, 0.4초 간격) → <code>pet.tick(dt)</code> → <code>field.update(dt)</code> (차인 아이콘 물리) → 시계 <code>t, life</code> 증가, <code>landing</code> 감소.</li>
+    <li><code>_chat()</code>: 40~90초마다 기분에 맞는 혼잣말(배고픔 &gt; 70 / 기분 &gt; 70 / 기분 &lt; 30), 런처·모드·바쁜 상태가 아닐 때만.</li>
+    <li><code>getattr(self, "_st_" + state.name.lower())(dt)</code> — 상태 이름으로 처리 함수를 찾아 부르는 <b>이름 규칙 디스패치</b>.</li>
+    <li><code>_ball_update(dt)</code> (털실공 물리) → 동작 선택 <code>_anim_choice()</code> → <code>an.play(...)</code> → <code>an.update(dt, 이동거리/scale)</code>.</li>
+  </ol>
+
+  <h3>다음 행동 뽑기 — 눌러서 확률 보기</h3>
+  <p>고양이는 "방금 한 행동"에서 이어질 수 있는 행동만 후보로 삼고(예: 달린 뒤 곧장 눕지 않음), <b>개연성 × 기본 가중치 × 상황 배수</b> 에 비례해 뽑아요. 아래는 실제 <code>flow.choose</code> 와 같은 계산이에요.</p>
+  <div class="diagram" id="markov">
+    <div class="sim">
+      <div class="ctl">
+        <label>방금 한 행동<select id="mk-last"></select></label>
+        <label>모드<select id="mk-mode"><option value="day">평소</option><option value="corner">한쪽에서 쉬기</option></select></label>
+        <label>시각: <b id="mk-hour-v">12:00</b><input type="range" id="mk-hour" min="0" max="23.5" step="0.5" value="12"></label>
+        <label class="check"><input type="checkbox" id="mk-happy"> 기분 좋음(&gt;70)</label>
+        <label class="check"><input type="checkbox" id="mk-hungry"> 배고픔(&gt;70)</label>
+        <label class="check"><input type="checkbox" id="mk-nojump"> 올라갈 창 없음(점프 불가)</label>
+        <button class="btn primary" id="mk-draw">▶ 10번 뽑아 보기</button>
+      </div>
+      <div class="view">
+        <div id="mk-bars"></div>
+        <div class="out" id="mk-out"></div>
+      </div>
+    </div>
+  </div>
+  <div class="code" data-lang="py" data-file="flow.choose / behavior._mult — 그대로"><pre>
+def choose(last, base, allowed, mult=None, rng=random):
+    r = FLOW.get(last) or FLOW["start"]          # 방금 행동의 후보표
+    cand, wts = [], []
+    for k, aff in r.items():
+        if k in allowed and k in base and aff > 0:
+            wt = base[k] * aff * mult.get(k, 1.0)  # 기본 가중치 × 개연성 × 상황 배수
+            if wt > 0: cand.append(k); wts.append(wt)
+    if not cand:                                  # 후보가 모두 막히면 얌전한 것 중에서
+        cand = [k for k in ("sit", "idle", "sittilt") if k in allowed] or list(allowed)
+        wts = [1.0] * len(cand)
+    return rng.choices(cand, wts)[0]
+
+def activity_mult(hour):                          # 고양이는 해 뜰 때·질 때 활발, 한낮엔 낮잠
+    if 7 &lt;= hour &lt; 10 or 17 &lt;= hour &lt; 21: return 1.35, 0.75   # (이동·놀이 배수, 잠 배수)
+    if 11 &lt;= hour &lt; 16:                      return 0.65, 1.35
+    return 1.0, 1.0
+
+def _mult(self):                                  # CatBrain
+    move, nap = activity_mult(self.hour_fn())
+    m = {k: move * (1.4 if happy else 1.0) for k in ("walk","trot","run","sneak","jump","travel","kick","tailplay","knead")}
+    m["sleep"] = nap * (1.5 if sad else 0.7 if hungry else 1.0)      # sad = 기분 &lt; 30
+    if hungry or sad:
+        for k in ("run","kick","tailplay","knead","trot"): m[k] = 0.0
+    return m
+</pre></div>
+
+  <h3>하루 시간 배분이 맞는 이유 (마르코프 연쇄)</h3>
+  <p>행동마다 길이가 달라서 <b>고르는 확률</b>만으로는 <b>시간 비율</b>이 안 맞아요(잠은 한 번에 40~150초, 하품은 2.4초). 그래서 "개연성 표 + 행동 평균 길이"로 만든 마르코프 연쇄의 정상 분포를 계산해서, 목표 시간 비율(<code>TARGET_DAY</code>)이 나오도록 기본 가중치(<code>WEIGHTS_DAY</code>)를 <code>solve()</code> 가 자동으로 맞춰요. 가중치는 미리 계산해 상수로 넣어 두었고(<code>python tools/test_flow.py --print</code> 로 다시 뽑음), 시작할 때마다 계산하면 2초쯤 걸리기 때문이에요.</p>
+  <div class="diagram">
+    <div class="bar"><b>시뮬레이션: 낮 동안 목표 비율에 가까운가?</b>
+      <button class="btn primary" id="mk-sim">▶ 행동 20,000번 시뮬레이션</button></div>
+    <div class="view" style="padding:12px"><div id="mk-share"></div><div class="caption" id="mk-share-cap">버튼을 누르면 20,000번 연속으로 뽑아서 행동 길이(평균)를 곱한 시간 비율을 목표와 비교해요.</div></div>
+  </div>
+  <div class="code" data-lang="py" data-file="flow.solve — 목표 시간 비율에 맞춰 가중치 조절"><pre>
+def solve(kinds, target, iters=400):
+    w = {k: 1.0 for k in kinds}; tsum = sum(target.values())
+    for _ in range(60):
+        P = {i: normalize({j: w[j] * row(i).get(j, 0) for j in kinds}) for i in kinds}   # 전이 확률
+        pi = stationary(P, iters // 4)                                                    # 정상 분포(반복 곱)
+        share = {k: pi[k] * mean_dur(k) for k in kinds}                                   # 시간 비율 = 확률 × 평균 길이
+        group = sum_by_group(share, GROUP_OF)                                             # 묶음별 %
+        for k in kinds:
+            w[k] *= ((target[GROUP_OF[k]] / tsum * 100) / group[GROUP_OF[k]]) ** 0.6      # 모자라면 키우고 넘치면 줄임
+    return w
+</pre></div>
+  <div class="grid g3">
+    <div class="card"><h4>낮 목표(%)</h4><p>잠 36 · 쉬기 32 · 그루밍 13 · 이동 8 · 놀이 6 · 하품·기지개 3<br><span class="muted">밤의 잠(22~07시)을 합치면 하루 전체로 잠 ≈60%, 쉬기 ≈20%, 그루밍 ≈8%, 이동 ≈5%, 놀이 ≈4%</span></p></div>
+    <div class="card"><h4>구석 쉬기(%)</h4><p>잠 54 · 쉬기 28 · 그루밍 12 · 놀이(=꾹꾹이) 2 · 하품·기지개 4<br><span class="muted">후보는 sit sittilt loaf sleep groom groomleg groomface scratchneck yawn stretch knead idle 만</span></p></div>
+    <div class="card"><h4>밤 모드</h4><p>구석까지 걸어가 <code>sleep_curl</code>(웅크리고 자기)로 <b>600초씩 이어서</b> 잔다. 일정·졸라대기 모두 쉼.</p></div>
+  </div>
+
+  <h3>이동·물리 상수</h3>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>이름</th><th>값</th><th>뜻</th></tr></thead><tbody>
+    <tr><td><code>G</code></td><td>1800</td><td>중력 가속도 (px/s²), 실제로는 <code>G × scale</code></td></tr>
+    <tr><td><code>V_WALK · V_TROT · V_RUN · V_SNEAK</code></td><td>70 · 150 · 300 · 38</td><td>기준 크기(scale=1) 속도 px/s. 배고프면 걷기·종종걸음 × 0.8</td></tr>
+    <tr><td><code>ACCEL_T · DECEL_T · STOP_MAX</code></td><td>0.35 · 0.30 · 0.6 초</td><td>출발 가속 / 멈춤 감속 / 멈추는 데 쓰는 최대 시간</td></tr>
+    <tr><td>낙하 공기저항</td><td><code>vx *= exp(−1.5·dt)</code></td><td>수평 속도 감쇠</td></tr>
+    <tr><td><code>jump_targets</code></td><td>높이 40~620, 가로 ≤ 380</td><td>뛰어오를 수 있는 더 높은 창 (창 폭 ≥ 100, 가려지지 않은 곳)</td></tr>
+    <tr><td>점프 시간 · 호</td><td><code>0.7 + rise/1500</code> 초 · <code>70 + 0.2·rise</code></td><td>웅크림(prep) 0.3초 후 도약</td></tr>
+    <tr><td>발판 판정</td><td>창 윗변, 가로 ±8px 안쪽</td><td>위쪽 창이 가리는 곳은 제외 (<code>_occluded</code>)</td></tr>
+    <tr><td><code>IconField.FRICTION</code></td><td>2.2</td><td>차인 아이콘 감속 <code>v *= exp(−2.2·dt)</code>, 벽에서 0.5배로 튕김, 속도 8 미만이면 멈춤</td></tr>
+    <tr><td>차는 속도</td><td>수평 750~1150 · 수직 −260~−40</td><td>KICK_HIT 0.3초에 <code>field.launch</code></td></tr>
+  </tbody></table></div>
+  <div class="diagram">
+    <div class="sim">
+      <div class="ctl">
+        <label>올라갈 높이 rise: <b id="ph-rise-v">240</b> px<input type="range" id="ph-rise" min="40" max="620" step="10" value="240"></label>
+        <label>걸음<select id="ph-gait"><option value="70">걷기 (70)</option><option value="150">종종걸음 (150)</option><option value="300">달리기 (300)</option><option value="38">살금살금 (38)</option></select></label>
+        <div class="muted" style="font-size:13px">왼쪽 그림: 도약 곡선. 오른쪽 그림: 출발~멈춤 속도.</div>
+      </div>
+      <div class="view"><svg id="ph-svg" viewBox="0 0 640 220" style="width:100%;height:auto"></svg><div class="out" id="ph-out"></div></div>
+    </div>
+  </div>
+
+  <h3>발판과 모니터 — <code>World</code></h3>
+  <ul>
+    <li><b>띠(strip)</b> 바닥 높이가 같고(오차 6px) 가로로 이어진 모니터들을 한 바닥으로 묶어요(<code>strip_at</code>). 바닥 높이가 다른 이웃 모니터(<code>neighbors</code>)는 가장자리에서 <b>뛰어내리거나(drop &gt; 6) 뛰어오르며</b>(높이 ≤ 560) 건너가요.</li>
+    <li><b>창 목록</b> <code>WindowTracker.refresh(0.25~0.4초)</code>: <code>EnumWindows</code> 로 보이는·최소화 아닌 창만, <code>WS_EX_TRANSPARENT/NOACTIVATE</code> 와 (APPWINDOW 아닌) <code>TOOLWINDOW</code> 제외, 제목 없는 창·셸 클래스(Progman, WorkerW, 작업표시줄 …)·DWM <b>cloaked</b>(가려진 가상 데스크톱 창) 제외, 폭 ≥ 120·높이 ≥ 60. 좌표는 <code>DWMWA_EXTENDED_FRAME_BOUNDS</code>(그림자 여백 제외)를 dpr 로 나눈 논리 픽셀. 고양이 자신의 창들은 <code>add_ignore</code>.</li>
+    <li><b>서 있는 창이 사라지거나 움직이면</b> <code>_stand()</code> 가 매 프레임 창 사각형을 다시 읽어 발바닥 높이를 따라가고, 가로 범위를 벗어나면 <code>FALL</code>.</li>
+    <li><b>낙하</b> <code>vy += G·scale·dt</code>; 아래로 떨어지는 동안 <code>surfaces_below</code> 중 첫 발판을 통과하는 프레임에 <code>_land(top, hwnd)</code>. 새 바닥이 위로 올라와 고양이가 바닥 아래에 있게 되면 즉시 착지.</li>
+  </ul>
+
+  <h3>쓰다듬기·집기·런처 생각하기·쥐 잡기</h3>
+  <div class="grid g2">
+    <div class="card"><h4>쓰다듬기</h4><p>클릭하거나, 몸 위에서 마우스를 움직인 거리를 <code>_pet_energy</code> 에 모아(초당 260 감소) <b>140</b>을 넘으면 <code>stroke()</code>. 기분 +8(1.2초에 한 번), STROKE 상태 유지 = 마지막 호출 + 1.3초. 자는 중이면 "…깼냐옹…".</p></div>
+    <div class="card"><h4>집어 올리기</h4><p><code>grab()</code>: 하던 일을 모두 버리고 HELD. <code>hold(cx, cy)</code>: <code>feet = cy + hold_drop</code>, 최근 6개 좌표 기록. <code>release()</code>: 마지막 구간 평균 속도(±700)로 <code>FALL</code>.</p></div>
+    <div class="card"><h4>런처 생각하기</h4><p><code>think(True)</code>: SITTILT 를 3600초로 걸어 앉아 갸웃한 채 기다림. 닫으면(<code>think(False)</code>) 1.5초 뒤 평소 행동. 쓰다듬기 감지는 이 동안 꺼요.</p></div>
+    <div class="card"><h4>쥐 잡기 <code>hunt()</code></h4><p>spot 0.75초(귀 쫑긋, 쥐 fade-in 0.3초) → chase(쥐 <code>V_RUN×0.5</code>, 고양이 <code>V_RUN</code>, 거리 &lt; 46·scale 또는 3.5초) → pounce(0.28초에 잡힘, 0.55초) → proud(1.6초, "잡았다옹!") → SIT. 벽 쪽이면 반대편에서 쥐가 나타남.</p></div>
+  </div>
+  <p><b>명령 대기열(<code>pending</code>)</b> 점프·낙하·집어 올림 중에는 밥 주기·놀아주기·쥐 잡기를 바로 하지 않고 <code>pending</code> 에 적어 두었다가 다음 <code>_pick_next()</code> 에서 처리해요(<code>feed</code> → <code>play</code> → <code>hunt</code> 순).</p>
+
+  <h3>하루 생활 — <code>routine.py</code> + <code>pet.py</code></h3>
+  <p><code>Routine</code> 은 화면을 모르고 <b>"지금 무슨 일이 일어나야 하나"</b>만 사건 목록으로 돌려줘요: <code>('night',)</code> · <code>('wake',)</code> · <code>('meal', 이름, 처음인가)</code> · <code>('play_start',)</code> · <code>('play', 처음인가)</code>. <code>cat.handle_routine</code> 이 소리·풍선·행동으로 옮겨요. 시계를 바꿔 끼울 수 있어서(<code>now_fn</code>) 시험이 쉬워요.</p>
+  <div class="diagram" id="routine-sim">
+    <div class="sim">
+      <div class="ctl">
+        <label>지금 시각: <b id="rt-now-v">12:30</b><input type="range" id="rt-now" min="0" max="1439" step="5" value="750"></label>
+        <label>마지막으로 밥 준 시각: <b id="rt-fed-v">07:40</b><input type="range" id="rt-fed" min="0" max="1439" step="5" value="460"></label>
+        <label>잠자는 시간 시작<input type="time" id="rt-ns" value="22:00"></label>
+        <label>잠자는 시간 끝<input type="time" id="rt-ne" value="07:00"></label>
+        <label>밥 시간들(쉼표)<input type="text" id="rt-meals" value="08:00,13:00,19:00" style="font:inherit;border:2px solid var(--line);border-radius:10px;padding:3px 8px"></label>
+      </div>
+      <div class="view"><svg id="rt-svg" viewBox="0 0 700 150" style="width:100%;height:auto"></svg><div class="out" id="rt-out"></div></div>
+    </div>
+  </div>
+  <div class="code" data-lang="py" data-file="routine.Routine.due_meal — 밥 졸라대기 판단"><pre>
+MEAL_EARLY = timedelta(minutes=30)       # 밥 시간보다 이만큼 일찍 준 밥도 그 끼니로 친다
+MEAL_MAX_WINDOW = timedelta(hours=8)
+def due_meal(self, now):
+    if not cfg.meals.enabled or self.is_night(now): return None
+    slots = self.meal_slots(now); night_start = self._night_start_today(now); due = None
+    for i, sl in enumerate(slots):
+        end = sl + MEAL_MAX_WINDOW
+        if i + 1 &lt; len(slots): end = min(end, slots[i + 1])      # 다음 끼니가 되면 그만
+        if night_start is not None and night_start > sl: end = min(end, night_start)
+        if sl &lt;= now &lt; end and self.last_fed &lt; (sl - MEAL_EARLY).timestamp():
+            due = sl                                              # 아직 이 끼니를 안 먹었다
+    return due
+# tick(): 졸라대기는 REPEAT_SEC=180 초마다, 한 번에 MAX_REPEATS=10 번까지.
+#         놀아주기: now - last_play >= max(10, every_min) * 60 이면 같은 방식 (play_start → play ...)
+</pre></div>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>키우기 값 (<code>pet.py</code>)</th><th>규칙</th></tr></thead><tbody>
+    <tr><td>배고픔 hunger (0~100)</td><td><code>+= dt / 300</code> (밥 먹고 약 5시간이면 70%). 자는 시간엔 × 0.2.</td></tr>
+    <tr><td>기분 mood</td><td>hunger &gt; 70 이면 <code>−dt/45</code>; 아니고 mood &gt; 50 이면 <code>−dt/150</code>; 아니고 hunger &lt; 40 이면 <code>+dt/200</code></td></tr>
+    <tr><td>행동 효과</td><td>간식 <code>feed</code>: 배고픔 −45·기분 +5 · 밥 <code>feed_meal</code>: −70·+8 · 놀이 <code>play</code>: 기분 +20·배고픔 +5 · 쓰다듬기 기분 +8</td></tr>
+    <tr><td>배부름</td><td>hunger &lt; 10 이면 간식 거절("배부르당..옹~"). 밥 시간 졸라대는 중이면 <code>force</code> 로 먹음.</td></tr>
+    <tr><td>저장</td><td>30초마다 + 종료·털색 변경 (<code>pet_state.json</code>)</td></tr>
+  </tbody></table></div>
+</section>

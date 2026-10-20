@@ -1,0 +1,93 @@
+{
+ "name": "3-잠자기-꾸벅꾸벅 졸기",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    41,
+    18,
+    335,
+    418
+   ],
+   "size": [
+    294,
+    400
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    444,
+    43,
+    769,
+    418
+   ],
+   "size": [
+    325,
+    375
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    832,
+    96,
+    1189,
+    414
+   ],
+   "size": [
+    357,
+    318
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    36,
+    557,
+    393,
+    858
+   ],
+   "size": [
+    357,
+    301
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    458,
+    466,
+    764,
+    858
+   ],
+   "size": [
+    306,
+    392
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    855,
+    464,
+    1158,
+    858
+   ],
+   "size": [
+    303,
+    394
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

@@ -1,0 +1,65 @@
+<section class="panel reveal" id="rebuild" data-toc="처음부터 다시 만들기">
+  <h2>처음부터 <em>다시 만들기</em> — 따라 하는 순서</h2>
+  <p class="lead">아래 순서대로 만들면 같은 프로그램이 돼요. 각 단계는 <b>앞 단계 위에 쌓이고</b>, 끝나면 확인할 수 있는 "완성 기준"이 있어요. 완료한 단계는 눌러서 체크하세요(이 브라우저에 기억돼요).</p>
+
+  <div class="card" style="margin:12px 0">
+    <div style="display:flex;gap:12px;align-items:center"><b class="meter-label" style="min-width:90px">0 / 18 완료</b><div class="meter" style="flex:1"><i></i></div></div>
+    <ul class="checklist" id="rebuild-list">
+      <li><input type="checkbox"><div><div class="t">1. 뼈대: 공통 도구와 설정 저장소</div><div class="d"><code>guard_common.py</code>(데이터 폴더·로그·하트비트·종료 이벤트·자원 측정), <code>config_store.py</code>(DEFAULTS·_merge·원자적 저장·DPAPI 비밀). <b>완성 기준</b>: 설정을 저장했다가 다시 읽으면 같고, 파일을 일부러 깨뜨려도 기본값으로 시작.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">2. 지킴이 <code>launcher.py</code></div><div class="d">모드 4가지, 뮤텍스, 감시 루프, 대기 시간 늘리기. 본체 자리에 3초 뒤 죽는 가짜 프로그램을 넣고 <b>완성 기준</b>: 죽을 때마다 되살아나고 대기가 3→12→24→48…300초로 늘며, 종료 코드 0 이면 같이 끝.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">3. 빈 투명 창 + 24fps 루프 (<code>cat.py</code> 골격)</div><div class="d"><code>QApplication</code>, <code>Overlay</code>(플래그·확장 스타일·클릭 통과 전환), <code>PreciseTimer</code> 42ms, <code>frame()</code> 의 오류 가둠, 트레이 아이콘+종료. <b>완성 기준</b>: 사각형 하나가 화면 위에 떠 있고 마우스를 올릴 때만 잡히며 다른 창 클릭을 방해하지 않음.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">4. 월드: 모니터·창 윗변·바닥</div><div class="d"><code>windows_info.py</code>(EnumWindows+DWM 프레임, 걸러내기 규칙), <code>behavior.World</code>(띠·발판·점프 후보). <b>완성 기준</b>: 창 윗변 목록을 출력해 눈으로 맞고, 모니터를 바꿔도 따라감.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">5. 두뇌: 상태 기계 + 물리</div><div class="d"><code>animations_runtime.Animator</code>, <code>flow.py</code>(FLOW·DUR·TARGET·choose·solve), <code>behavior.CatBrain</code>(걷기·가감속·점프·낙하·집기). 아직 그림은 사각형/글자로. <b>완성 기준</b>: <code>tools/sim_behavior.py</code> 로 8시간 시뮬레이션했을 때 시간 비율이 목표에 가까움.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">6. 사진 컷 엔진</div><div class="d"><code>photocat.PhotoRig</code>: <code>sprites.json</code> 읽기, 컷 캐시, <code>_select/_pick/_frame/draw</code>, 전환 겹침, 바닥 걸치기, 그림자·소품. 컷 자료는 <code>tools/*</code> 로 만듦(또는 직접 촬영/제작해 같은 폴더 규칙으로). <b>완성 기준</b>: 걸을 때 발이 미끄러지지 않고, 자세가 바뀔 때 잔상이 안 남음.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">7. 털색 바꾸기 + 눈 다시 그리기</div><div class="d"><code>coats.py</code>(_fur_weight·_RAMPS·삼색 순위 배분·paint_eyes). <b>완성 기준</b>: 6가지 털색에서 눈이 또렷하고 귀 안쪽 분홍·코는 그대로.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">8. 말풍선·쓰다듬기·집기·밥 주기·놀아주기</div><div class="d">고양이 창의 한 줄 말풍선(글자 미리 그려 두기), <code>hover/stroke/grab/hold/release</code>, <code>pet.py</code>, 털실공 놀이 단계. <b>완성 기준</b>: 쓱쓱 문지르면 골골, 던지면 포물선, 밥 주면 배고픔이 줄어듦.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">9. 하루 생활 <code>routine.py</code></div><div class="d">잠·밥·놀아주기 사건 계산(가짜 시계로 시험 먼저), 구석 모드, 밤 모드. <b>완성 기준</b>: <code>tools/test_routine.py</code> 에 해당하는 시험이 통과.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">10. 바탕화면 아이콘 차기</div><div class="d"><code>desktop_icons.py</code>(explorer 메모리에 버퍼를 만들어 ListView 메시지로 읽기/옮기기, 백업·복원 장부), <code>IconField</code> 물리. <b>완성 기준</b>: 차인 아이콘이 미끄러져 멈추고, 종료하면 모두 제자리·격자 정렬 설정도 복원.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">11. 런처·앱 등록·메뉴</div><div class="d"><code>launcher_ui.py</code>(호 배치·마스크·쪽 넘기기·닫히는 조건), <code>app_register.py</code>, <code>favicon.py</code>, 우클릭 메뉴/트레이. <b>완성 기준</b>: 4종류 앱을 등록·실행·삭제.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">12. 보조 프로세스 + 스케줄러</div><div class="d"><code>nethelper.py</code>(stdin/stdout JSON), <code>scheduler.py</code>, <code>calendar_ics.py</code>. <b>완성 기준</b>: 정해 둔 시각에 일정 풍선, 놓친 알림 따라잡기, 설정 저장만으로 안 울림(시험 먼저).</div></div></li>
+      <li><input type="checkbox"><div><div class="t">13. 풍선·소식 창·소리</div><div class="d"><code>balloon.py</code>, <code>notice_window.py</code>, <code>catsound.py</code>, 멈춘 동안 붙잡기(held), 재시도.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">14. 소식·Gemini·메일·매시 알림</div><div class="d"><code>news_sources.py</code>, <code>gemini_client.py</code>, <code>mail_imap.py</code>, <code>job_news/job_hourly</code>. <b>완성 기준</b>: 가짜 서버 시험 통과(오류 문구·재시도 포함).</div></div></li>
+      <li><input type="checkbox"><div><div class="t">15. 활동 기록 + 어제 한 일</div><div class="d"><code>activity_log.py</code>(제외 규칙·원자적 저장·30일), 요약 작업, 설정의 동의 흐름.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">16. 경비 고양이</div><div class="d"><code>sec_events → sec_watch → sec_ransom → sec_common/sec_sig/sec_scan → sec_privacy → sec_download → vt_client → security → sec_ui</code> 순서로. <b>완성 기준</b>: <code>test_ransom_sim</code> 이 흉내엔 울고 정상 작업엔 안 울림.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">17. 설정 창과 디자인</div><div class="d"><code>theme.py</code>, <code>cute.py</code>, <code>settings_dialog.py</code> 6탭. <b>완성 기준</b>: 모든 입력이 <code>launcher_config.json</code> 의 정해진 자리에 저장.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">18. 포장</div><div class="d"><code>build_installer.py</code>, <code>installer/*</code>. <b>완성 기준</b>: 깨끗한 계정에서 설치→자동 실행→삭제(기록 남기기/지우기 두 경우)가 관리자 권한 없이 됨.</div></div></li>
+    </ul>
+  </div>
+
+  <h3>덫 — 겪었던 문제와 해결 (꼭 피하세요)</h3>
+  <div class="tbl-wrap"><table class="tbl fit" id="pitfalls"><thead><tr><th>증상</th><th>원인</th><th>해결</th></tr></thead><tbody>
+    <tr><td>프레임 간격이 24~47ms 로 들쭉날쭉</td><td>기본 타이머(Coarse)가 윈도우 눈금 15.6ms 에 맞춰짐</td><td><code>setTimerType(PreciseTimer)</code></td></tr>
+    <tr><td>걸음이 가끔 뚝뚝 끊김</td><td>틱과 안 맞는 그리기 간격(격틱), 이모지 글자를 매 프레임 그리면 40~700ms</td><td>움직일 땐 매 틱, 글자는 미리 그림으로, 타이머 지연 여유 −12ms</td></tr>
+    <tr><td>며칠 뒤 갑자기 죽음</td><td>GDI/USER 개체·핸들이 조금씩 샘 (프로세스당 약 10,000개 한계)</td><td>60초마다 측정, 임계 넘으면 <code>exit(3)</code> 로 스스로 재시작</td></tr>
+    <tr><td>고양이·말풍선이 겹쳐 보임(이전 프레임이 안 지워짐)</td><td>그리다 오류가 나서 <code>QPainter.end()</code> 가 안 불림</td><td><code>try/finally</code> 로 반드시 <code>end()</code></td></tr>
+    <tr><td>창 위에 서 있는데 발이 떠 보임/빠져 보임</td><td>창의 그림자 여백 포함 사각형을 씀, 컷 맨 아래의 빈 줄</td><td><code>DWMWA_EXTENDED_FRAME_BOUNDS</code>, 컷의 빈 줄만큼 내리기, <code>SINK=2.5</code></td></tr>
+    <tr><td>가상 데스크톱에서 안 보이는 창 위로 올라섬</td><td>다른 데스크톱 창도 <code>IsWindowVisible</code> 가 참</td><td><code>DWMWA_CLOAKED</code> 확인</td></tr>
+    <tr><td>작업 표시줄을 누르면 고양이가 뒤로 숨음</td><td>작업 표시줄도 '항상 위' 창</td><td>끌 때 0.3초마다, 앞 창이 바뀔 때 1초마다 <code>SetWindowPos(HWND_TOPMOST …)</code> (단 시작 메뉴 같은 윈도우 화면이 앞이면 올리지 않음)</td></tr>
+    <tr><td>타자 입력이 풍선/소식 창으로 샘</td><td>창이 뜰 때 포커스를 가져감</td><td><code>WA_ShowWithoutActivating</code> + <code>WS_EX_NOACTIVATE</code></td></tr>
+    <tr><td>보조 모니터에서 아이콘 위치가 어긋남</td><td>바탕화면 아이콘은 물리 픽셀·가상 화면 기준, Qt 는 논리 픽셀</td><td>dpr 로 나누고 가상 화면 원점을 더함 (배율이 다른 모니터는 안내 메시지)</td></tr>
+    <tr><td>탐색기가 다시 시작되면 아이콘 차기가 멈춤</td><td>explorer 안의 ListView 핸들이 바뀜</td><td><code>revalidate()</code> 로 연결 되살림</td></tr>
+    <tr><td>트레이 아이콘이 사라짐</td><td>탐색기 재시작</td><td>60초마다 <code>tray.isVisible()</code> 확인 후 <code>show()</code></td></tr>
+    <tr><td>알림이 안 옴: 켠 직후/절전 복귀 직후</td><td>인터넷이 아직 안 붙음 / 시각을 놓침</td><td>재시도 60·180·600초, 가장 최근 놓친 칸 따라잡기, 설정만 저장해도 안 사라지게</td></tr>
+    <tr><td>같은 시각 알림이 계속 되풀이</td><td>실패하면 <code>last_run</code> 이 안 적혀서 다음 점검에 또 실행</td><td>실행 <b>전에</b> <code>last_run</code> 저장</td></tr>
+    <tr><td>보조 프로세스 결과가 한글에서 깨짐</td><td>파이프의 문자 인코딩(cp949/UTF-8) 불일치</td><td><code>json.dumps</code> 기본(ASCII 이스케이프)으로 출력</td></tr>
+    <tr><td>경비가 PC 를 느리게 함 (CPU 70%)</td><td>watchdog 이 사건마다 디스크에 '폴더인지' 물음, PowerShell 을 자주 실행</td><td><code>ReadDirectoryChangesW</code> 직접 사용, 레지스트리 지문으로 PowerShell 재사용</td></tr>
+    <tr><td>경비가 자기가 둔 미끼 때문에 오경보</td><td>다른 실행이 같은 미끼를 새로 덮어씀</td><td>멀쩡한 기존 미끼는 이어받음(<code>_adopt</code>)</td></tr>
+    <tr><td>경보 창/풍선의 아이콘이 파이썬 모양</td><td>작업 표시줄이 프로세스(pythonw.exe) 기준으로 묶음</td><td><code>SetCurrentProcessExplicitAppUserModelID("DesktopCat.CatSecretary")</code> + 창/트레이 아이콘 설정</td></tr>
+    <tr><td>삭제 프로그램이 안 끝남</td><td>마지막 안내창이 다른 창 뒤에 숨어 클릭을 기다림</td><td>안내를 별도 프로세스(wscript)로, 항상 맨 앞 플래그</td></tr>
+    <tr><td>메모리가 100MB 이상 큼</td><td>Qt 글꼴 엔진, 인터넷 라이브러리</td><td><code>QT_QPA_PLATFORM=windows:fontengine=gdi</code>, 인터넷/캘린더는 보조 프로세스</td></tr>
+    <tr><td>설정 저장 중 꺼지면 파일이 깨짐</td><td>직접 덮어쓰기</td><td>임시 파일 → <code>os.replace</code></td></tr>
+  </tbody></table></div>
+
+  <h3>모듈을 만드는 의존 순서</h3>
+  <p>아래 층이 위 층을 모르게 하면 시험하기 쉬워요. (화살표는 "~를 쓴다" 방향이 아니라 <b>만드는 순서</b>)</p>
+  <div class="flow">
+    <div class="f">1. 토대<small>guard_common · config_store · pet · flow · routine · scheduler</small></div>
+    <div class="f">2. 월드<small>windows_info · desktop_icons · behavior</small></div>
+    <div class="f">3. 그림<small>catrig · coats · photocat · cute · theme</small></div>
+    <div class="f">4. 외부 일<small>nethelper · calendar_ics · gemini_client · news_sources · mail_imap · favicon · activity_log</small></div>
+    <div class="f">5. 경비<small>sec_events · sec_watch · sec_ransom · sec_scan · …</small></div>
+    <div class="f">6. 화면<small>balloon · notice_window · launcher_ui · app_register · settings_dialog · sec_ui</small></div>
+    <div class="f">7. 조립<small>cat.py · launcher.py</small></div>
+  </div>
+  <div class="callout tip"><b>조립은 한 곳에서만</b> 모든 부품을 서로 연결하는 곳은 <code>cat.py</code> 의 <code>main()</code> 하나예요. 부품들은 서로를 직접 부르지 않고 <b>함수 콜백·Qt 신호</b>로만 이어져요(예: <code>brain.on_fed</code>, <code>overlay.on_click</code>, <code>guard.event</code>, <code>scheduler.finished</code>). 그래서 부품을 따로 시험하고 바꿔 끼울 수 있어요.</div>
+</section>

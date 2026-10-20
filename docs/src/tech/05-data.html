@@ -1,0 +1,189 @@
+<section class="panel reveal" id="data" data-toc="데이터 폴더와 JSON">
+  <h2>데이터 폴더와 <em>JSON</em> 파일들</h2>
+  <p class="lead">모든 기록은 <b>데이터 폴더</b> 한 곳에 모여요. 소스로 돌릴 때는 프로그램 폴더 자체, 설치본은 <code>%LOCALAPPDATA%\DesktopCat</code>, 시험 때는 <code>DESKTOPCAT_DATA</code> 가 가리키는 폴더예요. 폴더 이름을 눌러 보세요.</p>
+
+  <div class="sim wide">
+    <div class="ctl" style="min-width:0">
+      <div class="treeview" id="data-tree" role="tree" aria-label="데이터 폴더 구조"></div>
+    </div>
+    <div class="view" id="data-detail" aria-live="polite"><p class="muted">왼쪽에서 파일을 눌러 보세요.</p></div>
+  </div>
+
+  <h3>한눈에 보는 표 — 누가 쓰고 누가 읽나</h3>
+  <div class="tbl-wrap"><table class="tbl fit" id="data-matrix"><thead><tr><th>파일</th><th>만드는·쓰는 곳</th><th>읽는 곳</th><th>언제 저장</th><th>보관</th></tr></thead><tbody>
+    <tr><td><code>launcher_config.json</code></td><td><code>config_store.Settings.save()</code> ← 설정 창, 알림 결과, 앱 등록/삭제, 스케줄러(last_run)</td><td><code>Settings.load()</code> (시작 시), 거의 모든 모듈이 <code>settings.data[...]</code></td><td>바뀔 때마다 즉시</td><td>영구</td></tr>
+    <tr><td><code>secrets.json</code></td><td><code>Settings.set_secret()</code> (DPAPI 암호화)</td><td><code>Settings.get_secret()</code></td><td>키를 저장·지울 때</td><td>영구</td></tr>
+    <tr><td><code>pet_state.json</code></td><td><code>pet.Pet.save()</code></td><td><code>Pet._load()</code></td><td>30초마다 + 종료·털색 변경 때</td><td>영구</td></tr>
+    <tr><td><code>icons_backup.json</code></td><td><code>desktop_icons.DesktopIcons._save()</code></td><td><code>backup()</code>/<code>restore()</code></td><td>아이콘을 차기 전·멈춘 뒤</td><td>정상 종료하면 삭제</td></tr>
+    <tr><td><code>activity/YYYY-MM-DD.json</code></td><td><code>activity_log.ActivityLog.flush()</code></td><td><code>load()</code> → 요약·보기</td><td>60초마다·날짜 바뀔 때</td><td>30일</td></tr>
+    <tr><td><code>security/events.json</code></td><td><code>sec_events.SecEvents</code></td><td>경보 창·설정의 '잡은 쥐 기록'</td><td>사건이 생기거나 상태가 바뀔 때</td><td>30일·500건</td></tr>
+    <tr><td><code>security/canary.json</code></td><td><code>sec_ransom.Canaries._save()</code></td><td><code>Canaries._load()</code>, 설치 프로그램 <code>ops.remove_canaries()</code></td><td>미끼를 만들거나 지울 때</td><td>미끼가 있는 동안</td></tr>
+    <tr><td><code>security/baseline.json</code> · <code>seen.json</code></td><td><code>sec_scan.scan()</code></td><td>다음 점검</td><td>점검할 때마다</td><td>baseline 영구 · seen 7일</td></tr>
+    <tr><td><code>security/sigcache.json</code></td><td><code>sec_sig.check_many()</code></td><td>같은 함수</td><td>새 파일을 확인했을 때</td><td>5000건 넘으면 3000건만</td></tr>
+    <tr><td><code>security/privacy_state.json</code></td><td><code>sec_privacy.save_state()</code></td><td><code>load_state()</code></td><td>바뀐 때만</td><td>영구</td></tr>
+    <tr><td><code>security/vt_state.json</code></td><td><code>vt_client.Limiter._save()</code></td><td>같은 클래스</td><td>조회할 때마다</td><td>결과 30일</td></tr>
+    <tr><td><code>security/_tasks_fp.json</code> · <code>_tasks_out.json</code> · <code>_sig_in.json</code> · <code>_sig_out.json</code></td><td>PowerShell 과 주고받는 임시 파일</td><td>같은 모듈</td><td>점검할 때</td><td>다음에 덮어씀</td></tr>
+    <tr><td><code>assets/sprites/sprites.json</code></td><td><code>tools/build_sprites.py</code>, <code>eye_marks.py</code>, <code>frame_gaps.py</code>, <code>interp_frames.py</code> (개발 도구)</td><td><code>photocat.PhotoRig</code></td><td>그림 자료를 다시 만들 때</td><td>앱에 포함</td></tr>
+  </tbody></table></div>
+
+  <h3>모든 JSON 의 모양</h3>
+  <p>접힌 칸을 열어 보세요. <b>필드 이름·자료형·기본값</b>이 코드와 같아요. 이 모양대로 만들면 같은 파일을 서로 읽을 수 있어요(예: 새로 만든 프로그램이 예전 설정 파일을 그대로 이어받음).</p>
+
+  <details class="fold" id="d-launcher_config" open><summary>launcher_config.json — 설정 전체 (기본값)</summary>
+<div class="code" data-lang="json" data-file="launcher_config.json (config_store.DEFAULTS)"><pre>
+{
+ "version": 1,
+ "apps": [ {"name": "표시 이름", "target": "경로 또는 주소 또는 명령", "kind": "file|url|cmd|sys",
+            "shell": "cmd|powershell (kind=cmd 일 때)", "keep": true} ],
+ "calendar_url": "",
+ "gemini_model": "",
+ "schedules": {
+   "calendar":  {"enabled": true,  "times": ["09:00"]},
+   "news":      {"enabled": false, "times": ["08:00"]},
+   "yesterday": {"enabled": false, "times": ["09:30"]},
+   "hourly":    {"enabled": true,  "times": ["00:00", "01:00", "… 매시 …", "23:00"], "max_age_min": 180}
+ },
+ "prompts": {"news": "", "yesterday": ""},
+ "hourly_opts": {"calendar": true, "hours": 2, "mail": false},
+ "mail": {"address": ""},
+ "mail_state": {"last_uid": 12345, "uidvalidity": 1},
+ "news_opts": {"city": "자동", "quotes": "", "use_search": false},
+ "activity": {"enabled": false, "consented": false, "exclude": []},
+ "care": {
+   "night":  {"enabled": true, "start": "22:00", "end": "07:00"},
+   "meals":  {"enabled": true, "times": ["08:00", "13:00", "19:00"]},
+   "play":   {"enabled": true, "every_min": 60},
+   "corner": {"side": "right"}
+ },
+ "security": {
+   "enabled": true,
+   "ransom":   {"enabled": true, "canary": true, "sensitivity": "normal", "folders": []},
+   "download": {"enabled": true},
+   "vt":       {"enabled": false},
+   "privacy":  {"enabled": true},
+   "scan":     {"enabled": true, "interval_min": 10},
+   "allow":    {"process": [], "autorun": [], "privacy": []}
+ },
+ "care_state": {"last_fed": 0.0},
+ "last_run": {"calendar": "2026-10-16 09:00", "hourly": "2026-10-16 14:00"}
+}
+</pre></div>
+    <ul>
+      <li><b>불러오기</b> <code>_merge(DEFAULTS, 파일내용)</code>: 파일에 없는 키는 기본값으로 채우고, 사전 안의 사전도 깊게 합쳐요 → 새 버전에서 항목이 늘어도 옛 파일이 그대로 쓰여요. 파일이 깨졌으면(<code>ValueError</code>) 통째로 기본값.</li>
+      <li><b>이전 값 옮기기(migration)</b> <code>schedules.hourly.max_age_min</code> 이 0 초과 180 미만이면 180 으로 올려요(예전 기본이 20분이라 켠 직후 놓친 정각 알림을 못 따라잡았음).</li>
+      <li><b>저장</b> 임시 파일에 쓰고 <code>os.replace</code> (아래 원자적 저장).</li>
+    </ul>
+  </details>
+
+  <details class="fold" id="d-secrets"><summary>secrets.json — 암호화한 비밀 값</summary>
+<div class="code" data-lang="json" data-file="secrets.json"><pre>
+{ "calendar_url": "base64(DPAPI 암호문)", "gemini_key": "…", "gmail_pass": "…", "vt_key": "…" }
+</pre></div>
+    <p>값은 <code>win32crypt.CryptProtectData(value.encode("utf-8"), name, None, None, None, 0)</code> 의 결과를 base64 로 적은 것이에요. 같은 윈도우 계정으로만 풀려요(<code>CryptUnprotectData</code>). 빈 문자열을 저장하면 그 키를 지워요. 읽다가 실패하면 빈 문자열(키가 없는 것처럼).</p>
+  </details>
+
+  <details class="fold" id="d-pet_state"><summary>pet_state.json — 키우기 상태</summary>
+<div class="code" data-lang="json" data-file="pet_state.json"><pre>
+{"hunger": 48.32, "mood": 47.49, "last_seen": 1792456884.39, "coat": "black"}
+</pre></div>
+    <p>0~100 로 잘라서(clamp) 읽어요. <b>꺼 둔 동안의 변화</b>: <code>elapsed = now − last_seen</code> 일 때 <code>hunger = max(hunger, min(85, hunger + elapsed/300))</code>, <code>mood = max(min(mood, 20), mood − elapsed/300)</code>.</p>
+  </details>
+
+  <details class="fold" id="d-icons_backup"><summary>icons_backup.json — 바탕화면 아이콘 복원 장부</summary>
+<div class="code" data-lang="json" data-file="icons_backup.json"><pre>
+{"snap": true,                        // 켜기 전 '격자에 맞추기' 설정 (종료할 때 되돌림)
+ "kicked": { "아이콘키": {"origin": [x, y], "final": [x, y]} }}   // 찬 아이콘의 원래 자리와 멈춘 자리
+</pre></div>
+    <p>복원할 때 <b>지금 위치가 final 과 6px 넘게 다르면</b> 사용자가 직접 옮긴 것이라 건드리지 않아요. 이전 실행이 갑자기 꺼져 이 파일이 남아 있으면 다음 시작 때 먼저 제자리로 돌려놓아요. 예전 형식(<code>"icons"</code> 전체 위치 목록)도 알아봐요.</p>
+  </details>
+
+  <details class="fold" id="d-activity"><summary>activity/YYYY-MM-DD.json — 하루 활동 기록</summary>
+<div class="code" data-lang="json" data-file="activity/2026-10-16.json (예시)"><pre>
+{ "Code":    { "main.py - 프로젝트 - Visual Studio Code": 1830, "(기타)": 40 },
+  "chrome":  { "일정 보기 - 캘린더": 620 },
+  "(제외됨)": { "(제외됨)": 300 } }
+</pre></div>
+    <p>{프로그램: {창 제목: 초}}. 한 프로그램·하루에 제목은 300가지까지, 넘으면 <code>"(기타)"</code> 로 합쳐요. 제목은 120자로 자르고 공백을 정리해요. 저장할 때 초는 반올림한 정수.</p>
+  </details>
+
+  <details class="fold" id="d-events"><summary>security/events.json — 잡은 쥐(경보) 기록</summary>
+<div class="code" data-lang="json" data-file="events.json (목록)"><pre>
+[ { "id": "1792455145591-1",        // 밀리초시각-순번
+    "ts": 1792455145.59,
+    "kind": "ransom|autorun|process|privacy|download|system",
+    "level": "info|warn|danger",
+    "title": "쥐 발견! 미끼 파일이 건드려졌어요",
+    "text": "여러 줄 설명",
+    "data": { "...": "종류별 상세 (아래 표)" },
+    "status": "new|seen|ignored|allowed",
+    "key": "중복 막는 이름표 또는 null" } ]
+</pre></div>
+    <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>kind</th><th><code>data</code> 의 필드</th></tr></thead><tbody>
+      <tr><td>ransom</td><td><code>source(canary|behavior|test), files, dirs, samples[], suspects[{pid,name,path,mb_s}], reasons[]</code></td></tr>
+      <tr><td>autorun</td><td><code>path, command, where, name, id, status, publisher</code></td></tr>
+      <tr><td>process</td><td><code>path, pid, name, score, status, publisher</code></td></tr>
+      <tr><td>privacy</td><td><code>app, name, path, cap(webcam|microphone), suspects[]</code></td></tr>
+      <tr><td>download</td><td><code>path, name, status, publisher, zone, origin, reasons[], id</code></td></tr>
+    </tbody></table></div>
+  </details>
+
+  <details class="fold" id="d-canary"><summary>security/canary.json · baseline.json · seen.json · sigcache.json · privacy_state.json · vt_state.json</summary>
+<div class="code" data-lang="json" data-file="모양만 (값은 예시)"><pre>
+// canary.json   미끼 문서 경로 → 만들 때의 SHA-256
+{ "C:\\Users\\me\\Documents\\!_고양이미끼_회의록.docx": "21286eb2…" }
+
+// baseline.json  '평소에 있던' 자동 시작 항목 id → 처음 본 시각(epoch)
+{ "run|kakaotalk|\"c:\\program files (x86)\\kakao\\kakaotalk.exe\" -bystartup": 1792387586.13 }
+
+// seen.json      이미 알린 수상한 프로그램 키 → 알린 시각 (7일 지나면 잊음)
+{ "proc|c:\\users\\me\\appdata\\roaming\\x.exe|1789614058": 1792390000.0 }
+
+// sigcache.json  '경로|수정시각|크기' → 서명 확인 결과 (Error 는 저장 안 함)
+{ "c:\\program files\\app\\a.exe|1789614058|26836584": {"status": "Valid", "publisher": "회사 이름"} }
+
+// privacy_state.json   처음 켠 시각 + 이미 본 앱 키
+{ "first": 1792387525.7, "known": { "webcam|c:#users#me#...#zoom.exe": 1792387600.0 } }
+
+// vt_state.json  VirusTotal 한도·보관
+{ "day": "2026-10-16", "count": 3, "last": 1792456000.0,
+  "cache": { "해시": { "ts": 1792456000.0, "res": {"found": true, "malicious": 0, "...": 0} } } }
+</pre></div>
+  </details>
+
+  <details class="fold" id="d-sprites"><summary>assets/sprites/sprites.json — 사진 컷 설명서</summary>
+<div class="code" data-lang="json" data-file="sprites.json"><pre>
+{ "store": 1.6,                       // 저장 픽셀 → 화면 픽셀 배율 (화면 = 저장 ÷ 1.6 × scale)
+  "actions": {
+    "walk": {
+      "frames": [ {"w": 308, "h": 155,       // 컷 그림 크기(저장 픽셀)
+                   "cx": 149.7,              // 몸 중심 x (발 기준점)
+                   "hx": 142.7, "hy": 155.0, // 머리 꼭대기 (몸 중심에서 앞쪽 x, 바닥에서 위 y)
+                   "eyes": [[296.0, 35.0]] } // 눈 위치(털색을 바꿔도 눈은 또렷하게 다시 칠함)
+                 /* … 컷마다 … */ ],
+      "orig": 17,                     // 원래 사진 컷 수 (중간 컷을 만든 동작만)
+      "mult": 2,                      // 저장된 컷 수 ÷ orig  (중간 컷 배수)
+      "gaps": [0.109, 0.118, ...],    // 이웃 컷과의 실루엣 차이 (섞기 정도를 정함)
+      "rest": 3.0                     // 누운 자세의 '몸 아랫선이 맨 아래보다 몇 줄 위인가'
+    }
+  } }
+</pre></div>
+    <p>동작 33개·컷 331장. 동작 이름: <code>walk run trot sneak jump_up jump_down crouch land hold sit sit_tilt stand loaf sleep_curl sleep_side sleep_nap sleep_doze scratch groom groom_leg scratch_neck groom_face stretch yawn tail_play knead eat swat wiggle hop bat bunny stroke</code>. 컷 파일은 <code>assets/sprites/동작/f0.png … f(N-1).png</code>.</p>
+  </details>
+
+  <h3>안전하게 저장하는 법 — 모든 JSON 이 같은 방식</h3>
+  <div class="code" data-lang="py" data-file="원자적 저장 (config_store._atomic_write, pet.save, sec_events._save …)"><pre>
+def _atomic_write(path, text):
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(text, encoding="utf-8")   # ① 임시 파일에 다 쓰고
+    os.replace(tmp, path)                    # ② 한순간에 바꿔치기: 쓰다 꺼져도 원본은 멀쩡하다
+</pre></div>
+  <div class="callout tip"><b>읽기도 같은 철학</b> 파일이 없거나(<code>OSError</code>) 깨졌으면(<code>ValueError</code>) 항상 <b>기본값으로 시작</b>하고 프로그램을 멈추지 않아요. 읽기 실패를 사용자에게 알리지도 않아요(처음 실행과 같은 상태).</div>
+
+  <h3>로그 파일</h3>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>파일</th><th>누가 적나</th><th>내용</th></tr></thead><tbody>
+    <tr><td><code>cat_error.log</code></td><td>본체 (<code>_log_crash</code>, 알림 오류, 재시작 요청)</td><td>시각 + 오류 스택/한 줄 메시지</td></tr>
+    <tr><td><code>cat_guard.log</code></td><td>지킴이</td><td>"고양이가 꺼짐(종료 코드 N, M초 동안 실행) → K초 뒤 다시 시작" 등</td></tr>
+    <tr><td><code>cat_crash.log</code></td><td><code>faulthandler</code> (환경 변수로 켠 때만)</td><td>파이썬 스택</td></tr>
+  </tbody></table></div>
+  <p>모든 로그는 <code>guard_common.log_text(path, text, cap=200_000)</code> 로 적어요: 한 줄 앞에 <code>[YYYY-MM-DD HH:MM:SS]</code>, 파일이 200,000바이트를 넘으면 비우고 새로 시작해서 며칠을 켜 둬도 커지지 않아요.</p>
+</section>

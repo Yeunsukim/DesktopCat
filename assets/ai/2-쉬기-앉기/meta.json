@@ -1,0 +1,93 @@
+{
+ "name": "2-쉬기-앉기",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    12,
+    35,
+    346,
+    413
+   ],
+   "size": [
+    334,
+    378
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    410,
+    27,
+    738,
+    413
+   ],
+   "size": [
+    328,
+    386
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    809,
+    36,
+    1142,
+    412
+   ],
+   "size": [
+    333,
+    376
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    10,
+    472,
+    339,
+    854
+   ],
+   "size": [
+    329,
+    382
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    417,
+    496,
+    764,
+    854
+   ],
+   "size": [
+    347,
+    358
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    809,
+    475,
+    1149,
+    854
+   ],
+   "size": [
+    340,
+    379
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

@@ -1,0 +1,93 @@
+{
+ "name": "4-몸단장-하품",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    50,
+    26,
+    346,
+    424
+   ],
+   "size": [
+    296,
+    398
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    450,
+    30,
+    740,
+    424
+   ],
+   "size": [
+    290,
+    394
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    850,
+    27,
+    1141,
+    424
+   ],
+   "size": [
+    291,
+    397
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    50,
+    468,
+    348,
+    865
+   ],
+   "size": [
+    298,
+    397
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    450,
+    480,
+    757,
+    865
+   ],
+   "size": [
+    307,
+    385
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    851,
+    467,
+    1150,
+    866
+   ],
+   "size": [
+    299,
+    399
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

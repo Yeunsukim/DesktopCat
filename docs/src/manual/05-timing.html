@@ -1,0 +1,38 @@
+<section class="panel reveal" id="timing" data-toc="알림은 언제 오나요">
+  <h2>알림은 <em>언제</em> 오나요?</h2>
+  <p class="lead">"9시에 알림을 맞췄는데 컴퓨터를 9시 30분에 켰어요. 알림이 올까요?" — 이런 궁금증을 풀어 주는 시뮬레이터예요. 고양이가 쓰는 <b>실제 규칙</b>과 같아요. 시각과 컴퓨터 켜진 시간을 바꿔 보세요.</p>
+
+  <div class="diagram" id="when-sim">
+    <div class="sim">
+      <div class="ctl">
+        <label>알림 종류<select id="ws-kind"><option value="daily">하루 한 번류 (오늘 일정·소식·어제 한 일)</option><option value="hourly">매시 정각 (일정+메일)</option></select></label>
+        <label>알림 시각(쉼표)<input type="text" id="ws-times" value="09:00" style="font:inherit;border:2px solid var(--line);border-radius:10px;padding:3px 8px"></label>
+        <label>컴퓨터를 켠 시각: <b id="ws-on-v">08:00</b><input type="range" id="ws-on" min="0" max="1439" step="5" value="480"></label>
+        <label>컴퓨터를 끈 시각: <b id="ws-off-v">18:00</b><input type="range" id="ws-off" min="0" max="1439" step="5" value="1080"></label>
+        <label class="check"><input type="checkbox" id="ws-night" checked> 잠자는 시간(22:00~07:00) 설정 켜짐</label>
+      </div>
+      <div class="view"><svg id="ws-svg" viewBox="0 0 700 150" style="width:100%;height:auto"></svg><div class="out" id="ws-out"></div></div>
+    </div>
+  </div>
+
+  <h3>규칙 정리</h3>
+  <div class="grid g2">
+    <div class="card"><h4>정해진 시각이 되면</h4><p>컴퓨터가 켜져 있으면 <b>20초 안에</b> 알림 작업이 시작돼요. 인터넷에서 가져오는 데 몇 초~몇십 초 걸려요.</p></div>
+    <div class="card"><h4>컴퓨터가 꺼져 있었다면</h4><p>켜진 뒤 첫 점검에서 오늘 놓친 알림 중 <b>가장 최근 것 하나만</b> 따라잡아요. (여러 개가 한꺼번에 쏟아지지 않아요.) 매시 알림은 <b>3시간 안에 놓친 것만</b> 따라잡아요.</p></div>
+    <div class="card"><h4>잠자는 시간이면</h4><p>알림 작업을 시작하지 않아요. 깬 뒤(07:00) 첫 점검에서 가장 최근 놓친 것을 따라잡아요.</p></div>
+    <div class="card"><h4>자리를 비웠거나 게임 중이면</h4><p>알림 <b>작업은 제 시각에</b> 해요. 하지만 풍선은 <b>돌아왔을 때</b> 보여 줘요(고양이가 멈춰 있어서 아무도 못 보고 사라지는 걸 막으려고요). 입력이 10분 넘게 없으면 자리 비움, 전체 화면 앱이 덮으면 숨어요.</p></div>
+    <div class="card"><h4>인터넷이 안 될 때</h4><p>켠 직후·절전 복귀 직후에는 인터넷이 아직 안 붙었을 수 있어서, <b>1분 → 3분 → 10분 뒤</b>에 조용히 다시 시도해요. 끝내 안 되면 "…못 가져왔다냥" 풍선이 나와요.</p></div>
+    <div class="card"><h4>설정을 바꿔 저장하면</h4><p>시각이나 켜짐을 바꾼 알림은 <b>이미 지난 시각을 한 것으로 쳐요</b>. 그래서 저장하자마자 울리지 않아요. 바꾸지 않은 알림은 그대로예요.</p></div>
+  </div>
+  <div class="callout tip"><b>같은 시각에 두 번 안 와요</b> 알림은 시각 칸마다 한 번만 실행하고 기록해요. 매시 정각에 "오늘 일정"도 같은 시각이라면 겹치지 않게 매시 알림의 일정 부분은 건너뛰어요.</div>
+
+  <h3>알림이 안 올 때 점검표</h3>
+  <ol>
+    <li>설정에서 그 알림이 <b>켜져 있고 저장</b>했나요? (알림마다 켜기 체크가 있어요)</li>
+    <li>주소·키·비밀번호가 연결되어 있나요? 상태 줄이 "저장된 … 있다냥" 인지 보세요.</li>
+    <li><b>지금 시험해 보기</b>가 되나요? 시험이 안 되면 연결 문제예요(메시지를 읽어 보세요).</li>
+    <li>잠자는 시간이거나 컴퓨터가 꺼져 있진 않았나요? (위 시뮬레이터)</li>
+    <li>고양이가 <b>실행 중</b>인가요? 트레이에 아이콘이 있어야 해요.</li>
+    <li>그래도 안 되면 <code>%LOCALAPPDATA%\DesktopCat\cat_error.log</code> 를 열어 마지막 줄을 보세요(원인이 적혀 있어요).</li>
+  </ol>
+</section>

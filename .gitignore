@@ -1,0 +1,14 @@
+secrets.json
+__pycache__/
+*.log
+build/
+build_out.txt
+build_err.txt
+cat_stdout.txt
+cat_stderr.txt
+pet_state.json
+icons_backup.json
+.claude/
+activity/*.json
+security/*.json
+DesktopCat_대화기록.md

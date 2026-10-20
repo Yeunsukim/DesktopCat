@@ -1,0 +1,93 @@
+{
+ "name": "5-먹기놀기-털실공4-끌어안고뒷발킥",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    19,
+    32,
+    375,
+    321
+   ],
+   "size": [
+    356,
+    289
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    416,
+    32,
+    771,
+    320
+   ],
+   "size": [
+    355,
+    288
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    821,
+    31,
+    1172,
+    329
+   ],
+   "size": [
+    351,
+    298
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    15,
+    490,
+    382,
+    836
+   ],
+   "size": [
+    367,
+    346
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    417,
+    490,
+    764,
+    836
+   ],
+   "size": [
+    347,
+    346
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    816,
+    490,
+    1163,
+    837
+   ],
+   "size": [
+    347,
+    347
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

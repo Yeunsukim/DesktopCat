@@ -1,0 +1,93 @@
+{
+ "name": "1-이동-웅크리기",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    16,
+    51,
+    362,
+    379
+   ],
+   "size": [
+    346,
+    328
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    416,
+    66,
+    766,
+    378
+   ],
+   "size": [
+    350,
+    312
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    817,
+    96,
+    1170,
+    378
+   ],
+   "size": [
+    353,
+    282
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    12,
+    662,
+    381,
+    835
+   ],
+   "size": [
+    369,
+    173
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    418,
+    671,
+    779,
+    835
+   ],
+   "size": [
+    361,
+    164
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    812,
+    560,
+    1177,
+    836
+   ],
+   "size": [
+    365,
+    276
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

@@ -1,0 +1,74 @@
+<section class="panel reveal" id="frame" data-toc="24fps 프레임 루프">
+  <h2>심장 박동 — <em>24fps</em> 프레임 루프</h2>
+  <p class="lead">고양이의 모든 것은 <code>QTimer</code> 하나가 42ms 마다 부르는 <code>frame()</code> 에서 시작해요. 이 함수 하나가 <b>행동 → 그리기 → 알림 점검 → 건강 점검</b>을 순서대로 하고, 느린 일은 시간 간격으로 걸러서 해요. 평소 CPU 가 코어 1개의 약 1% 인 이유는 대부분의 일을 <b>걸러서</b> 하기 때문이에요.</p>
+
+  <div class="diagram" id="frame-diagram">
+    <div class="bar"><b>10초 동안의 일정표 (줄 이름을 누르면 설명)</b>
+      <button class="btn" id="frame-run">❚❚ 멈춤</button>
+      <button class="btn" id="frame-away">자리 비움 흉내</button></div>
+    <svg viewBox="0 0 1000 520" role="img" aria-label="프레임 루프 일정표"></svg>
+    <div class="caption" id="frame-caption"></div>
+  </div>
+
+  <h3><code>frame_body()</code> — 실행 순서 그대로</h3>
+  <div class="code" data-lang="py" data-file="cat.py — frame_body() 뼈대"><pre>
+def frame_body():
+    now = time.perf_counter(); dt = min(0.1, now - last); last = now; n += 1
+    # (1) 건강 신호 — 멈춘 동안에도 계속
+    if heartbeat and now >= next_beat: next_beat = now + 5.0; heartbeat.beat()
+    if (n % 30 == 0 or paused) and WaitForSingleObject(quit_event, 0) == WAIT_OBJECT_0:
+        cleanup(); app.quit(); return
+    mono = time.monotonic()
+    if mono >= next_check:                       # 60초마다 자원 점검
+        next_check = mono + 60
+        u = process_usage()
+        if u and (u["ws_mb"] > LIMIT_MB or u["handles"] > 5000 or u["gdi"] > 7000 or u["user"] > 7000):
+            ask_restart("자원 사용량이 너무 큼"); return
+        if not tray.isVisible(): tray.show()
+    # (2) 멈출지 판단 (1초마다)
+    if not args.no_autopause and now >= next_power:
+        next_power = now + 1.0; set_paused(_power_state(overlay.hwnd))
+    # (3) 알림 — 멈춘 동안에도 제 시각에 일을 시작한다
+    activity.tick(mono)                          # 5초마다 맨 앞 창 표본
+    scheduler.tick(mono)                         # 20초마다 시각 점검
+    if paused: return                            # ---- 여기부터는 고양이가 보이는 동안만 ----
+    # (4) 화면
+    keep_cat_on_top(mono)                        # 1초마다
+    if mono >= routine_next[0]: routine_next[0] = mono + 2.0; handle_routine(routine.tick(mono))
+    if n % 50 == 0: ... 모니터 구성이 바뀌었으면 world.set_areas + brain.relocate()
+    brain.update(dt)      # 행동 상태기계 + 물리
+    overlay.tick(dt)      # 창 위치 옮기기 + (필요하면) 다시 그리기 요청
+    launcher.tick(); balloon.tick()
+</pre></div>
+
+  <h3>오류를 가두는 겉옷 <code>frame()</code></h3>
+  <p>한 프레임에서 오류가 나도 프로그램은 꺼지지 않아요. 세 겹으로 지켜요.</p>
+  <div class="flow">
+    <div class="f">1. 한 프레임 가둠<small>try/except 로 로그만 (10초에 한 번만 기록)</small></div>
+    <div class="f">2. 20프레임 연속 오류<small>brain.reset() — 두뇌를 처음 상태로</small></div>
+    <div class="f">3. 10분 안에 3번 reset<small>ask_restart → 종료 코드 3 → 지킴이가 재시작</small></div>
+  </div>
+
+  <h3>멈춤(paused)의 뜻</h3>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>상태</th><th>들어가는 조건</th><th>하는 일</th><th>나오는 조건</th></tr></thead><tbody>
+    <tr><td class="nw"><code>None</code> 평소</td><td>—</td><td>타이머 42ms</td><td>—</td></tr>
+    <tr><td class="nw"><code>"full"</code></td><td>제목 표시줄이 <b>없는</b> 앞 창이 고양이가 있는 모니터를 완전히 덮음(게임·동영상). 제목 표시줄이 있는 최대화 창은 해당 안 됨.</td><td>런처·풍선·소식 창 닫고 <b>고양이 창 숨김</b>, 타이머 500ms</td><td>앞 창이 바뀜 → 창을 다시 보임</td></tr>
+    <tr><td class="nw"><code>"away"</code></td><td><code>GetLastInputInfo</code> 기준 입력 없음 ≥ 600초</td><td>창은 그대로 두고 멈춤, 타이머 500ms</td><td>입력이 생김</td></tr>
+  </tbody></table></div>
+  <p>멈춘 동안에도 <b>하트비트·종료 이벤트·자원 점검·활동 표본·알림 시각 점검</b>은 계속 돌아요. 이때 끝난 알림 결과는 <code>held</code> 목록에 쌓아 두었다가(최대 12건, 매시 알림은 하나로 합침) 돌아오면 1.5초 뒤에 보여 줘요 — 풍선이 아무도 못 본 채 사라지지 않게요.</p>
+
+  <h3>고양이 창(<code>Overlay</code>)이 하는 일</h3>
+  <div class="grid g2">
+    <div class="card"><h4>창의 성격</h4><p>플래그 <code>FramelessWindowHint | WindowStaysOnTopHint | Tool | NoDropShadowWindowHint</code>, 속성 <code>WA_TranslucentBackground | WA_ShowWithoutActivating</code>. 만든 뒤 <code>GWL_EXSTYLE</code> 에 <code>WS_EX_NOACTIVATE | TOOLWINDOW | LAYERED</code> 를 더한다. 크기는 <code>W = max(300·s, 260)</code>, <code>H = 150·s + 80</code>, 발바닥 기준점 <code>anchor = (W/2, H−18)</code>.</p></div>
+    <div class="card"><h4>클릭 통과</h4><p>매 틱 마우스가 <b>몸(히트 사각형의 가로 10~90%, 세로 10~100%)</b> 위에 있을 때만 <code>WS_EX_TRANSPARENT</code> 를 끈다. 그 밖에서는 클릭이 아래 창으로 그대로 간다 — 고양이 창이 바탕화면을 가리지 않는 비결.</p></div>
+    <div class="card"><h4>그리기 횟수 줄이기</h4><p>그리기가 비싸서(프레임당 ~17ms) 간격을 둔다: 움직일 때 <b>매 틱</b>, 쉬는 자세 <b>0.125초</b>, 잘 때 <b>0.2초</b>마다. 단 자세가 바뀌는 중(<code>photo.busy</code>)에는 매 틱. 타이머가 늦어도 틱을 건너뛰지 않게 <code>−12ms</code> 여유.</p></div>
+    <div class="card"><h4>마우스</h4><p>왼쪽 누르고 6px 넘게 끌면 <code>brain.grab()</code>+<code>hold()</code> (0.3초마다 <code>keep_on_top</code>), 놓으면 <code>release()</code>(최근 속도로 던져짐, ±700 한계). 끌지 않고 놓으면 <code>on_click</code>(런처 열기). 오른쪽은 메뉴. 몸 위에서 쓱쓱 움직이면 쓰다듬기(<code>_pet_energy</code>).</p></div>
+  </div>
+
+  <h3>프레임 시간 계산 규칙</h3>
+  <ul>
+    <li><code>dt = min(0.1, 실제 경과)</code> — 오래 멈췄다 와도 한 번에 0.1초 이상 진행하지 않아요(순간이동 방지).</li>
+    <li>타이머 종류는 <code>PreciseTimer</code> — 기본(Coarse)은 윈도우 눈금 15.6ms 에 맞춰져 프레임 간격이 24~47ms 로 들쭉날쭉해요.</li>
+    <li>모든 "몇 초마다"는 <code>time.monotonic()</code>(시계가 바뀌어도 안전), 실제 시각이 필요한 곳(스케줄러·루틴)만 <code>datetime/time.time()</code>.</li>
+  </ul>
+</section>

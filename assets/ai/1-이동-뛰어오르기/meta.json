@@ -1,0 +1,93 @@
+{
+ "name": "1-이동-뛰어오르기",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    51,
+    90,
+    391,
+    355
+   ],
+   "size": [
+    340,
+    265
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    443,
+    74,
+    867,
+    392
+   ],
+   "size": [
+    424,
+    318
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    903,
+    19,
+    1150,
+    424
+   ],
+   "size": [
+    247,
+    405
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    18,
+    493,
+    444,
+    847
+   ],
+   "size": [
+    426,
+    354
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    561,
+    480,
+    818,
+    837
+   ],
+   "size": [
+    257,
+    357
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    841,
+    470,
+    1164,
+    863
+   ],
+   "size": [
+    323,
+    393
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

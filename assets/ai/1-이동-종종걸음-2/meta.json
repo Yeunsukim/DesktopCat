@@ -1,0 +1,93 @@
+{
+ "name": "1-이동-종종걸음-2",
+ "source_size": [
+  1024,
+  1024
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    57,
+    9,
+    453,
+    320
+   ],
+   "size": [
+    396,
+    311
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    559,
+    13,
+    978,
+    323
+   ],
+   "size": [
+    419,
+    310
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    66,
+    358,
+    432,
+    659
+   ],
+   "size": [
+    366,
+    301
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    582,
+    358,
+    956,
+    659
+   ],
+   "size": [
+    374,
+    301
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    62,
+    698,
+    454,
+    1007
+   ],
+   "size": [
+    392,
+    309
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    566,
+    698,
+    968,
+    1006
+   ],
+   "size": [
+    402,
+    308
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

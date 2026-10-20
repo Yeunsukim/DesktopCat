@@ -1,0 +1,93 @@
+{
+ "name": "4-몸단장-기지개",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    812,
+    62,
+    1190,
+    275
+   ],
+   "size": [
+    378,
+    213
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    15,
+    353,
+    532,
+    566
+   ],
+   "size": [
+    517,
+    213
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    631,
+    351,
+    1165,
+    566
+   ],
+   "size": [
+    534,
+    215
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    15,
+    601,
+    431,
+    862
+   ],
+   "size": [
+    416,
+    261
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    406,
+    598,
+    810,
+    863
+   ],
+   "size": [
+    404,
+    265
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    792,
+    610,
+    1172,
+    863
+   ],
+   "size": [
+    380,
+    253
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

@@ -1,0 +1,93 @@
+{
+ "name": "1-이동-착지",
+ "source_size": [
+  1431,
+  736
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    22,
+    70,
+    453,
+    314
+   ],
+   "size": [
+    431,
+    244
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    499,
+    116,
+    925,
+    314
+   ],
+   "size": [
+    426,
+    198
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    1031,
+    140,
+    1385,
+    311
+   ],
+   "size": [
+    354,
+    171
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    25,
+    461,
+    451,
+    664
+   ],
+   "size": [
+    426,
+    203
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    495,
+    448,
+    926,
+    665
+   ],
+   "size": [
+    431,
+    217
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    974,
+    413,
+    1389,
+    668
+   ],
+   "size": [
+    415,
+    255
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

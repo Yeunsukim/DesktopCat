@@ -1,0 +1,93 @@
+{
+ "name": "6-반응-쓰다듬기",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    16,
+    107,
+    376,
+    420
+   ],
+   "size": [
+    360,
+    313
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    417,
+    93,
+    755,
+    420
+   ],
+   "size": [
+    338,
+    327
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    824,
+    29,
+    1158,
+    420
+   ],
+   "size": [
+    334,
+    391
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    30,
+    463,
+    373,
+    859
+   ],
+   "size": [
+    343,
+    396
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    443,
+    458,
+    772,
+    857
+   ],
+   "size": [
+    329,
+    399
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    831,
+    462,
+    1161,
+    859
+   ],
+   "size": [
+    330,
+    397
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

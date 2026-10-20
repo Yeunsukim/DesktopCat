@@ -1,0 +1,93 @@
+{
+ "name": "4-몸단장-그루밍2",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    16,
+    30,
+    384,
+    403
+   ],
+   "size": [
+    368,
+    373
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    406,
+    31,
+    779,
+    404
+   ],
+   "size": [
+    373,
+    373
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    813,
+    29,
+    1181,
+    403
+   ],
+   "size": [
+    368,
+    374
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    18,
+    467,
+    364,
+    854
+   ],
+   "size": [
+    346,
+    387
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    413,
+    474,
+    763,
+    854
+   ],
+   "size": [
+    350,
+    380
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    805,
+    474,
+    1165,
+    856
+   ],
+   "size": [
+    360,
+    382
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

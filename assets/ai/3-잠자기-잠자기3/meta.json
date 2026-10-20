@@ -1,0 +1,93 @@
+{
+ "name": "3-잠자기-잠자기3",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    34,
+    22,
+    549,
+    266
+   ],
+   "size": [
+    515,
+    244
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    636,
+    34,
+    1153,
+    266
+   ],
+   "size": [
+    517,
+    232
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    36,
+    324,
+    549,
+    563
+   ],
+   "size": [
+    513,
+    239
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    637,
+    339,
+    1153,
+    563
+   ],
+   "size": [
+    516,
+    224
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    34,
+    626,
+    546,
+    858
+   ],
+   "size": [
+    512,
+    232
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    634,
+    613,
+    1150,
+    858
+   ],
+   "size": [
+    516,
+    245
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

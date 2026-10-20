@@ -1,0 +1,93 @@
+{
+ "name": "4-몸단장-귀뒤긁기",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    30,
+    21,
+    356,
+    420
+   ],
+   "size": [
+    326,
+    399
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    440,
+    21,
+    755,
+    420
+   ],
+   "size": [
+    315,
+    399
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    838,
+    14,
+    1147,
+    421
+   ],
+   "size": [
+    309,
+    407
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    0,
+    450,
+    340,
+    861
+   ],
+   "size": [
+    340,
+    411
+   ],
+   "cut_by_edge": true
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    401,
+    453,
+    742,
+    861
+   ],
+   "size": [
+    341,
+    408
+   ],
+   "cut_by_edge": true
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    801,
+    459,
+    1152,
+    862
+   ],
+   "size": [
+    351,
+    403
+   ],
+   "cut_by_edge": true
+  }
+ ]
+}

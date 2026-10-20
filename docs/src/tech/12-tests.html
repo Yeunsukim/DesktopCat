@@ -1,0 +1,44 @@
+<section class="panel reveal" id="tests" data-toc="시험과 검증">
+  <h2>시험과 <em>검증</em> — 어떻게 믿을 수 있나</h2>
+  <p class="lead">화면에 의존하지 않는 부분(<code>flow.py</code>, <code>routine.py</code>, <code>scheduler.py</code>, <code>sec_*</code> 의 판단 로직)은 <b>가짜 시계·가짜 입력</b>으로 시험해요. 진짜 악성코드는 절대 쓰지 않고, 모든 시험은 임시 폴더(<code>DESKTOPCAT_DATA</code>)만 건드려요.</p>
+
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>실행</th><th>확인하는 것</th></tr></thead><tbody>
+    <tr><td><code>python tools/test_flow.py</code> (<code>--print</code>)</td><td>행동 흐름 표(FLOW)에 막다른 길이 없는지, 목표 시간 비율이 나오는지, 미리 계산해 둔 가중치가 낡지 않았는지. <code>--print</code> 는 새 가중치를 뽑아 줌</td></tr>
+    <tr><td><code>python -I -X utf8 tools/test_brain_ratio.py</code></td><td>실제 두뇌에 가짜 시간을 먹여 하루 시간 배분이 의도대로인지(예: 걷기 함수가 한 방향으로만 가서 이동이 99% 가 되던 문제를 잡는 시험)</td></tr>
+    <tr><td><code>python tools/test_modes.py</code></td><td>구석 쉬기/잠자는 시간 모드의 행동·화면 범위</td></tr>
+    <tr><td><code>python tools/test_routine.py</code></td><td>가짜 시계로 잠·밥·놀아주기 요구가 제때 일어나는지(졸라대기 간격 180초, 최대 10번, 30분 일찍 준 밥 인정 …)</td></tr>
+    <tr><td><code>python -I -X utf8 tools/test_scheduler_rules.py</code></td><td>놓친 알림 따라잡기, 설정만 저장해도 사라지지 않기, 20초 주기, 바뀐 알림만 '한 것' 표시</td></tr>
+    <tr><td><code>python tools/test_ransom_sim.py</code></td><td>(A) 가짜 사건으로 단위 점검 (B) 임시 폴더에서 실제 파일 시스템·폴더 감시로 "무작위 바이트 덮어쓰기 + .locked" 흉내와 정상 작업(대량 복사·압축 풀기·글자 파일 서식)을 돌려 경보가 제때 울리고 정상에는 안 울리는지, 임계값 표 출력</td></tr>
+    <tr><td><code>python tools/test_security.py</code></td><td>자동 시작·프로세스·서명 판단 규칙(가짜 입력) + 실제 PC 는 읽기만 해서 형식 확인</td></tr>
+    <tr><td><code>python tools/test_security2.py</code></td><td>다운로드 검사 + VirusTotal 조회 (가짜 VirusTotal 서버·임시 폴더)</td></tr>
+    <tr><td><code>python tools/sim_behavior.py [시간] [시도 수]</code></td><td>두뇌를 화면 없이 가상 시간으로 돌려 행동 시간 비율을 %로 출력(기본 8시간×3번)</td></tr>
+  </tbody></table></div>
+
+  <h3>개발 도구 (그림 자료 만들기 — 앱에는 안 들어가요)</h3>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>도구</th><th>하는 일</th><th>필요한 것</th></tr></thead><tbody>
+    <tr><td><code>gif_extract.py</code></td><td>AI 가 만든 걷기 GIF(체크무늬 배경, 30프레임)에서 고양이만 뽑아 투명 PNG 컷으로. 체크무늬가 모든 프레임에서 같은 자리라는 점을 이용해 30프레임 전체로 "배경 판"을 만들어 제거</td><td>Pillow, numpy</td></tr>
+    <tr><td><code>slice_ai.py</code></td><td>한 장에 6컷 안팎이 든 AI 그림(흰 배경)을 컷별 투명 배경 그림으로: 확실한 배경만 지우고 경계띠는 알파 매팅으로 계산</td><td>Pillow, scipy</td></tr>
+    <tr><td><code>build_sprites.py</code></td><td>자른 컷을 앱용 사진 컷(<code>assets/sprites</code>)으로: 크기 맞추기(귀 안쪽 분홍색 크기를 기준), 털색 맞추기(전체 평균 색·밝기에 맞춤), 컷마다 발바닥 높이·몸 중심·머리 꼭대기 기록, 저장 해상도(STORE) 적용, <code>sprites.json</code> 작성(<code>--chart</code> 로 점검용 그림)</td><td>Pillow, numpy, scipy</td></tr>
+    <tr><td><code>interp_frames.py</code></td><td>두 컷 사이의 <b>진짜 중간 컷</b>을 광학 흐름(optical flow)으로 만들기(단순 겹침과 달리 잔상이 없음). 차이가 너무 큰 쌍은 건너뜀(<code>MAX_GAP</code>)</td><td>OpenCV</td></tr>
+    <tr><td><code>frame_gaps.py</code></td><td>이웃 컷 실루엣 차이(0~1)를 재서 <code>gaps</code>, 누운 자세의 <code>rest</code> 를 <code>sprites.json</code> 에 기록</td><td>numpy</td></tr>
+    <tr><td><code>eye_marks.py</code></td><td>사진 속 눈 위치를 찾아 <code>eyes</code> 에 기록(털색을 바꿔도 눈을 다시 그리려고). 첫 컷 눈 위치(SEEDS)를 시작점으로 이웃 컷을 따라가며 찾고, 놓친 컷은 이웃 값으로 보충</td><td>numpy, scipy</td></tr>
+    <tr><td><code>make_skin.py</code></td><td>예비 뼈대 고양이용 질감 조각(<code>assets/skin/*.png</code>)을 실사 사진에서 잘라 만들기</td><td>Pillow, numpy, scipy</td></tr>
+    <tr><td><code>make_icon.py</code></td><td>앱 아이콘 <code>cat.ico</code></td><td>PyQt6</td></tr>
+    <tr><td><code>gallery.py</code> · <code>gallery_ko.py</code> · <code>motion_sheets.py</code> · <code>preview.py</code> · <code>ai_player.py</code></td><td>동작 목록 그림, 동작 시트, 미리 보기 HTML 만들기(점검용)</td><td>PyQt6/Pillow</td></tr>
+  </tbody></table></div>
+
+  <h3>시험할 때 지킨 원칙</h3>
+  <div class="grid g3">
+    <div class="card"><h4>진짜 악성코드 금지</h4><p>랜섬웨어는 "무작위 바이트로 덮어쓰고 이름을 .locked 로 바꾸는 흉내"만. VirusTotal 연결 시험은 표준 시험 파일 EICAR 의 해시로.</p></div>
+    <div class="card"><h4>가짜 서버</h4><p>Gemini·VirusTotal·IMAP 은 <code>127.0.0.1</code> 에서만 도는 가짜 서버로 시험(환경 변수로 주소를 바꿀 수 있지만 <b>127.0.0.1 만 허용</b>해서 키가 밖으로 새지 않음).</p></div>
+    <div class="card"><h4>가짜 시계·입력</h4><p><code>Routine(now_fn)</code>, <code>Scheduler.tick(now=)</code>, <code>ActivityLog(read_fg, read_idle, is_locked, today)</code>, <code>scan(collectors, sig_runner, now)</code> 처럼 바깥 세계를 <b>바꿔 끼울 수 있게</b> 설계했어요.</p></div>
+  </div>
+
+  <h3>실제 화면에서 확인하기</h3>
+  <ul>
+    <li>시험용 데이터 폴더로 실행: <code>DESKTOPCAT_DATA=임시폴더</code> + <code>DESKTOPCAT_AWAY_FLAG</code> 등으로 상황을 만들고 화면을 캡처해서 풍선·창·쥐 잡기를 눈으로 봐요. 시험이 끝나면 임시 폴더를 지워요.</li>
+    <li>자원: 설치본·개발본을 켜 두고 CPU·메모리를 재요. 목표: 평소 코어 1개의 약 1%, 메모리 약 110MB, 경비를 켜도 +0.3% / +10MB 이내, 72시간 이상 안 죽기.</li>
+    <li>이 문서의 숫자·그래프는 코드에서 자동으로 뽑아요: <code>python docs/build_docs.py</code> → <code>docs/assets/gen-data.js</code>.</li>
+  </ul>
+  <div class="callout tip"><b>시험 중에 얻은 교훈</b> 경비 시험 중 내가 만든 가짜 미끼가 다른 실행의 감시를 놀라게 한 적이 있어요 → 멀쩡한 기존 미끼는 새로 덮어쓰지 않고 이어받도록(<code>_adopt</code>) 고쳤어요. 시험이 실제 사용 환경에 번지지 않게 데이터 폴더를 분리하는 것이 중요해요.</div>
+</section>

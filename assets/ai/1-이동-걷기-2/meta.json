@@ -1,0 +1,93 @@
+{
+ "name": "1-이동-걷기-2",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    44,
+    36,
+    550,
+    283
+   ],
+   "size": [
+    506,
+    247
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    635,
+    34,
+    1145,
+    285
+   ],
+   "size": [
+    510,
+    251
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    51,
+    328,
+    546,
+    573
+   ],
+   "size": [
+    495,
+    245
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    636,
+    327,
+    1143,
+    578
+   ],
+   "size": [
+    507,
+    251
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    40,
+    615,
+    541,
+    868
+   ],
+   "size": [
+    501,
+    253
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    638,
+    615,
+    1142,
+    867
+   ],
+   "size": [
+    504,
+    252
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

@@ -1,0 +1,161 @@
+{
+ "version": 1,
+ "apps": [
+  {
+   "name": "naver.com",
+   "target": "https://naver.com",
+   "kind": "url"
+  },
+  {
+   "name": "his",
+   "target": "C:\\Himed\\His\\his.exe",
+   "kind": "file"
+  },
+  {
+   "name": "제어판",
+   "target": "control",
+   "kind": "sys"
+  },
+  {
+   "name": "작업 관리자",
+   "target": "taskmgr",
+   "kind": "sys"
+  }
+ ],
+ "calendar_url": "",
+ "gemini_model": "",
+ "schedules": {
+  "calendar": {
+   "enabled": true,
+   "times": [
+    "08:00"
+   ]
+  },
+  "news": {
+   "enabled": true,
+   "times": [
+    "08:00"
+   ]
+  },
+  "yesterday": {
+   "enabled": true,
+   "times": [
+    "08:30"
+   ]
+  },
+  "hourly": {
+   "enabled": true,
+   "times": [
+    "00:00",
+    "01:00",
+    "02:00",
+    "03:00",
+    "04:00",
+    "05:00",
+    "06:00",
+    "07:00",
+    "08:00",
+    "09:00",
+    "10:00",
+    "11:00",
+    "12:00",
+    "13:00",
+    "14:00",
+    "15:00",
+    "16:00",
+    "17:00",
+    "18:00",
+    "19:00",
+    "20:00",
+    "21:00",
+    "22:00",
+    "23:00"
+   ],
+   "max_age_min": 180
+  }
+ },
+ "prompts": {
+  "news": "",
+  "yesterday": ""
+ },
+ "hourly_opts": {
+  "calendar": true,
+  "hours": 2,
+  "mail": true
+ },
+ "mail": {
+  "address": "lakezkim@gmail.com"
+ },
+ "mail_state": {
+  "last_uid": 3117,
+  "uidvalidity": 643771259
+ },
+ "news_opts": {
+  "city": "대전",
+  "quotes": "",
+  "use_search": false
+ },
+ "activity": {
+  "enabled": true,
+  "consented": true,
+  "exclude": []
+ },
+ "care": {
+  "night": {
+   "enabled": true,
+   "start": "22:00",
+   "end": "07:00"
+  },
+  "meals": {
+   "enabled": true,
+   "times": [
+    "08:00",
+    "13:00",
+    "19:00"
+   ]
+  },
+  "play": {
+   "enabled": true,
+   "every_min": 60
+  },
+  "corner": {
+   "side": "right"
+  }
+ },
+ "security": {
+  "enabled": true,
+  "ransom": {
+   "enabled": true,
+   "canary": true,
+   "sensitivity": "strict",
+   "folders": []
+  },
+  "download": {
+   "enabled": true
+  },
+  "vt": {
+   "enabled": true
+  },
+  "privacy": {
+   "enabled": true
+  },
+  "scan": {
+   "enabled": true,
+   "interval_min": 10
+  },
+  "allow": {
+   "process": [],
+   "autorun": [],
+   "privacy": []
+  }
+ },
+ "care_state": {
+  "last_fed": 1792471925.0124018
+ },
+ "last_run": {
+  "calendar": "2026-10-20 08:00",
+  "news": "2026-10-20 08:00",
+  "hourly": "2026-10-20 15:00",
+  "yesterday": "2026-10-20 08:30"
+ }
+}

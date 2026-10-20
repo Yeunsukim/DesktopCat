@@ -1,0 +1,87 @@
+<section class="panel reveal" id="appendix" data-toc="부록: 상수·이름표 모음">
+  <h2>부록 — <em>상수</em>와 이름표 모음</h2>
+  <p class="lead">다시 만들 때 값을 한 곳에서 찾을 수 있게 모았어요. 검색 칸에 낱말을 입력하면 표가 걸러져요.</p>
+  <input class="search" data-filter="#const-table" placeholder="상수 검색 (예: 초, 속도, 한도, DAILY …)" aria-label="상수 검색">
+  <div class="tbl-wrap"><table class="tbl fit" id="const-table"><thead><tr><th>이름</th><th>값</th><th>위치</th><th>뜻</th></tr></thead><tbody>
+    <tr><td>FRAME_MS</td><td>42</td><td>cat.py</td><td>프레임 주기 (24fps). 멈춘 동안은 500</td></tr>
+    <tr><td>LIMIT_MB</td><td>400</td><td>cat.py</td><td>메모리 초과 재시작 기준 (핸들 5000 · GDI 7000 · USER 7000)</td></tr>
+    <tr><td>AWAY_SECONDS</td><td>600</td><td>cat.py</td><td>자리 비움 판단(입력 없음)</td></tr>
+    <tr><td>하트비트 주기 / HANG_SECONDS / STARTUP_GRACE</td><td>5 / 90 / 90 초</td><td>cat.py / launcher.py</td><td>신호 / 멈춤 판단 / 시작 유예 (절전 복귀 후 +60초)</td></tr>
+    <tr><td>지킴이 감시 주기 · 대기</td><td>2초 · 3→최대 300초</td><td>launcher.py</td><td>빨리(30초 안) 죽은 횟수 n 이면 <code>min(300, 3·2^min(n,7))</code> (n≤1 이면 3)</td></tr>
+    <tr><td>EXIT_QUIT / EXIT_RESTART</td><td>0 / 3</td><td>guard_common.py</td><td>종료 코드</td></tr>
+    <tr><td>프레임 오류 정책</td><td>20연속 → reset, 10분 3번 → 재시작</td><td>cat.py</td><td>로그는 10초에 한 번만</td></tr>
+    <tr><td>G</td><td>1800</td><td>behavior.py</td><td>중력(×scale)</td></tr>
+    <tr><td>V_WALK / V_TROT / V_RUN / V_SNEAK</td><td>70 / 150 / 300 / 38</td><td>behavior.py</td><td>속도 px/s (×scale), 배고프면 걷기류 ×0.8</td></tr>
+    <tr><td>ACCEL_T / DECEL_T / STOP_MAX</td><td>0.35 / 0.30 / 0.6</td><td>behavior.py</td><td>가감속 시간(초)</td></tr>
+    <tr><td>기본 scale</td><td>0.8</td><td>cat.py</td><td>고양이 크기 배율 (히트 상자 120×105 ×scale, 월드 높이 105×scale)</td></tr>
+    <tr><td>Overlay 크기</td><td>W=max(300s,260), H=150s+80</td><td>cat.py</td><td>발바닥 기준점 (W/2, H−18)</td></tr>
+    <tr><td>IconField.FRICTION</td><td>2.2</td><td>behavior.py</td><td>아이콘 마찰</td></tr>
+    <tr><td>HUNGER_PER_SEC / SLEEP_HUNGER_FACTOR</td><td>1/300 / 0.2</td><td>pet.py</td><td>배고픔 증가</td></tr>
+    <tr><td>OFFLINE_HUNGER_CAP / OFFLINE_MOOD_FLOOR</td><td>85 / 20</td><td>pet.py</td><td>꺼 둔 동안 한계</td></tr>
+    <tr><td>REPEAT_SEC / MAX_REPEATS / MEAL_EARLY / MEAL_MAX_WINDOW</td><td>180 / 10 / 30분 / 8시간</td><td>routine.py</td><td>졸라대기 규칙</td></tr>
+    <tr><td>CHECK_EVERY</td><td>20</td><td>scheduler.py</td><td>알림 시각 점검 간격(초)</td></tr>
+    <tr><td>RETRY_DELAYS</td><td>60 / 180 / 600</td><td>cat.py</td><td>일시적 오류 재시도 간격(초)</td></tr>
+    <tr><td>hourly.max_age_min</td><td>180</td><td>config_store.py</td><td>매시 알림이 따라잡는 최대 지연(분)</td></tr>
+    <tr><td>TIMEOUTS</td><td>calendar 45 · gemini 200 · news 200 · upcoming 45 · mail 60 · favicon 40 · scan 240 · vt 40</td><td>nethelper.py</td><td>보조 프로세스 제한 시간(초)</td></tr>
+    <tr><td>MAX_BYTES (캘린더)</td><td>8MB</td><td>calendar_ics.py</td><td>캘린더 최대 크기</td></tr>
+    <tr><td>Gemini 재시도 / 기본 모델</td><td>3초·8초(최대 2번) / gemini-3.5-flash-lite</td><td>gemini_client.py</td><td></td></tr>
+    <tr><td>NEWS_COUNT</td><td>12</td><td>news_sources.py</td><td>뉴스 헤드라인 수 (시세 최대 12개)</td></tr>
+    <tr><td>MAX_NAMES (메일)</td><td>8</td><td>mail_imap.py</td><td>보낸 사람 이름 최대 수</td></tr>
+    <tr><td>SAMPLE_EVERY / MAX_STEP / IDLE_STOP / SAVE_EVERY / KEEP_DAYS / MAX_TITLES / TITLE_MAX</td><td>5 / 10 / 300 / 60 / 30 / 300 / 120</td><td>activity_log.py</td><td>활동 기록</td></tr>
+    <tr><td>Balloon MAX_W / TAIL / AV</td><td>260 / 11 / 38</td><td>balloon.py</td><td>풍선 글 폭 / 꼬리 / 얼굴 지름. 표시 시간 min(20, 8+0.12n+줄수)</td></tr>
+    <tr><td>R_MID / BAND / ICON / PER_PAGE / ANG0 / ANG1 / IDLE_SECONDS</td><td>98 / 25 / 32 / 5 / 12 / 168 / 8</td><td>launcher_ui.py</td><td>런처 기하</td></tr>
+    <tr><td>OPEN_SECONDS / ROLL_SECONDS / ROLL_SHIFT</td><td>0.16 / 0.34 / 95</td><td>launcher_ui.py</td><td>열리는·쪽 넘기는 애니메이션</td></tr>
+    <tr><td>SINK / MAX_DROP / REST_SHARE / REST_MAX</td><td>2.5 / 4 / 0.9 / 8</td><td>photocat.py</td><td>바닥 걸치기</td></tr>
+    <tr><td>DRIFT_HOLD / DRIFT_FPS</td><td>1.2~4초 / 1.6</td><td>photocat.py</td><td>가만히 쉬는 자세</td></tr>
+    <tr><td>GAP_FULL / GAP_ZERO / BLEND_SPAN / TRANS_SEC / TRANS_FAST</td><td>0.04 / 0.09 / 0.45 / 0.10 / 0.05</td><td>photocat.py</td><td>컷 섞기·전환</td></tr>
+    <tr><td>삼색 목표</td><td>주황 50% · 검정 20% · 흰 30%</td><td>coats.py</td><td>BLACK_K 0.857, ORANGE_K 1.050</td></tr>
+    <tr><td>SENSITIVITY</td><td>loose 40/3 · normal 25/2 · strict 12/2 (파일/폴더), 창 10초</td><td>sec_ransom.py</td><td>랜섬웨어 문턱</td></tr>
+    <tr><td>랜섬웨어 쿨다운</td><td>행동 120초 · 미끼 60초 · 같은 key 30초(이벤트)</td><td>sec_ransom.py</td><td></td></tr>
+    <tr><td>EVAL_MAX / 사건 상한</td><td>5000 / 30000</td><td>sec_ransom.py</td><td>한 번 판단에 보는 사건 수 / 보관 사건 수</td></tr>
+    <tr><td>엔트로피 문턱</td><td>글자 6.6 · 동영상 7.2 · 그 밖 7.6</td><td>sec_ransom.py</td><td>앞 4KB 섀넌 엔트로피</td></tr>
+    <tr><td>KEEP_DAYS / MAX_ITEMS (경보)</td><td>30 / 500</td><td>sec_events.py</td><td></td></tr>
+    <tr><td>SEEN_DAYS / TASKS_REFRESH</td><td>7일 / 6시간</td><td>sec_scan.py</td><td>같은 건 다시 알리지 않음 / PowerShell 재사용 한도</td></tr>
+    <tr><td>수상도 단계</td><td>score ≥ 9 위험 · ≥ 6 의심</td><td>sec_scan.py</td><td>위치 4/3/3/2/1 + 서명 + 시스템 이름 흉내 6 + 이중 확장자 5 + 하루 미만 1</td></tr>
+    <tr><td>카메라·마이크 학습 기간 / 확인 주기</td><td>24시간 / 30초</td><td>sec_privacy.py, security.py</td><td></td></tr>
+    <tr><td>MIN_GAP / DAILY_MAX / CACHE_DAYS</td><td>16 / 450 / 30</td><td>vt_client.py</td><td>VirusTotal 한도 지키기</td></tr>
+    <tr><td>점검 간격</td><td>첫 점검 90초 뒤, 이후 5·10·30·60분(기본 10, 최소 5)</td><td>security.py</td><td></td></tr>
+    <tr><td>log_text cap</td><td>200,000 바이트</td><td>guard_common.py</td><td>넘으면 비움</td></tr>
+  </tbody></table></div>
+
+  <h3>이름표 모음 (프로세스 밖에서도 보이는 이름)</h3>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>이름</th><th>종류</th><th>쓰임</th></tr></thead><tbody>
+    <tr><td><code>Local\DesktopCatGuardMutex</code></td><td>뮤텍스</td><td>지킴이 중복 방지, 설치 프로그램의 실행 중 판단</td></tr>
+    <tr><td><code>Local\DesktopCatPetMutex</code></td><td>뮤텍스</td><td>본체 중복 방지</td></tr>
+    <tr><td><code>Local\DesktopCatQuitEvent</code></td><td>이벤트</td><td>정상 종료 요청 (<code>--quit</code>, 설치·삭제)</td></tr>
+    <tr><td><code>Local\DesktopCatHeartbeat</code></td><td>공유 메모리 16바이트</td><td>앞 8바이트에 <code>struct.pack("d", time.time())</code></td></tr>
+    <tr><td><code>DesktopCat.CatSecretary</code></td><td>AppUserModelID</td><td>작업 표시줄 묶음·아이콘</td></tr>
+    <tr><td><code>DesktopCat</code></td><td>레지스트리 값/키 이름</td><td>Run 값, Uninstall 키</td></tr>
+    <tr><td><code>!_고양이미끼_회의록.docx</code> · <code>~_고양이미끼_견적서.docx</code></td><td>숨김 미끼 파일</td><td>문서·사진·다운로드 폴더 맨 위</td></tr>
+    <tr><td>"Desktop Cat"</td><td>트레이 툴팁·애플리케이션 이름</td><td></td></tr>
+  </tbody></table></div>
+
+  <h3>외부 주소 (모두 https, 메일만 imaps)</h3>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>용도</th><th>주소</th><th>키·인증</th></tr></thead><tbody>
+    <tr><td>캘린더</td><td>사용자의 iCal 비공개 주소 (<code>calendar.google.com/calendar/ical/…/basic.ics</code>)</td><td>주소 자체가 비밀</td></tr>
+    <tr><td>Gemini</td><td><code>generativelanguage.googleapis.com/v1beta/interactions</code> (되돌림: <code>/models/{model}:generateContent</code>)</td><td>헤더 <code>x-goog-api-key</code></td></tr>
+    <tr><td>Gmail</td><td><code>imap.gmail.com:993</code></td><td>앱 비밀번호</td></tr>
+    <tr><td>날씨</td><td><code>api.open-meteo.com/v1/forecast</code>, <code>geocoding-api.open-meteo.com</code></td><td>없음</td></tr>
+    <tr><td>위치(자동)</td><td><code>ipwho.is</code> → <code>get.geojs.io</code> → <code>ipapi.co</code></td><td>없음</td></tr>
+    <tr><td>뉴스</td><td><code>news.google.com/rss?hl=ko&amp;gl=KR&amp;ceid=KR:ko</code></td><td>없음</td></tr>
+    <tr><td>시세</td><td><code>query1.finance.yahoo.com/v8/finance/chart/{심볼}?range=10d&amp;interval=1d</code></td><td>없음</td></tr>
+    <tr><td>VirusTotal</td><td><code>www.virustotal.com/api/v3/files/{sha256}</code></td><td>헤더 <code>x-apikey</code></td></tr>
+    <tr><td>파비콘</td><td>사용자가 등록한 사이트</td><td>없음</td></tr>
+    <tr><td>런처 기본 링크</td><td>캘린더 <code>calendar.google.com/calendar/u/0/r</code>, <code>mail.google.com</code>, <code>www.google.com</code>, <code>www.youtube.com</code></td><td>브라우저가 연다</td></tr>
+  </tbody></table></div>
+
+  <h3>코드 읽는 순서 추천</h3>
+  <ol>
+    <li><code>launcher.py</code> → <code>guard_common.py</code> (프로세스 모델)</li>
+    <li><code>cat.py</code> 의 <code>main()</code> 과 <code>frame_body()</code> (조립과 심장)</li>
+    <li><code>flow.py</code> → <code>behavior.py</code> (두뇌)</li>
+    <li><code>photocat.py</code> → <code>coats.py</code> (그리기)</li>
+    <li><code>scheduler.py</code> → <code>nethelper.py</code> → 각 소스 모듈 (알림)</li>
+    <li><code>sec_events.py</code> → <code>sec_ransom.py</code> → <code>security.py</code> (경비)</li>
+    <li><code>settings_dialog.py</code> → <code>theme.py</code> → <code>cute.py</code> (화면)</li>
+  </ol>
+</section>

@@ -1,0 +1,93 @@
+{
+ "name": "1-이동-집어올리기",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    26,
+    37,
+    335,
+    392
+   ],
+   "size": [
+    309,
+    355
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    530,
+    38,
+    692,
+    407
+   ],
+   "size": [
+    162,
+    369
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    823,
+    38,
+    1133,
+    390
+   ],
+   "size": [
+    310,
+    352
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    125,
+    470,
+    285,
+    845
+   ],
+   "size": [
+    160,
+    375
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    423,
+    478,
+    716,
+    834
+   ],
+   "size": [
+    293,
+    356
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    928,
+    470,
+    1087,
+    845
+   ],
+   "size": [
+    159,
+    375
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

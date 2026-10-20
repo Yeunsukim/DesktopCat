@@ -1,0 +1,97 @@
+<section class="panel reveal" id="privacy" data-toc="개인정보와 안전">
+  <h2><em>개인정보</em>와 안전</h2>
+  <p class="lead">고양이가 <b>무엇을 저장하고, 무엇을 밖으로 보내는지</b> 솔직하게 정리했어요. 기본값은 <b>밖으로 거의 아무것도 안 보내는 쪽</b>이에요.</p>
+
+  <h3>이 컴퓨터에만 저장되는 것</h3>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>무엇</th><th>어디에 (<code>%LOCALAPPDATA%\DesktopCat</code>)</th><th>비고</th></tr></thead><tbody>
+    <tr><td>설정(앱 목록·알림 시각·프롬프트·생활 설정)</td><td><code>launcher_config.json</code></td><td>평범한 글 파일</td></tr>
+    <tr><td>캘린더 주소·Gemini 키·Gmail 앱 비밀번호·VirusTotal 키</td><td><code>secrets.json</code></td><td><b>윈도우 계정으로 암호화</b>. 같은 계정으로만 풀려요. 이 파일을 다른 컴퓨터에 복사해도 못 읽어요.</td></tr>
+    <tr><td>배고픔·기분·털색</td><td><code>pet_state.json</code></td><td></td></tr>
+    <tr><td>활동 기록 (켠 경우만)</td><td><code>activity\날짜.json</code></td><td>30일 뒤 자동 삭제</td></tr>
+    <tr><td>경비 기록·점검 상태</td><td><code>security\…</code></td><td>30일</td></tr>
+    <tr><td>오류·재시작 기록</td><td><code>cat_error.log</code>, <code>cat_guard.log</code></td><td>20만 바이트 넘으면 비워요</td></tr>
+  </tbody></table></div>
+
+  <h3>인터넷으로 나가는 것</h3>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>기능</th><th>어디로</th><th>무엇을</th><th>끄는 법</th></tr></thead><tbody>
+    <tr><td>캘린더</td><td>구글 캘린더</td><td>내 비공개 주소로 일정 내려받기(읽기)</td><td>캘린더 알림 끄기·주소 지우기</td></tr>
+    <tr><td>소식</td><td>Open-Meteo(날씨)·구글 뉴스·야후 파이낸스(시세)·위치 조회·구글 Gemini</td><td>날씨·뉴스·시세 자료와 프롬프트(Gemini에 정리를 시킴). 날씨 지역이 "자동"이면 이 컴퓨터의 인터넷 주소로 대략의 위치를 조회해요.</td><td>소식 끄기·키 지우기</td></tr>
+    <tr><td>메일</td><td>Gmail (imaps)</td><td>로그인해서 <b>보낸 사람 이름만</b> 읽기</td><td>메일 끄기·비밀번호 지우기</td></tr>
+    <tr><td>어제 한 일 요약</td><td>구글 Gemini</td><td>그날의 <b>프로그램·창 제목 기록</b></td><td>기록 끄기 / "기록 그대로 보기"만 쓰기 / 제외 단어</td></tr>
+    <tr><td>앱 등록(웹 주소)</td><td>그 사이트</td><td>사이트 아이콘(파비콘) 받기</td><td>웹 앱을 지우기</td></tr>
+    <tr><td>VirusTotal (선택, 꺼짐)</td><td>virustotal.com</td><td>수상한 파일의 <b>해시값만</b></td><td>끄기·키 지우기</td></tr>
+  </tbody></table></div>
+  <div class="callout ok"><b>고양이가 절대 안 하는 것</b> 키보드로 친 내용을 읽거나 저장하기 · 화면 캡처 · 파일 내용을 밖으로 보내기 · 파일을 지우거나 프로그램을 끄기(내가 버튼을 누르기 전에는) · 일정·메일을 바꾸거나 보내기.</div>
+  <div class="callout warn"><b>주의</b> 다른 사람과 컴퓨터를 같이 쓰면, 같은 윈도우 계정을 쓰는 사람은 설정 창에서 같은 알림을 볼 수 있어요. 키·비밀번호는 화면에 다시 보여 주지 않지만, 계정을 공유하는 환경은 피하세요.</div>
+</section>
+
+<section class="panel reveal" id="faq" data-toc="문제 해결 (FAQ)">
+  <h2>문제 해결 <em>FAQ</em></h2>
+  <input class="search" placeholder="증상 검색 (예: 아이콘, 알림, 안 보여요)" id="faq-search" aria-label="FAQ 검색">
+  <div id="faq-list">
+    <details class="fold"><summary>고양이가 안 보여요</summary><ul>
+      <li>트레이(작업 표시줄 오른쪽 아래, ^ 안쪽)에 고양이 아이콘이 있는지 보세요. 없으면 시작 메뉴에서 "데스크탑 고양이"를 켜세요.</li>
+      <li>전체 화면 앱(게임·동영상)이 떠 있으면 <b>숨어요</b>. 앱을 닫거나 창 모드로 바꾸면 돌아와요.</li>
+      <li>10분 넘게 컴퓨터를 안 만지면 멈춰 있어요(자리 비움). 마우스를 움직이면 이어서 놀아요.</li>
+      <li>모니터를 뺐다 꽂은 뒤엔 가장 가까운 모니터 바닥으로 데려와요.</li>
+    </ul></details>
+    <details class="fold"><summary>고양이가 멈추거나 사라졌다가 다시 나타났어요</summary><p>정상이에요! 고양이가 응답이 없으면(90초) 지킴이가 강제로 껐다가 몇 초 뒤 다시 켜요. 메모리나 시스템 자원이 샐 때도 스스로 껐다 켜요. 사용자가 <b>종료</b>를 눌렀을 때만 완전히 꺼져요. 자세한 기록은 <code>cat_guard.log</code> 에 있어요.</p></details>
+    <details class="fold"><summary>작업 관리자에서 끝냈는데 되살아나요</summary><p>지킴이가 되살리는 거예요. 완전히 끄려면 트레이 아이콘 우클릭 → <b>종료</b>. 명령줄에서는 <code>DesktopCat.exe --quit</code>.</p></details>
+    <details class="fold"><summary>바탕화면 아이콘이 이상한 곳에 있어요 / 아이콘을 차지 않아요</summary><ul>
+      <li>아이콘 차기는 <b>처음엔 꺼져 있어요</b>. 우클릭 → "아이콘 차기"를 체크하세요.</li>
+      <li>바탕화면 <b>자동 정렬</b>이 켜져 있으면 못 차요. 바탕화면 우클릭 → 보기 → "자동 정렬" 해제(시작할 때 안내가 나와요).</li>
+      <li>아이콘이 제자리에 없으면 우클릭 → <b>아이콘 원래대로</b>. 고양이를 정상 종료해도 모두 돌아와요. 갑자기 꺼졌다면 다음 시작 때 먼저 제자리로 돌려놓아요. 내가 직접 옮긴 아이콘은 건드리지 않아요.</li>
+    </ul></details>
+    <details class="fold"><summary>보조 모니터에서 고양이 위치가 어긋나요</summary><p>모니터마다 화면 배율이 다르면 생길 수 있어요(시작할 때 안내가 나와요). 윈도우 설정 → 디스플레이에서 배율을 같게 맞추세요.</p></details>
+    <details class="fold"><summary>일정 알림이 안 와요 / "일정을 못 가져왔다냥"</summary><ul>
+      <li>"캘린더 주소가 틀렸거나 바뀌었다냥" → <b>비공개 주소</b>를 다시 복사하세요(공개 주소는 안 돼요).</li>
+      <li>"연결을 못 했다냥 / 시간 초과" → 인터넷 문제예요. 고양이가 1·3·10분 뒤 조용히 다시 해 봐요.</li>
+      <li>그 밖에는 앞의 "알림이 안 올 때 점검표"를 보세요.</li>
+    </ul></details>
+    <details class="fold"><summary>Gemini 오류가 나요 ("키가 틀렸다", "사용량을 다 썼다")</summary><ul>
+      <li>"키가 틀렸거나 만료" → 키를 다시 복사해 넣으세요(공백·한글 없이).</li>
+      <li>"사용량을 다 썼다 / 한도에 걸렸다" → 무료 한도예요. 내일 다시 하거나, <b>"구글 검색 사용"</b> 체크가 켜져 있다면 끄세요(무료 키는 검색 도구가 막혀 있어요).</li>
+      <li>"모델 이름을 못 찾겠다" → 설정의 모델 칸을 비우세요(기본 모델 사용).</li>
+    </ul></details>
+    <details class="fold"><summary>메일 로그인이 안 돼요</summary><p>일반 구글 비밀번호가 아니라 <b>앱 비밀번호 16자리</b>를 넣어야 해요. 2단계 인증이 켜져 있어야 만들 수 있고, 회사/학교 계정이거나 패스키만 쓰면 안 될 수 있어요. 구글이 "보안 확인"을 요구한다면 브라우저에서 그 계정으로 Gmail에 한 번 로그인해 확인한 뒤 다시 해 보세요.</p></details>
+    <details class="fold"><summary>"쥐 발견!" 경보가 떴어요. 진짜인가요?</summary><p>제목에 <b>(시험 경보)</b>가 있으면 시험이에요. 아니라면 경보 창의 설명을 읽어 보세요. <b>미끼 파일</b>이 건드려졌다는 내용이면 내가 그 숨김 문서를 열거나 지우지 않았는지 떠올려 보세요. 확실하지 않으면 <b>랜섬웨어 4단계 카드</b>를 따라 하세요(인터넷 끊기 → 의심 프로그램 끝내기 → 몸값 내지 않기 → 백업 장치 연결하지 않기).</p></details>
+    <details class="fold"><summary>자꾸 같은 프로그램을 의심해요</summary><p>내가 아는 프로그램이면 경보 창에서 <b>허용 목록에 추가</b>를 누르세요. 그 프로그램은 다시 알리지 않아요. 잘못 허용했다면 설정 → 경비 → <b>허용 목록 지우기</b>.</p></details>
+    <details class="fold"><summary>카메라·마이크 알림이 갑자기 와요</summary><p>처음 24시간은 알림 없이 기억만 하고, 그 뒤 <b>처음 보는 프로그램</b>이 쓸 때만 알려요. 내가 쓰던 앱이면 <b>허용 목록에 추가</b>하세요. 모르는 앱이면 스파이웨어일 수 있으니 의심하고 백신으로 검사하세요.</p></details>
+    <details class="fold"><summary>컴퓨터가 느려졌어요</summary><p>평소 CPU 코어 1개의 약 1%, 메모리 약 110MB예요. 경비를 켜도 거의 늘지 않아요. 파일을 수만 개 한꺼번에 복사·압축 해제하는 동안에는 폴더 감시가 잠깐 바빠질 수 있어요. 그래도 부담되면 설정 → 경비의 민감도를 "느슨"으로 하거나 폴더 감시를 끄세요. 실행 옵션으로 <code>--low-priority</code>(우선순위를 낮춤)도 있어요.</p></details>
+    <details class="fold"><summary>글자가 깨져 보여요 / 이모티콘이 안 보여요</summary><p>풍선에는 이모티콘을 쓰지 않아요. 설정 창의 버튼·제목에도 없어요. 고양이가 직접 하는 말풍선에만 이모티콘이 들어 있어요. 글꼴은 맑은 고딕을 써요.</p></details>
+  </div>
+</section>
+
+<section class="panel reveal" id="remove" data-toc="업데이트와 삭제">
+  <h2>업데이트와 <em>삭제</em></h2>
+  <div class="grid g2">
+    <div class="card"><h4>새 버전으로 바꾸기</h4><p>새 <code>DesktopCat_Setup.exe</code> 를 그냥 한 번 더 실행하세요. 실행 중인 고양이를 알아서 끄고, 이전 설치를 안전하게 바꿔치기해요. <b>설정·기록은 그대로</b> 남아요(데이터 폴더는 따로 있어요).</p></div>
+    <div class="card"><h4>삭제하기</h4><p>윈도우 설정 → 앱 → 설치된 앱에서 "데스크탑 고양이" → 제거, 또는 설치 폴더의 <code>uninstall.exe</code>. 묻는 순서: ① "삭제할까요?" ② "고양이의 기록도 함께 지울까요?"</p></div>
+  </div>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>"기록도 지울까요?"</th><th>지워지는 것</th><th>남는 것</th></tr></thead><tbody>
+    <tr><td><b>예</b></td><td>배고픔·기분, 설정(앱·알림 시각), 암호화해 저장한 키·주소, 활동 기록, 경비 기록·VirusTotal 키 — <b>모두</b></td><td>없음</td></tr>
+    <tr><td><b>아니요</b></td><td>프로그램 파일, 바로가기, 자동 실행 등록</td><td>기록·설정 (다시 설치하면 이어서 써요)</td></tr>
+  </tbody></table></div>
+  <div class="callout tip"><b>숨김 미끼 파일</b>은 "기록은 남기고 삭제"를 골라도 <b>항상 같이 지워져요</b>(고양이가 만든 것만). 문서 폴더에 이상한 숨김 파일이 남을 걱정은 안 해도 돼요. 삭제 프로그램은 자동 실행 해제와 바탕화면 아이콘 원위치도 해 줘요.</div>
+  <p>명령줄 삭제: <code>uninstall.exe --silent</code> (기록 남김) · <code>uninstall.exe --silent --purge</code> (기록까지 삭제).</p>
+</section>
+
+<section class="panel reveal" id="checklist" data-toc="처음 설정 체크리스트">
+  <h2>처음 설정 <em>체크리스트</em></h2>
+  <p class="lead">원하는 기능만 골라 설정하세요. 하나씩 눌러서 체크하면 이 브라우저가 기억해 줘요.</p>
+  <div class="card" style="margin:12px 0">
+    <div style="display:flex;gap:12px;align-items:center"><b class="meter-label" style="min-width:90px">0 / 10 완료</b><div class="meter" style="flex:1"><i></i></div></div>
+    <ul class="checklist" id="manual-list">
+      <li><input type="checkbox"><div><div class="t">고양이 설치하고 트레이 아이콘 확인하기</div><div class="d">설치 → 바탕화면에 고양이, 작업 표시줄 오른쪽 아래에 아이콘.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">고양이와 놀아 보기</div><div class="d">클릭(런처) · 쓱쓱(쓰다듬기) · 끌어서 놓기 · 우클릭 메뉴 · 밥 주기.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">자주 쓰는 프로그램·웹 등록하기</div><div class="d">우클릭 → 앱 등록… → 런처에 아이콘 추가.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">캘린더 연결하고 오늘 일정 시험하기</div><div class="d">iCal 비공개 주소 → 지금 시험해 보기 → 시각 정하고 저장.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">매시 정각 일정 알림 켜기 (선택)</div><div class="d">앞으로 몇 시간 안의 일정을 알려 줘요.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">Gemini 키로 소식 설정하기 (선택)</div><div class="d">키 → 연결 시험 → 지역·시세 → 시각 → 지금 시험.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">Gmail 앱 비밀번호로 새 메일 알림 (선택)</div><div class="d">2단계 인증 → 앱 비밀번호 16자리 → 확인해 보기 → 켜기.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">잠자는 시간과 밥 시간 확인하기</div><div class="d">생활 탭에서 내 생활에 맞게. 구석 위치도 고르기.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">경비 고양이 "시험 경보" 보기</div><div class="d">설정 → 경비 → 시험 경보(위험)·(의심) — 경보 창 읽는 법 익히기.</div></div></li>
+      <li><input type="checkbox"><div><div class="t">어제 한 일 기록 켜기 (선택)</div><div class="d">무엇이 저장되는지 읽고 동의한 뒤에만. 제외 단어도 넣어 두세요.</div></div></li>
+    </ul>
+  </div>
+</section>

@@ -1,0 +1,93 @@
+{
+ "name": "5-먹기놀기-털실공1-엉덩이씰룩",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    37,
+    131,
+    376,
+    381
+   ],
+   "size": [
+    339,
+    250
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    426,
+    125,
+    783,
+    384
+   ],
+   "size": [
+    357,
+    259
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    854,
+    123,
+    1182,
+    387
+   ],
+   "size": [
+    328,
+    264
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    37,
+    552,
+    377,
+    834
+   ],
+   "size": [
+    340,
+    282
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    435,
+    557,
+    779,
+    827
+   ],
+   "size": [
+    344,
+    270
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    821,
+    570,
+    1183,
+    825
+   ],
+   "size": [
+    362,
+    255
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

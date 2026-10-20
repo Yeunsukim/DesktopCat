@@ -1,0 +1,93 @@
+{
+ "name": "5-먹기놀기-밥먹기",
+ "source_size": [
+  1187,
+  896
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    45,
+    33,
+    365,
+    277
+   ],
+   "size": [
+    320,
+    244
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    604,
+    75,
+    1166,
+    263
+   ],
+   "size": [
+    562,
+    188
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    41,
+    363,
+    511,
+    547
+   ],
+   "size": [
+    470,
+    184
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    635,
+    342,
+    1112,
+    547
+   ],
+   "size": [
+    477,
+    205
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    37,
+    626,
+    489,
+    835
+   ],
+   "size": [
+    452,
+    209
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    632,
+    625,
+    1088,
+    835
+   ],
+   "size": [
+    456,
+    210
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

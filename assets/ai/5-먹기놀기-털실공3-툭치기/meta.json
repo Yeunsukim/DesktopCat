@@ -1,0 +1,93 @@
+{
+ "name": "5-먹기놀기-털실공3-툭치기",
+ "source_size": [
+  1216,
+  879
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    18,
+    63,
+    377,
+    418
+   ],
+   "size": [
+    359,
+    355
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    434,
+    65,
+    792,
+    383
+   ],
+   "size": [
+    358,
+    318
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    707,
+    64,
+    1200,
+    393
+   ],
+   "size": [
+    493,
+    329
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    20,
+    508,
+    333,
+    863
+   ],
+   "size": [
+    313,
+    355
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    437,
+    490,
+    739,
+    859
+   ],
+   "size": [
+    302,
+    369
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    750,
+    538,
+    1209,
+    856
+   ],
+   "size": [
+    459,
+    318
+   ],
+   "cut_by_edge": true
+  }
+ ]
+}

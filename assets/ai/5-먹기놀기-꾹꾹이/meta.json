@@ -1,0 +1,135 @@
+{
+ "name": "5-먹기놀기-꾹꾹이",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    16,
+    16,
+    369,
+    276
+   ],
+   "size": [
+    353,
+    260
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    410,
+    20,
+    770,
+    280
+   ],
+   "size": [
+    360,
+    260
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    810,
+    21,
+    1171,
+    275
+   ],
+   "size": [
+    361,
+    254
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    8,
+    313,
+    369,
+    573
+   ],
+   "size": [
+    361,
+    260
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    401,
+    312,
+    770,
+    574
+   ],
+   "size": [
+    369,
+    262
+   ],
+   "cut_by_edge": true
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    802,
+    314,
+    1171,
+    573
+   ],
+   "size": [
+    369,
+    259
+   ],
+   "cut_by_edge": true
+  },
+  {
+   "file": "f6.png",
+   "box": [
+    14,
+    608,
+    369,
+    866
+   ],
+   "size": [
+    355,
+    258
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f7.png",
+   "box": [
+    408,
+    609,
+    769,
+    867
+   ],
+   "size": [
+    361,
+    258
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f8.png",
+   "box": [
+    802,
+    609,
+    1170,
+    868
+   ],
+   "size": [
+    368,
+    259
+   ],
+   "cut_by_edge": true
+  }
+ ]
+}

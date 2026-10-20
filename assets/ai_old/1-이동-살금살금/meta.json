@@ -1,0 +1,107 @@
+{
+ "name": "1-이동-살금살금",
+ "source_size": [
+  1194,
+  880
+ ],
+ "frames": [
+  {
+   "file": "f0.png",
+   "box": [
+    11,
+    111,
+    382,
+    254
+   ],
+   "size": [
+    371,
+    143
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f1.png",
+   "box": [
+    410,
+    109,
+    785,
+    253
+   ],
+   "size": [
+    375,
+    144
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f2.png",
+   "box": [
+    809,
+    109,
+    1182,
+    255
+   ],
+   "size": [
+    373,
+    146
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f3.png",
+   "box": [
+    19,
+    391,
+    550,
+    562
+   ],
+   "size": [
+    531,
+    171
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f4.png",
+   "box": [
+    629,
+    382,
+    1159,
+    559
+   ],
+   "size": [
+    530,
+    177
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f5.png",
+   "box": [
+    23,
+    681,
+    548,
+    856
+   ],
+   "size": [
+    525,
+    175
+   ],
+   "cut_by_edge": false
+  },
+  {
+   "file": "f6.png",
+   "box": [
+    638,
+    680,
+    1164,
+    857
+   ],
+   "size": [
+    526,
+    177
+   ],
+   "cut_by_edge": false
+  }
+ ]
+}

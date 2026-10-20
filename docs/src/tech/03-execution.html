@@ -1,0 +1,90 @@
+<section class="panel reveal" id="run" data-toc="실행과 종료 (지킴이)">
+  <h2>실행과 종료 — <em>지킴이</em>가 하는 일</h2>
+  <p class="lead">프로그램은 <code>launcher.py</code> 하나로 시작해요. 같은 파일이 <b>옵션에 따라 네 가지 얼굴</b>을 가져요. 설치본에서는 이것이 <code>DesktopCat.exe</code> 이고, 소스로 돌릴 때는 <code>pythonw launcher.py</code> 예요.</p>
+
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>실행 방법</th><th>무슨 일이 일어나나</th><th>누가 쓰나</th></tr></thead><tbody>
+    <tr><td><code>launcher.py [옵션]</code></td><td><b>지킴이</b> 모드. 뮤텍스 <code>Local\DesktopCatGuardMutex</code> 를 잡고(이미 있으면 조용히 끝), 본체를 <code>--worker</code> 로 띄워 감시한다. 옵션(<code>--no-icons --scale 1.0 …</code>)은 본체에 그대로 전달.</td><td>사용자·시작 프로그램·바로가기</td></tr>
+    <tr><td><code>launcher.py --worker</code></td><td><code>import cat; cat.main()</code>. PyQt 같은 무거운 라이브러리는 <b>이 모드에서만</b> 불러온다.</td><td>지킴이가 내부적으로</td></tr>
+    <tr><td><code>launcher.py --net-helper</code></td><td><code>nethelper.main()</code>: 표준 입력으로 요청 JSON 한 줄을 읽고 결과 JSON 한 줄을 쓰고 끝.</td><td>본체가 필요할 때마다</td></tr>
+    <tr><td><code>launcher.py --quit</code> · <code>python cat.py --quit</code></td><td>이벤트 <code>Local\DesktopCatQuitEvent</code> 를 켠다 → 본체가 정리하고(아이콘 복원·기록 저장) 종료 코드 0 으로 끝 → 지킴이도 종료.</td><td>설치·삭제 프로그램, 개발 때 재시작</td></tr>
+  </tbody></table></div>
+
+  <h3>시작부터 24fps 루프까지 (단계별)</h3>
+  <p>아래 상자의 번호를 눌러 보세요. <code>cat.main()</code> 의 순서가 그대로예요 — <b>다시 만들 때도 이 순서</b>를 지키세요(앞 단계의 결과를 뒤 단계가 써요).</p>
+  <div class="stepper" data-auto="4200">
+    <div class="step" data-title="지킴이 시작"><p><code>launcher.main()</code> → <code>run_guard(extra)</code>. 뮤텍스를 만들어 두 번째 지킴이를 막고, <code>Heartbeat()</code>(16바이트 공유 메모리 <code>Local\DesktopCatHeartbeat</code>)를 만든 뒤 <code>subprocess.Popen([exe, "--worker", …], creationflags=CREATE_NO_WINDOW, 표준 입출력 모두 DEVNULL)</code>.</p></div>
+    <div class="step" data-title="본체: 중복 실행 방지"><p><code>cat.main()</code> 첫머리에서 인자(<code>--no-icons --scale --skin --coat --no-autopause --low-priority --quit --worker</code>)를 읽고, 뮤텍스 <code>Local\DesktopCatPetMutex</code> 를 만든다. 이미 있으면(<code>GetLastError()==183</code>) 바로 종료. 종료 이벤트 <code>QUIT_EVENT</code> 도 이때 만든다.</p></div>
+    <div class="step" data-title="프로세스 준비"><p>환경 변수 <code>QT_QPA_PLATFORM=windows:fontengine=gdi</code>(글꼴 엔진을 GDI 로: 메모리 약 70MB 절약)는 <b>PyQt 를 불러오기 전에</b> 이미 설정돼 있다. <code>AppUserModelID="DesktopCat.CatSecretary"</code> 를 달아 작업 표시줄이 파이썬 아이콘과 묶지 않게 한다. <code>QApplication</code> 생성(<code>setQuitOnLastWindowClosed(False)</code>) → <code>theme.apply(app, DATA)</code> 로 분홍 스타일시트 적용.</p></div>
+    <div class="step" data-title="화면·키우기 상태"><p><code>dpr = primaryScreen().devicePixelRatio()</code>, <code>_monitor_layout(app)</code> 로 모니터별 작업 영역(작업 표시줄 제외)과 가상 화면 원점을 구한다. <code>Pet(DATA/"pet_state.json")</code> 을 읽어 꺼 둔 시간만큼 배고픔을 올린다(최대 85).</p></div>
+    <div class="step" data-title="그리개 준비"><p>기본 스킨 <code>sprite</code> 이면 <code>PhotoRig(assets/sprites, 털색, dpr, scale)</code> — <code>sprites.json</code> 을 읽고 33개 동작 폴더가 모두 있는지 확인한다(없으면 예외 → 로그 남기고 뼈대 고양이 <code>CatRig</code> 로 계속). <code>WindowTracker(dpr)</code> 생성.</p></div>
+    <div class="step" data-title="바탕화면 아이콘 연결"><p><code>--no-icons</code> 가 아니면 <code>DesktopIcons(icons_backup.json)</code>. <code>attach()</code> 가 성공하면 <code>backup()</code> 으로 현재 아이콘 위치를 저장하고 <code>set_snap(False)</code>(격자 정렬 해제). <code>IconField</code> 가 이를 감싼다. 자동 정렬이 켜져 있으면 아이콘 차기를 끈다.</p></div>
+    <div class="step" data-title="두뇌 만들기"><p><code>World(areas, tracker, dpr, 105*scale)</code> → <code>CatBrain(world, pet, field, scale)</code>. 사진 고양이는 매달리면 키가 커서 <code>brain.hold_drop = 128*scale</code>.</p></div>
+    <div class="step" data-title="메뉴·트레이"><p>우클릭 메뉴(밥 주기·놀아주기·한쪽에서 쉬기·고양이 색·앱 등록·앱 지우기·설정·아이콘 차기·아이콘 원래대로·종료)를 만들고 <code>QSystemTrayIcon</code> 에 연결한다. 종료는 <code>cleanup()</code>(pet.save · guard.stop · activity.flush · icons.shutdown) 후 <code>app.quit()</code>.</p></div>
+    <div class="step" data-title="창들 만들기"><p><code>Overlay</code>(고양이 투명 창), <code>LauncherBubble</code>(반원 런처), <code>Balloon</code>(여러 줄 풍선), <code>NoticeWindow</code>(소식 창)를 만들고 <b>모두 <code>tracker.add_ignore(hwnd)</code></b> — 고양이가 자기 창 위에 올라서지 않게. 8초 뒤 <code>ensure_favicons()</code> 예약.</p></div>
+    <div class="step" data-title="알림·루틴·경비 연결"><p><code>Settings(DATA)</code>, <code>ActivityLog</code>, 작업 함수 5개(<code>calendar·news·yesterday·hourly·gemini_ping</code>)를 <code>Scheduler</code> 에 등록. <code>Routine(settings)</code>, <code>scheduler.quiet = routine.is_night</code>. <code>SecurityGuard.start()</code> 로 폴더 감시·점검 스레드 시작.</p></div>
+    <div class="step" data-title="타이머 시작"><p>하트비트(<code>Heartbeat()</code>)와 상태 변수를 준비하고 <code>QTimer(PreciseTimer)</code> 를 <code>FRAME_MS=42</code> 로 시작 → <code>app.exec()</code>. 이제부터 <code>frame()</code> 이 24fps 로 불린다. (다음 장)</p></div>
+  </div>
+
+  <h3>지킴이 감시 상태 — 눌러서 시험해 보기</h3>
+  <p>지킴이는 2초마다 본체를 살펴요. 아래 버튼으로 네 가지 상황을 재생해 보세요(대기 시간 계산이 코드와 같아요).</p>
+  <div class="diagram" id="guard-diagram">
+    <div class="bar"><b>지킴이 상태 기계</b>
+      <button class="btn" data-guard="quit">사용자가 종료</button>
+      <button class="btn" data-guard="restart">스스로 재시작(3)</button>
+      <button class="btn" data-guard="die">갑자기 죽음</button>
+      <button class="btn" data-guard="hang">멈춤(hang)</button></div>
+    <svg viewBox="0 0 840 290" role="img" aria-label="지킴이 상태 기계"></svg>
+    <div class="caption"><div class="out" id="guard-log" style="max-height:130px"><span class="dim">버튼을 눌러 보세요.</span></div></div>
+  </div>
+  <div class="code" data-lang="py" data-file="launcher.py — 핵심 (그대로 옮겨도 동작)"><pre>
+HANG_SECONDS   = 90      # 하트비트가 이 시간 없으면 멈춘 것
+STARTUP_GRACE  = 90      # 시작 직후 이만큼은 봐 준다
+def _watch(proc, hb, started):
+    last_poll, grace_until = time.time(), started + STARTUP_GRACE
+    while True:
+        rc = proc.poll()
+        if rc is not None: return rc
+        time.sleep(2.0)
+        now = time.time()
+        if now - last_poll > 20:          # 우리도 같이 잠들었다 깸 = 절전 복귀
+            grace_until = now + 60
+        last_poll = now
+        if now > grace_until and now - hb.last() > HANG_SECONDS:
+            proc.kill(); proc.wait(10); return "hang"
+
+def run_guard(extra):
+    # 뮤텍스(이미 있으면 return 0) ... hb = Heartbeat(); fast_fails = 0
+    while True:
+        started = time.time(); hb.beat()
+        proc = subprocess.Popen(child_cmd(extra), creationflags=CREATE_NO_WINDOW,
+                                stdin=DEVNULL, stdout=DEVNULL, stderr=DEVNULL)
+        rc = _watch(proc, hb, started)
+        if rc == EXIT_QUIT: return 0                       # 0 = 사용자가 끔
+        if rc == EXIT_RESTART:                             # 3 = 스스로 재시작 요청
+            fast_fails = 0; continue
+        uptime = time.time() - started
+        fast_fails = fast_fails + 1 if uptime &lt; 30 else 0
+        wait = 3 if fast_fails &lt;= 1 else min(300, 3 * 2 ** min(fast_fails, 7))
+        time.sleep(wait)                                   # 계속 죽어도 포기하지 않는다
+</pre></div>
+
+  <h3>종료하는 방법과 종료 순서</h3>
+  <div class="grid g2">
+    <div class="card"><h4>정상 종료</h4><p>메뉴 <b>종료</b> → <code>cleanup()</code> → <code>app.quit()</code> → <code>main()</code> 이 <code>app.exec()</code> 의 값(0)을 돌려줌 → 지킴이가 <code>EXIT_QUIT</code> 로 보고 함께 끝. 바탕화면 아이콘은 <code>icons.shutdown()</code> 이 원래 자리로 돌려놓고 격자 정렬도 되살린다.</p></div>
+    <div class="card"><h4>스스로 재시작</h4><p>자원 점검(60초마다)이나 프레임 오류가 계속되면 <code>ask_restart(이유)</code>: 로그에 이유를 남기고 <code>cleanup()</code> 후 <code>app.exit(3)</code>. 지킴이는 기다리지 않고 곧바로 다시 띄운다.</p></div>
+  </div>
+
+  <h3>환경 변수 (시험용 — 평소엔 쓰지 않아요)</h3>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>이름</th><th>효과</th></tr></thead><tbody>
+    <tr><td><code>DESKTOPCAT_DATA</code></td><td>데이터 폴더를 다른 곳으로 (실제 설정·기록을 건드리지 않고 시험).</td></tr>
+    <tr><td><code>DESKTOPCAT_HANG_SECONDS</code> · <code>DESKTOPCAT_STARTUP_GRACE</code></td><td>지킴이의 멈춤 판단·시작 유예 시간(초). 기본 90 · 90.</td></tr>
+    <tr><td><code>DESKTOPCAT_LIMIT_MB</code></td><td>메모리 자동 재시작 기준(기본 400).</td></tr>
+    <tr><td><code>DESKTOPCAT_AWAY_SEC</code> · <code>DESKTOPCAT_AWAY_FLAG</code></td><td>자리 비움 기준(기본 600초) · 이 이름의 파일이 있으면 '자리 비움'.</td></tr>
+    <tr><td><code>DESKTOPCAT_PLAY_SEC</code></td><td>놀아 달라는 간격을 초 단위로 짧게.</td></tr>
+    <tr><td><code>DESKTOPCAT_FAULTHANDLER=1</code></td><td>Qt/윈도우 내부 오류로 죽을 때 파이썬 스택을 <code>cat_crash.log</code> 에.</td></tr>
+    <tr><td><code>DESKTOPCAT_GEMINI_BASE</code> · <code>DESKTOPCAT_VT_BASE</code> · <code>DESKTOPCAT_IMAP_HOST</code></td><td>가짜 서버로만 연결(<code>127.0.0.1</code> 만 허용 — 키가 밖으로 새지 않게).</td></tr>
+    <tr><td><code>DESKTOPCAT_APP_ID</code> · <code>DESKTOPCAT_TRACE</code></td><td>설치/삭제 시험용 다른 이름으로 설치 · 삭제 추적 로그.</td></tr>
+  </tbody></table></div>
+
+  <div class="callout warn"><b>다시 만들 때 꼭</b> 환경 변수 <code>QT_QPA_PLATFORM</code> 은 <code>QApplication</code> 보다 먼저, 그리고 <code>import PyQt6</code> 보다도 먼저 설정해야 효과가 있어요. 그래서 <code>cat.py</code> 는 <code>import os</code> 직후, 다른 import 보다 앞에서 <code>os.environ.setdefault(...)</code> 를 해요.</div>
+</section>
