@@ -45,6 +45,7 @@ def main():
     pyinstaller("--onedir", "--windowed", "--name", "DesktopCat", "--icon", ico, "--paths", ROOT,
                 "--add-data", f"{ROOT / 'assets' / 'skin'};assets/skin",
                 "--add-data", f"{ROOT / 'assets' / 'sprites'};assets/sprites",
+                "--add-data", f"{ROOT / 'assets' / 'sounds'};assets/sounds",
                 # 캘린더 알림: 일정 해석(icalendar·recurring_ical_events)과 시간대 자료(tzdata). 보조 프로세스에서 필요할 때만 불러오는 모듈이라 명시해 둔다
                 "--collect-all", "icalendar", "--collect-all", "recurring_ical_events", "--collect-all", "x_wr_timezone",
                 "--collect-data", "tzdata", "--collect-submodules", "dateutil", "--hidden-import", "zoneinfo",

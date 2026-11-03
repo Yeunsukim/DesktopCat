@@ -69,6 +69,7 @@ from catsound import CatSound
 import gemini_client
 from config_store import Settings
 from desktop_icons import DesktopIcons
+from feather_toy import FeatherCursor
 import favicon
 from launcher_ui import CALENDAR_URL, GMAIL_URL, LauncherBubble, icon_for_app
 import cute
@@ -87,7 +88,7 @@ LIMIT_MB = float(os.environ.get("DESKTOPCAT_LIMIT_MB", 400))   # 메모리가 �
 FRAME_MS = 42                      # 갱신·그리기 주기(24fps). 정밀 타이머로 간격을 고르게 유지하면 24fps 로도 부드럽다 (CPU 는 fps 에 비례)
 
 
-_MOVING = {S.WALK, S.RUN, S.SNEAK, S.KICK_WALK, S.KICK_LEAP, S.JUMP, S.FALL, S.PLAY, S.HELD}
+_MOVING = {S.WALK, S.RUN, S.SNEAK, S.KICK_WALK, S.KICK_LEAP, S.JUMP, S.FALL, S.PLAY, S.HELD, S.TEASE}
 
 
 class Overlay(QWidget):
@@ -107,6 +108,7 @@ class Overlay(QWidget):
         self._press = None
         self._dragging = False
         self._last_top = 0.0
+        self.on_touch = None                              # 왼쪽·오른쪽 마우스로 눌렀을 때 부를 함수 (반응 소리)
         self.on_click = None                              # 끌지 않고 클릭했을 때 부를 함수 (앱 런처 열기). 없으면 쓰다듬기
         self.bubble_blocked = None                        # True 를 돌려주면 한 줄 말풍선을 그리지 않는다 (런처·여러 줄 풍선과 겹치지 않게)
         self._through = None
@@ -188,6 +190,8 @@ class Overlay(QWidget):
 
     # --- 마우스 ---------------------------------------------------------
     def mousePressEvent(self, e):
+        if self.on_touch and e.button() in (Qt.MouseButton.LeftButton, Qt.MouseButton.RightButton):
+            self.on_touch()                                   # 왼쪽·오른쪽으로 눌렀다 (반응 냐옹)
         if e.button() == Qt.MouseButton.RightButton:
             self.menu.exec(e.globalPosition().toPoint())
         elif e.button() == Qt.MouseButton.LeftButton:
@@ -200,6 +204,8 @@ class Overlay(QWidget):
         if not self._dragging and (g - self._press).manhattanLength() > 6:
             self._dragging = True
             self.brain.grab()
+            if self.on_touch:
+                self.on_touch()                               # 집어 올렸다 (눌렀을 때의 소리가 아직 나는 중이면 겹치지 않는다)
             self.keep_on_top()
             self._last_top = time.monotonic()
         if self._dragging:
@@ -413,6 +419,8 @@ def main():
 
     screen = app.primaryScreen()
     dpr = screen.devicePixelRatio()
+    feather = FeatherCursor(dpr, DATA / "cursor_swapped.flag")      # 놀아주기(깃털) 동안 마우스 커서를 나비 낚싯대로 바꾼다
+    feather.recover()                                                # 지난번에 커서를 바꾼 채 갑자기 꺼졌다면 되돌린다
     work, vorigin = _monitor_layout(app)
 
     pet = Pet(DATA / "pet_state.json")
@@ -439,6 +447,7 @@ def main():
     world = World(work, tracker, dpr, 105 * args.scale)
     mixed_dpi = any(abs(s.devicePixelRatio() - dpr) > 0.01 for s in app.screens())
     brain = CatBrain(world, pet, field, args.scale)
+    brain.cursor_fn = lambda: (QCursor.pos().x(), QCursor.pos().y())          # 놀아주기(깃털): 고양이가 쫓아갈 마우스 커서 위치
     if photo:
         brain.hold_drop = 128 * args.scale          # 사진 고양이는 매달리면 키가 약 155 라서, 마우스가 목덜미 근처에 오게 한다
 
@@ -451,7 +460,8 @@ def main():
     menu.addAction(head_act)
     menu.addSeparator()
     act_feed = menu.addAction("🐟 밥 주기")
-    act_play = menu.addAction("🧶 놀아주기")
+    act_play = menu.addAction("🧶 놀아주기 (공)")
+    act_tease = menu.addAction("🦋 놀아주기 (깃털)")
     act_rest = menu.addAction("🛌 한쪽에서 쉬기")           # 일에 방해될 때: 구석으로 가서 얌전히 쉰다
     act_rest.setCheckable(True)
     menu.addSeparator()
@@ -506,8 +516,44 @@ def main():
         fill_app_menu()
 
     menu.aboutToShow.connect(on_menu_show)
+
+    # --- 메뉴 밖(허공·바탕화면·다른 창)을 눌러도 메뉴가 닫히게 한다 ---
+    # 고양이 창은 포커스를 가져가지 않는 창이라, 윈도우에서 메뉴가 바깥 클릭을 못 받아 안 닫히는 일이 있다.
+    # 메뉴가 열려 있는 동안 마우스 버튼이 '새로 눌린' 순간을 직접 지켜보고, 그 자리가 메뉴(하위 메뉴 포함) 밖이면 닫는다.
+    outside = QTimer()
+    outside.setInterval(30)
+    outside_state = {"down": False, "empty": 0}
+
+    def _mouse_down():
+        return any(win32api.GetAsyncKeyState(k) & 0x8000 for k in (0x01, 0x02, 0x04))        # 왼쪽·오른쪽·가운데 버튼
+
+    def check_outside():
+        pops = [w for w in app.topLevelWidgets() if isinstance(w, QMenu) and w.isVisible()]
+        if not pops:
+            outside_state["empty"] += 1
+            if outside_state["empty"] > 30:                     # 메뉴가 열리는 순간에는 아직 안 보일 수 있어 잠깐 기다린 뒤에 멈춘다
+                outside.stop()
+            return
+        outside_state["empty"] = 0
+        down = _mouse_down()
+        if down and not outside_state["down"]:                  # 방금 눌렀다 (메뉴를 연 그 클릭은 이미 눌려 있던 상태라 제외)
+            p = QCursor.pos()
+            if not any(w.frameGeometry().contains(p) for w in pops):
+                for w in reversed(pops):                        # 하위 메뉴부터 닫는다 (QApplication.closeAllPopups 는 이 상황에서 프로그램이 꺼져서 쓰지 않는다)
+                    w.close()
+        outside_state["down"] = down
+
+    def start_outside_watch():
+        outside_state["down"] = _mouse_down()
+        outside_state["empty"] = 0
+        outside.start()
+
+    outside.timeout.connect(check_outside)
+    menu.aboutToShow.connect(start_outside_watch)
+    menu.aboutToHide.connect(outside.stop)
     act_feed.triggered.connect(lambda _=False: feed_now())
     act_play.triggered.connect(lambda _=False: brain.command_play())
+    act_tease.triggered.connect(lambda _=False: brain.command_tease())
     act_kick.toggled.connect(lambda on: setattr(brain, "kick_enabled", on))
 
     def restore_icons():
@@ -519,6 +565,14 @@ def main():
 
     def cleanup():
         pet.save()
+        try:
+            feather.close()                 # 나비 커서를 켠 채로 끝나면 원래 커서로 되돌린다
+        except Exception:
+            pass
+        try:
+            sound.close()
+        except Exception:
+            pass
         try:
             guard.stop()                    # 폴더 감시 끄기
         except Exception:
@@ -567,6 +621,7 @@ def main():
     launcher = LauncherBubble(brain, settings, head_screen, lambda: world.areas, ICONS_DIR)
     tracker.add_ignore(launcher.hwnd)
     overlay.on_click = launcher.toggle
+    overlay.on_touch = lambda: sound.react()                 # 고양이를 누르거나 집어 올리면 냐옹 (meow_2s.mp3)
 
     def ensure_favicons():
         """등록한 웹 주소 중 사이트 아이콘(파비콘)이 아직 없는 것을 백그라운드에서 받아 온다 (실패하면 3일 뒤에 다시)."""
@@ -592,6 +647,7 @@ def main():
 
     # --- 캘린더 알림: 풍선 + 소리 + 스케줄러 ---
     sound = CatSound(ROOT / "assets", DATA)
+    sound.configure(settings.data["care"]["sound"])
     balloon = Balloon(head_screen, lambda: world.areas)
     tracker.add_ignore(balloon.hwnd)
     balloon.on_click = lambda: os.startfile(CALENDAR_URL)
@@ -999,7 +1055,7 @@ def main():
             settings_win[0].raise_()
             settings_win[0].activateWindow()
             return
-        dlg = SettingsDialog(overlay, settings, run_test, lambda: (scheduler.mark_past_done(), apply_mode(), guard.reload()), activity, show_raw, guard, show_alert)
+        dlg = SettingsDialog(overlay, settings, run_test, lambda: (scheduler.mark_past_done(), apply_mode(), guard.reload(), sound.configure(settings.data["care"]["sound"])), activity, show_raw, guard, show_alert)
         dlg.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         dlg.setWindowModality(Qt.WindowModality.NonModal)
         settings_win[:] = [dlg]
@@ -1062,6 +1118,7 @@ def main():
         if new == paused:
             return
         if new == "full":
+            brain.tease = None                                 # 전체 화면 앱이 덮으면 깃털 놀이는 접는다 (커서도 아래 프레임에서 되돌린다)
             launcher.close_now()
             balloon.close_now()
             notice.hide()
@@ -1079,6 +1136,21 @@ def main():
         log_text(DATA / "cat_error.log", "다시 시작 요청: " + reason)
         cleanup()
         app.exit(EXIT_RESTART)
+
+    def want_sound():
+        """지금 하는 행동에 맞는 소리 (이름, 사용자가 시킨 행동인가). 잠자기 1·2 → 골골(식빵 자세 3 은 뺌), 털실공·밥 먹기·종종걸음·나비잡기 → 채터링(달리기는 소리 없음), 꾹꾹이·꼬리 놀이·쓰다듬기 → 트릴."""
+        st, an = brain.state, brain.an.name
+        if st in (S.TEASE, S.PLAY, S.EAT):
+            return "chatter", True
+        if st is S.STROKE:
+            return "trill", True
+        if st is S.SLEEP and an in ("sleep_curl", "sleep_side"):        # 식빵 자세로 턱 괴고 자는 sleep_nap 은 골골 소리를 내지 않는다
+            return "golgol", False
+        if st in (S.KNEAD, S.TAILPLAY):
+            return "trill", False
+        if an == "trot" and st in (S.WALK, S.KICK_WALK):               # 종종걸음만 (달리기 run 은 소리 없음)
+            return "chatter", False
+        return None, False
 
     def frame_body():
         nonlocal last, n, next_power, next_beat, next_check
@@ -1105,6 +1177,15 @@ def main():
         if not args.no_autopause and now >= next_power:
             next_power = now + 1.0
             set_paused(_power_state(overlay.hwnd))
+        want_toy = brain.tease_active()     # 깃털 놀이 중이면 마우스 커서를 나비로, 끝나면(어떤 이유로든) 곧바로 되돌린다
+        if want_toy and not feather.active:
+            feather.start()
+        elif feather.active and not want_toy:
+            feather.stop()
+        feather.tick(mono)
+        sound.tick(mono)                    # 냐옹을 첫 한 번만 자르고 두 번째 냐옹을 낸다
+        w_name, w_user = want_sound()       # 행동 소리: 행동을 시작할 때 한 번만 틀고, 행동이 끝나면 바로 끊는다 (잠자는 시간·멈춘 동안은 안 낸다)
+        sound.sync(w_name, mono, w_user, allowed=(not paused and brain.mode != "night"))
         activity.tick(mono)                 # 5초에 한 번 맨 앞 창을 기록 (설정에서 켠 경우만)
         scheduler.tick(mono)                # 정해 둔 알림 작업은 자리를 비웠거나 전체 화면 앱이 떠 있어도 제 시각에 돈다 (결과 보여 주기는 돌아온 뒤: deliver)
         if paused:

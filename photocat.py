@@ -77,6 +77,9 @@ DRIFT_FPS = 1.6                           # 옮겨 갈 때의 속도 (초당 컷
 _PINGPONG = {"stand": ("stand", 1.2), "sit": ("sit", 1.0), "sit_tilt": ("sit_tilt", 1.0), "loaf": ("loaf", 0.9),
              "sleep_curl": ("sleep_curl", 0.7), "sleep_side": ("sleep_side", 0.7), "sleep_nap": ("sleep_nap", 0.7),
              "hold": ("hold", 2.5), "wiggle": ("wiggle", 5.0)}
+# 왔다갔다 할 컷 범위(처음~끝 컷 번호). 웅크리고 자는 사진은 0·1번 컷만 머리가 왼쪽이고 2~5번은 오른쪽이라,
+# 전부 오가면 자는 내내 고양이가 몸을 뒤집는 것처럼 보인다 → 같은 방향인 2~5번 컷만 쓴다.
+_PP_RANGE = {"sleep_curl": (2, 5)}
 # 한 바퀴 계속 도는 동작 (초당 컷 수)
 # (몸단장은 천천히, 긁기·꾹꾹이·뒷발킥처럼 원래 빠른 동작은 상대적으로 빠르게)
 _LOOP = {"sleep_doze": ("sleep_doze", 0.8), "groom": ("groom", 1.9), "groom_leg": ("groom_leg", 1.6),
@@ -220,10 +223,13 @@ class PhotoRig:
             return name, self._drift_pos(name, t), False
         if name in _PINGPONG:
             key, fps = _PINGPONG[name]
-            return key, _pingpong(t * fps, 0, self._n(key) - 1), False
+            lo, hi = _PP_RANGE.get(key, (0, self._n(key) - 1))
+            return key, _pingpong(t * fps, lo, hi), False
         if name in _LOOP:
             key, fps = _LOOP[name]
             return key, (t * fps) % self._n(key), True
+        if name == "leap":                                           # 깃털 놀이의 뛰어오르기: 컷 번호를 두뇌가 직접 정한다 (0 웅크림, 1 박차기, 2 쭉 뻗기, 4·5 앞발 들기)
+            return "jump_up", float(an.param.get("f", 0)), False
         if name == "crouch":
             return "crouch", 2.0 + 3.0 * _smooth(t / 0.28), False
         if name == "jump":
@@ -339,7 +345,7 @@ class PhotoRig:
         p.translate(ox, oy)
         if face < 0:
             p.scale(-1.0, 1.0)
-        grounded = brain.state.name not in ("JUMP", "KICK_LEAP", "FALL", "HELD")
+        grounded = not getattr(brain, "airborne", brain.state.name in ("JUMP", "KICK_LEAP", "FALL", "HELD"))
         sink = self.sinks.get(key, SINK) if grounded else 0.0
         if room is not None:
             sink = max(0.0, min(sink, room - 1.0))

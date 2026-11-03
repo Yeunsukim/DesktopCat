@@ -697,6 +697,24 @@ class SettingsDialog(QDialog):
         g4l.addLayout(srow)
         g4l.addWidget(_label("‘한쪽에서 쉬기’를 켜면 이 구석으로 간다냥.", "help"))
         lay.addWidget(g4)
+
+        g5, g5l = _group("고양이 소리")
+        snd = c.get("sound", {})
+        self.sound_on = QCheckBox("행동할 때 소리 내기 (잠잘 때 골골, 놀거나 밥 먹을 때 채터링, 꾹꾹이·쓰다듬기 때 트릴)")
+        self.sound_on.setChecked(bool(snd.get("enabled", True)))
+        g5l.addWidget(self.sound_on)
+        vrow = QHBoxLayout()
+        vrow.addWidget(QLabel("음량"))
+        self.sound_vol = QSpinBox()
+        self.sound_vol.setRange(0, 100)
+        self.sound_vol.setSingleStep(5)
+        self.sound_vol.setSuffix(" %")
+        self.sound_vol.setValue(int(snd.get("volume", 80) or 0))
+        vrow.addWidget(self.sound_vol)
+        vrow.addStretch(1)
+        g5l.addLayout(vrow)
+        g5l.addWidget(_label("행동을 시작할 때 한 번만 내고, 끝나면 바로 멈춘다냥. 잠자는 시간에는 안 낸다옹. 알림 ‘냐옹’도 이 음량을 따른다냥.", "help"))
+        lay.addWidget(g5)
         lay.addStretch(1)
         return page
 
@@ -717,6 +735,7 @@ class SettingsDialog(QDialog):
         c["meals"] = {"enabled": self.meals_on.isChecked(), "times": times}
         c["play"] = {"enabled": self.play_on.isChecked(), "every_min": int(self.play_every.value())}
         c["corner"] = {"side": self.corner_side.currentData() or "right"}
+        c["sound"] = {"enabled": self.sound_on.isChecked(), "volume": int(self.sound_vol.value())}
         self.settings.save()
 
     # ------------------------------------------------------------ 경비 탭 (랜섬웨어 경보 · 잡은 쥐 기록)

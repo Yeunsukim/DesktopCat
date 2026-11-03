@@ -68,7 +68,7 @@
     <tr><td>Python 3.14 (3.10 이상이면 동작)</td><td>전체</td><td>개발·시험은 3.14에서 했어요. <code>X | None</code> 타입 표기를 써서 3.10 이상이 필요해요.</td></tr>
     <tr><td>PyQt6</td><td>창·그리기·메뉴·트레이·타이머</td><td>본체의 유일한 GUI 라이브러리. 글꼴 엔진은 GDI로 지정(메모리 약 70MB 절약).</td></tr>
     <tr><td>pywin32</td><td>창 열거·뮤텍스·이벤트·DPAPI·폴더 감시·프로세스 정보</td><td><code>win32gui, win32api, win32con, win32event, win32process, win32file, win32crypt, pywintypes</code></td></tr>
-    <tr><td>numpy</td><td>털색 바꾸기(coats), 울음소리 합성(catsound), 사진 컷 처리</td><td>설치본에 포함돼요.</td></tr>
+    <tr><td>numpy</td><td>털색 바꾸기(coats), 예비 울음소리 합성(catsound), 사진 컷 처리</td><td>설치본에 포함돼요.</td></tr>
     <tr><td>icalendar · recurring-ical-events · tzdata</td><td>캘린더 일정 해석(반복 일정·시간대)</td><td>보조 프로세스 안에서만 불러와요.</td></tr>
     <tr><td>표준 라이브러리만</td><td>지킴이, 네트워크(urllib), 메일(imaplib), 파일 저장(json)</td><td>지킴이는 PyQt를 불러오지 않아 아주 튼튼해요.</td></tr>
     <tr><td>PowerShell (윈도우 기본)</td><td>디지털 서명 확인, 예약 작업·서비스 목록</td><td>점검 때만 잠깐 실행.</td></tr>
@@ -163,7 +163,7 @@ tzdata
     <div class="step" data-title="그리개 준비"><p>기본 스킨 <code>sprite</code> 이면 <code>PhotoRig(assets/sprites, 털색, dpr, scale)</code> — <code>sprites.json</code> 을 읽고 33개 동작 폴더가 모두 있는지 확인한다(없으면 예외 → 로그 남기고 뼈대 고양이 <code>CatRig</code> 로 계속). <code>WindowTracker(dpr)</code> 생성.</p></div>
     <div class="step" data-title="바탕화면 아이콘 연결"><p><code>--no-icons</code> 가 아니면 <code>DesktopIcons(icons_backup.json)</code>. <code>attach()</code> 가 성공하면 <code>backup()</code> 으로 현재 아이콘 위치를 저장하고 <code>set_snap(False)</code>(격자 정렬 해제). <code>IconField</code> 가 이를 감싼다. 자동 정렬이 켜져 있으면 아이콘 차기를 끈다.</p></div>
     <div class="step" data-title="두뇌 만들기"><p><code>World(areas, tracker, dpr, 105*scale)</code> → <code>CatBrain(world, pet, field, scale)</code>. 사진 고양이는 매달리면 키가 커서 <code>brain.hold_drop = 128*scale</code>.</p></div>
-    <div class="step" data-title="메뉴·트레이"><p>우클릭 메뉴(밥 주기·놀아주기·한쪽에서 쉬기·고양이 색·앱 등록·앱 지우기·설정·아이콘 차기·아이콘 원래대로·종료)를 만들고 <code>QSystemTrayIcon</code> 에 연결한다. 종료는 <code>cleanup()</code>(pet.save · guard.stop · activity.flush · icons.shutdown) 후 <code>app.quit()</code>.</p></div>
+    <div class="step" data-title="메뉴·트레이"><p>우클릭 메뉴(밥 주기·놀아주기(공)·놀아주기(깃털)·한쪽에서 쉬기·고양이 색·앱 등록·앱 지우기·설정·아이콘 차기·아이콘 원래대로·종료)를 만들고 <code>QSystemTrayIcon</code> 에 연결한다. 종료는 <code>cleanup()</code>(pet.save · guard.stop · activity.flush · icons.shutdown) 후 <code>app.quit()</code>.</p></div>
     <div class="step" data-title="창들 만들기"><p><code>Overlay</code>(고양이 투명 창), <code>LauncherBubble</code>(반원 런처), <code>Balloon</code>(여러 줄 풍선), <code>NoticeWindow</code>(소식 창)를 만들고 <b>모두 <code>tracker.add_ignore(hwnd)</code></b> — 고양이가 자기 창 위에 올라서지 않게. 8초 뒤 <code>ensure_favicons()</code> 예약.</p></div>
     <div class="step" data-title="알림·루틴·경비 연결"><p><code>Settings(DATA)</code>, <code>ActivityLog</code>, 작업 함수 5개(<code>calendar·news·yesterday·hourly·gemini_ping</code>)를 <code>Scheduler</code> 에 등록. <code>Routine(settings)</code>, <code>scheduler.quiet = routine.is_night</code>. <code>SecurityGuard.start()</code> 로 폴더 감시·점검 스레드 시작.</p></div>
     <div class="step" data-title="타이머 시작"><p>하트비트(<code>Heartbeat()</code>)와 상태 변수를 준비하고 <code>QTimer(PreciseTimer)</code> 를 <code>FRAME_MS=42</code> 로 시작 → <code>app.exec()</code>. 이제부터 <code>frame()</code> 이 24fps 로 불린다. (다음 장)</p></div>
@@ -608,7 +608,7 @@ def _pick(key, idx, wrap):
   <h2>행동 <em>두뇌</em> — 상태 기계와 물리</h2>
   <p class="lead"><code>behavior.py</code> 가 고양이의 "무엇을 할까"를 정해요. 구조는 세 층이에요. <b>흐름(flow.py)</b>이 다음 행동 후보와 개연성을 주고, <b>상태 기계(CatBrain)</b>가 그 행동을 매 프레임 진행시키고, <b>월드(World)</b>가 바닥과 창 윗변을 알려 줘요. 좌표는 모두 <b>논리 픽셀</b>(Qt 좌표), 고양이 위치는 <code>(x = 가로 중심, feet = 발바닥 y)</code> 예요.</p>
 
-  <h3>상태(<code>S</code>) 27가지</h3>
+  <h3>상태(<code>S</code>) 28가지</h3>
   <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>묶음</th><th>상태</th><th>끝나는 조건 / 다음</th></tr></thead><tbody>
     <tr><td>쉬기</td><td><code>IDLE SIT SITTILT LOAF</code></td><td><code>t ≥ dur</code> → <code>_after_rest()</code> → <code>_pick_next()</code>. 런처가 열려 있으면 SITTILT 는 계속 기다림</td></tr>
     <tr><td>잠</td><td><code>SLEEP</code></td><td>같음. 깨면 "후아암~ 누구냥.." 말풍선(밤 모드가 아닐 때)</td></tr>
@@ -617,8 +617,9 @@ def _pick(key, idx, wrap):
     <tr><td>이동</td><td><code>WALK RUN SNEAK</code></td><td><code>t ≥ dur</code> 후 서서히 멈춤(최대 0.6초) → <code>_pick_next</code>. WALK 는 <code>gait</code>(WALK/RUN)로 걷기·종종걸음 구분</td></tr>
     <tr><td>공중</td><td><code>JUMP KICK_LEAP FALL</code></td><td>도약 보간 끝 → <code>_land</code> / 발판이 없으면 FALL</td></tr>
     <tr><td>아이콘 차기</td><td><code>KICK_WALK KICK_LEAP KICK_HIT</code></td><td>KICK_HIT 0.3초에 아이콘 발사, 0.9초에 끝</td></tr>
-    <tr><td>사용자와</td><td><code>EAT STROKE PLAY HELD</code></td><td>EAT 4.5초 / STROKE: 마지막 쓰다듬은 뒤 1.3초 / PLAY: 단계 끝 / HELD: 놓을 때까지</td></tr>
+    <tr><td>사용자와</td><td><code>EAT STROKE PLAY HELD</code></td><td>EAT 10초(<code>EAT_SEC</code>) / STROKE: 마지막 쓰다듬은 뒤 1.3초 / PLAY: 단계 끝 / HELD: 놓을 때까지</td></tr>
     <tr><td>경비</td><td><code>HUNT</code></td><td>spot → chase → pounce → proud (쥐 잡기 연출)</td></tr>
+    <tr><td>깃털 놀이</td><td><code>TEASE</code></td><td>10초(<code>TEASE_SEC</code>). 단계 run → (crouch → air → land | swat | wiggle → pounce → bat). 아래 "깃털 놀이" 참고</td></tr>
   </tbody></table></div>
 
   <h3><code>CatBrain.update(dt)</code> — 한 프레임에 하는 일</h3>
@@ -704,7 +705,7 @@ def solve(kinds, target, iters=400):
   <h3>이동·물리 상수</h3>
   <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>이름</th><th>값</th><th>뜻</th></tr></thead><tbody>
     <tr><td><code>G</code></td><td>1800</td><td>중력 가속도 (px/s²), 실제로는 <code>G × scale</code></td></tr>
-    <tr><td><code>V_WALK · V_TROT · V_RUN · V_SNEAK</code></td><td>70 · 150 · 300 · 38</td><td>기준 크기(scale=1) 속도 px/s. 배고프면 걷기·종종걸음 × 0.8</td></tr>
+    <tr><td><code>V_WALK · V_TROT · V_RUN · V_SNEAK</code></td><td>70 · 150 · 300 · 38</td><td>기준 크기(scale=1) 속도 px/s. 배고프면 걷기·종종걸음 × 0.8. 여기에 동작 시간 배율 <code>MOTION_SPEED</code> 1.10(10% 빠르게)이 곱해집니다 — <code>update()</code> 에서 <code>dt</code> 를 1.1배 하되 나비잡기와 종종걸음은 1.0배, pet(배고픔·기분)은 실제 시간. 웅크리고 자는 컷은 2~5번만 오감(<code>photocat._PP_RANGE</code>). 시험 <code>tools/test_motion.py</code></td></tr>
     <tr><td><code>ACCEL_T · DECEL_T · STOP_MAX</code></td><td>0.35 · 0.30 · 0.6 초</td><td>출발 가속 / 멈춤 감속 / 멈추는 데 쓰는 최대 시간</td></tr>
     <tr><td>낙하 공기저항</td><td><code>vx *= exp(−1.5·dt)</code></td><td>수평 속도 감쇠</td></tr>
     <tr><td><code>jump_targets</code></td><td>높이 40~620, 가로 ≤ 380</td><td>뛰어오를 수 있는 더 높은 창 (창 폭 ≥ 100, 가려지지 않은 곳)</td></tr>
@@ -731,6 +732,26 @@ def solve(kinds, target, iters=400):
     <li><b>서 있는 창이 사라지거나 움직이면</b> <code>_stand()</code> 가 매 프레임 창 사각형을 다시 읽어 발바닥 높이를 따라가고, 가로 범위를 벗어나면 <code>FALL</code>.</li>
     <li><b>낙하</b> <code>vy += G·scale·dt</code>; 아래로 떨어지는 동안 <code>surfaces_below</code> 중 첫 발판을 통과하는 프레임에 <code>_land(top, hwnd)</code>. 새 바닥이 위로 올라와 고양이가 바닥 아래에 있게 되면 즉시 착지.</li>
   </ul>
+
+  <h3>깃털 놀이 — 마우스 커서를 쫓는 두뇌 (<code>S.TEASE</code>)</h3>
+  <p>메뉴 <b>놀아주기 (깃털)</b> → <code>brain.command_tease()</code>. 두뇌는 마우스 위치를 <code>brain.cursor_fn()</code> (cat.py 가 <code>QCursor.pos()</code> 로 연결)으로만 알고, 커서 모양은 모릅니다. cat.py 가 매 프레임 <code>brain.tease_active()</code> 를 보고 <code>FeatherCursor</code> 를 켜고 끕니다 — <b>어떤 이유로 놀이가 끝나도</b>(집어 올림·경비 경보·전체 화면·시간 종료) 같은 한 곳에서 커서가 되돌아옵니다.</p>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>상황</th><th>하는 일</th><th>값</th></tr></thead><tbody>
+    <tr><td>쫓기 (run)</td><td>목표 x 로 비례 제어: <code>v = min(VMAX, 7·(거리−9) + 30)</code>, 가속 <code>TEASE_ACC</code>. 목표를 지나치지 않고, 걸음 단계(stand·walk·trot·run)는 올라갈 때와 내려갈 때 경계를 달리해 깜빡이지 않게</td><td>VMAX 420 px/s · ACC 3200 px/s²</td></tr>
+    <tr><td>동작 시작 조건</td><td>가로 거리 ≤ 34(이미 하는 중이면 58, 떨림 방지) 이고 속도 &lt; 70</td><td>k = scale/0.8</td></tr>
+    <tr><td>나비가 높다 (r ≥ 100k)</td><td><code>crouch</code> 0.11초 → <code>air</code>: 높이 <code>h = clamp(r − 110k, 18k, 430k)</code>, 중력 <code>g = max(3000k, 8h/0.85²)</code> (높이 뛸수록 세게 → 어느 높이든 공중에 약 0.85초), 초속 <code>√(2·g·h)</code>. 공중에서도 x 를 나비 쪽으로 따라간다. 컷: 박차기(1) → 쭉 뻗기(2, 꼭대기) → 앞발 들기(4) → 내려오며(5)</td><td>REACH_AIR 125 · LEAP_MAX 430 (앞발까지 약 555 = 화면 가운데)</td></tr>
+    <tr><td>앉은 키 높이 (25k ≤ r &lt; 100k)</td><td><code>swat</code> 0.74초 (앉아서 앞발로 툭툭)</td><td></td></tr>
+    <tr><td>바닥 근처 (r &lt; 25k)</td><td><code>wiggle</code> 0.24초 → <code>pounce</code> 0.26초(아치 22k) → <code>bat</code> 0.6초</td><td></td></tr>
+    <tr><td>나비가 높고 아이콘이 가까이 (r ≥ 150k)</td><td><code>_tease_pick_icon</code>: 바닥에서 30~230k 위, 나비까지 50~555k, 가로 120k 안, 창에 안 가린 아이콘을 고른다. 그 아래로 달려가 <code>step</code>(0.1초 웅크림 → 포물선 hop)으로 아이콘 윗면에 올라 <code>tz["icon"]</code> 로 기억. 아이콘 위에서는 발판이 아이콘이라 <code>_tease_stand</code> 가 발 높이를 아이콘 윗면으로 맞추고, 위에 또 아이콘이 있으면 같은 방법으로 계단처럼 한 칸 더. 아이콘에서 뛸 때는 x 를 자유롭게 날려 나비를 따라가고, 아이콘 밖에 내리면 떨어져 바닥에서 다시 쫓는다. 0.6초마다 아이콘이 그 자리에 있는지 확인(옮겨졌으면 떨어짐)</td><td>아이콘 위치는 3초에 한 번 다시 읽음</td></tr>
+    <tr><td>너무 높다 (r &gt; 580k)</td><td><code>_tease_climb</code>: <code>jump_targets</code> 중 나비에 가장 가까운 창 윗변으로 JUMP. 착지(<code>_land</code>)하면 놀이를 이어 감</td><td>1.2초에 한 번 시도</td></tr>
+    <tr><td>창 위인데 나비가 창 밖 아래</td><td>가까운 가장자리로 가서 <code>_start_fall</code>(뛰어내림), 착지하면 이어 감. 나비가 창 안쪽이면 윗변에서 내려다보며 논다</td><td>110k 이상 아래일 때</td></tr>
+  </tbody></table></div>
+  <ul>
+    <li><b>끝</b> <code>end = 시작 + 10초</code>. 뛰는 중이면 내려앉은 뒤(최대 한 동작) <code>_end_tease</code>: <code>pet.play()</code>(기분 +20), 앉아서 쉼, <code>on_played()</code>.</li>
+    <li><b>끼어들기 처리</b> <code>grab()</code>·<code>hunt()</code>·<code>reset()</code> 은 <code>tease=None</code>, 전체 화면은 <code>set_paused("full")</code> 에서 비움. 놀이 중에는 <code>_busy()</code> 가 참이라 쓰다듬기·런처·밥 주기는 대기(pending)하거나 무시.</li>
+    <li><b>그리기</b> 새 동작 이름 <code>leap</code>(컷 번호 <code>f</code> 를 두뇌가 직접 정함: <code>jump_up</code> 컷 0·1·2·4·5). 공중이면 <code>brain.airborne</code> 로 그림자·바닥 걸치기를 뺀다.</li>
+    <li><b>시험</b> <code>python tools/test_tease.py</code>: 가짜 커서·가짜 시계로 추적 오차, 최고 속도, 뛴 높이가 커서에 닿는지, 끝나는 때, 창 오르내리기, 끼어들기를 확인.</li>
+  </ul>
+  <div class="callout tip"><b>나비 낚싯대 (<code>feather_toy.py</code>)</b> 윈도우 커서는 점 그림만 받고 '마우스 포인터 크기' 설정이 크면 한 번 더 확대돼 거칠어지므로, 나비는 <b>마우스를 따라다니는 투명 창</b>(클릭 통과·포커스 안 가져감·항상 위)에 <code>QPainter</code> 로 <b>벡터</b>로 그립니다(10ms 간격으로 <code>QCursor.pos()</code> 를 따라가고, 날개 6장면을 0.07초마다 바꿔 퍼덕임, 화면 배율에 맞춰 한 번만 그려 둠). 진짜 커서(화살표·I 빔·손가락)는 <code>SetSystemCursor</code> 로 <b>투명 커서</b>로 바꿔 숨깁니다. 되돌릴 때는 <code>SystemParametersInfo(SPI_SETCURSORS)</code> 로 사용자가 정해 둔 커서를 레지스트리에서 다시 불러와서 <b>사용자 설정을 건드리지 않습니다</b>. 켜 둔 동안 데이터 폴더에 <code>cursor_swapped.flag</code> 를 두고, 갑자기 꺼졌으면 <b>다음 시작 때</b> <code>recover()</code> 가 되돌립니다.</div>
 
   <h3>쓰다듬기·집기·런처 생각하기·쥐 잡기</h3>
   <div class="grid g2">
@@ -939,7 +960,7 @@ def call(kind, **params):
   <div class="grid g3">
     <div class="card"><h4>풍선 <code>Balloon</code></h4><p>포커스를 가져가지 않는 투명 최상위 창. 글은 한 번만 그림으로 만들어 둠. 폭 260, 이모티콘은 <code>cute.strip_emoji</code> 로 제거. 표시 시간 = <code>min(20, 8 + 0.12×글자수 + 줄 수)</code>초, 마우스를 올려 두면 +3초씩 연장. <code>enqueue</code> 는 앞 풍선이 닫힌 뒤(대기열 6개). 클릭하면 닫고 <code>on_click</code>.</p></div>
     <div class="card"><h4>소식 창 <code>NoticeWindow</code></h4><p>Markdown 을 <code>QTextBrowser</code> 로. 링크는 http/https 만(file:// 로 프로그램이 실행되는 일을 막음). 자동으로 뜰 때는 포커스를 안 가져가고(<code>WA_ShowWithoutActivating</code>) 잠깐 TOPMOST 로 올렸다 풀어 맨 위에 둠. 직접 시험이면 활성화.</p></div>
-    <div class="card"><h4>소리 <code>CatSound</code></h4><p><code>assets/meow.wav</code> 가 있으면 사용, 없으면 numpy 로 "냐~옹"을 합성해 데이터 폴더에 한 번 저장. 별도 스레드에서 <code>winsound</code> 로 재생(0.2초쯤 걸려 화면 스레드에서 안 함). <code>meow(2)</code> = "냐옹~ 냐옹~".</p></div>
+    <div class="card"><h4>소리 <code>CatSound</code></h4><p><b>다른 PC 대비</b>: mp3 는 MCI 로 틀고, MCI 가 못 열거나 틀다가 오류를 내면 같은 이름의 wav 를 <code>_MemPlayer</code>(메모리에서 읽어 <code>PlaySound</code>, 음량은 데이터에 곱함, 길이로 재생 중 판단)로 소리마다 대신 틀어요(<code>_Router</code>). 이유는 <code>sound_log.txt</code> 에 기록. wav 는 <code>tools/make_sound_wavs.py</code> 가 mp3 에서 만든 모노 파일. <code>assets/sounds/*.mp3</code> 를 윈도우 MCI(<code>winmm.mciSendStringW</code>, <code>open … type mpegvideo alias</code> → <code>play 이름 from 0</code> / <code>stop</code>)로 틀어서 별도 라이브러리가 없어요. 틀기는 기다리지 않고 바로 돌아오고, 시작할 때 한 번만 열어 둬요(화면 스레드에서만 호출). <code>meow()</code> = meow.mp3 <b>전체(약 10초)</b>를 끝까지 한 번(졸라대기·1시간 쉬기·알림·경보 모두. 나는 중이면 <code>status … mode</code> 로 확인해 겹치지 않음), <code>react()</code> = meow_2s.mp3 전체(고양이를 <b>누르거나 집어 올릴 때</b>: <code>Overlay.on_touch</code>). <b>행동 소리</b>(<code>sync</code>): 잠자기 1·2 → golgol(식빵 자세 3 은 뺌), 털실공·밥 먹기·종종걸음·나비잡기 → chatter(달리기는 소리 없음), 꾹꾹이·꼬리 놀이·쓰다듬기 → trill. <b>냐옹이 우선</b>: 냐옹이 나는 동안에는 행동 소리를 내지 않고(<code>_meow_busy</code>), 틀던 소리는 끊고, 냐옹 중에 시작한 행동의 소리는 늦게 틀지 않아요. 행동이 시작될 때 <b>한 번만</b> 틀고 행동이 끝나면 남은 소리를 <b>바로 끊어요</b>(되풀이 없음). 저절로 하는 행동은 0.3초 이상 이어질 때, 소리마다 쉬는 시간(60·10·12초). 잠자는 시간·멈춘 동안·설정에서 끄면 안 내요. mp3 가 없으면 numpy 로 합성한 냐옹(wav)을 <code>winsound</code> 로.</p></div>
   </div>
   <div class="callout warn"><b>말투 규칙</b> 고양이가 직접 하는 말(풍선 안내·설정 도움말)은 <code>~냥/~옹</code>. 하지만 <b>밖에서 가져온 정보(날씨·뉴스·시세·요약)와 경보 문구는 또렷한 존댓말</b>이에요. 정보가 말투에 묻히지 않게요.</div>
 </section>
@@ -1336,6 +1357,7 @@ def classify_process(path, sig_status, age_days=None):
     <tr><td>경보 창/풍선의 아이콘이 파이썬 모양</td><td>작업 표시줄이 프로세스(pythonw.exe) 기준으로 묶음</td><td><code>SetCurrentProcessExplicitAppUserModelID("DesktopCat.CatSecretary")</code> + 창/트레이 아이콘 설정</td></tr>
     <tr><td>삭제 프로그램이 안 끝남</td><td>마지막 안내창이 다른 창 뒤에 숨어 클릭을 기다림</td><td>안내를 별도 프로세스(wscript)로, 항상 맨 앞 플래그</td></tr>
     <tr><td>메모리가 100MB 이상 큼</td><td>Qt 글꼴 엔진, 인터넷 라이브러리</td><td><code>QT_QPA_PLATFORM=windows:fontengine=gdi</code>, 인터넷/캘린더는 보조 프로세스</td></tr>
+    <tr><td>마우스 커서가 나비로 남아 있음 (놀이 중 고양이가 죽음)</td><td>시스템 커서를 투명으로 바꾼 채로 끝남 (커서 그림은 '마우스 포인터 크기'에 따라 확대돼 크고 거칠어져서, 나비는 따라다니는 투명 창에 벡터로 그림)</td><td>바꾸는 동안 표식 파일, 다음 시작에서 <code>SPI_SETCURSORS</code> 로 되돌림, 놀이 끝은 한 곳(프레임 루프)에서만 판단</td></tr>
     <tr><td>설정 저장 중 꺼지면 파일이 깨짐</td><td>직접 덮어쓰기</td><td>임시 파일 → <code>os.replace</code></td></tr>
   </tbody></table></div>
 

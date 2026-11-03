@@ -2,7 +2,7 @@
   <h2>행동 <em>두뇌</em> — 상태 기계와 물리</h2>
   <p class="lead"><code>behavior.py</code> 가 고양이의 "무엇을 할까"를 정해요. 구조는 세 층이에요. <b>흐름(flow.py)</b>이 다음 행동 후보와 개연성을 주고, <b>상태 기계(CatBrain)</b>가 그 행동을 매 프레임 진행시키고, <b>월드(World)</b>가 바닥과 창 윗변을 알려 줘요. 좌표는 모두 <b>논리 픽셀</b>(Qt 좌표), 고양이 위치는 <code>(x = 가로 중심, feet = 발바닥 y)</code> 예요.</p>
 
-  <h3>상태(<code>S</code>) 27가지</h3>
+  <h3>상태(<code>S</code>) 28가지</h3>
   <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>묶음</th><th>상태</th><th>끝나는 조건 / 다음</th></tr></thead><tbody>
     <tr><td>쉬기</td><td><code>IDLE SIT SITTILT LOAF</code></td><td><code>t ≥ dur</code> → <code>_after_rest()</code> → <code>_pick_next()</code>. 런처가 열려 있으면 SITTILT 는 계속 기다림</td></tr>
     <tr><td>잠</td><td><code>SLEEP</code></td><td>같음. 깨면 "후아암~ 누구냥.." 말풍선(밤 모드가 아닐 때)</td></tr>
@@ -11,8 +11,9 @@
     <tr><td>이동</td><td><code>WALK RUN SNEAK</code></td><td><code>t ≥ dur</code> 후 서서히 멈춤(최대 0.6초) → <code>_pick_next</code>. WALK 는 <code>gait</code>(WALK/RUN)로 걷기·종종걸음 구분</td></tr>
     <tr><td>공중</td><td><code>JUMP KICK_LEAP FALL</code></td><td>도약 보간 끝 → <code>_land</code> / 발판이 없으면 FALL</td></tr>
     <tr><td>아이콘 차기</td><td><code>KICK_WALK KICK_LEAP KICK_HIT</code></td><td>KICK_HIT 0.3초에 아이콘 발사, 0.9초에 끝</td></tr>
-    <tr><td>사용자와</td><td><code>EAT STROKE PLAY HELD</code></td><td>EAT 4.5초 / STROKE: 마지막 쓰다듬은 뒤 1.3초 / PLAY: 단계 끝 / HELD: 놓을 때까지</td></tr>
+    <tr><td>사용자와</td><td><code>EAT STROKE PLAY HELD</code></td><td>EAT 10초(<code>EAT_SEC</code>) / STROKE: 마지막 쓰다듬은 뒤 1.3초 / PLAY: 단계 끝 / HELD: 놓을 때까지</td></tr>
     <tr><td>경비</td><td><code>HUNT</code></td><td>spot → chase → pounce → proud (쥐 잡기 연출)</td></tr>
+    <tr><td>깃털 놀이</td><td><code>TEASE</code></td><td>10초(<code>TEASE_SEC</code>). 단계 run → (crouch → air → land | swat | wiggle → pounce → bat). 아래 "깃털 놀이" 참고</td></tr>
   </tbody></table></div>
 
   <h3><code>CatBrain.update(dt)</code> — 한 프레임에 하는 일</h3>
@@ -98,7 +99,7 @@ def solve(kinds, target, iters=400):
   <h3>이동·물리 상수</h3>
   <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>이름</th><th>값</th><th>뜻</th></tr></thead><tbody>
     <tr><td><code>G</code></td><td>1800</td><td>중력 가속도 (px/s²), 실제로는 <code>G × scale</code></td></tr>
-    <tr><td><code>V_WALK · V_TROT · V_RUN · V_SNEAK</code></td><td>70 · 150 · 300 · 38</td><td>기준 크기(scale=1) 속도 px/s. 배고프면 걷기·종종걸음 × 0.8</td></tr>
+    <tr><td><code>V_WALK · V_TROT · V_RUN · V_SNEAK</code></td><td>70 · 150 · 300 · 38</td><td>기준 크기(scale=1) 속도 px/s. 배고프면 걷기·종종걸음 × 0.8. 여기에 동작 시간 배율 <code>MOTION_SPEED</code> 1.10(10% 빠르게)이 곱해집니다 — <code>update()</code> 에서 <code>dt</code> 를 1.1배 하되 나비잡기와 종종걸음은 1.0배, pet(배고픔·기분)은 실제 시간. 웅크리고 자는 컷은 2~5번만 오감(<code>photocat._PP_RANGE</code>). 시험 <code>tools/test_motion.py</code></td></tr>
     <tr><td><code>ACCEL_T · DECEL_T · STOP_MAX</code></td><td>0.35 · 0.30 · 0.6 초</td><td>출발 가속 / 멈춤 감속 / 멈추는 데 쓰는 최대 시간</td></tr>
     <tr><td>낙하 공기저항</td><td><code>vx *= exp(−1.5·dt)</code></td><td>수평 속도 감쇠</td></tr>
     <tr><td><code>jump_targets</code></td><td>높이 40~620, 가로 ≤ 380</td><td>뛰어오를 수 있는 더 높은 창 (창 폭 ≥ 100, 가려지지 않은 곳)</td></tr>
@@ -125,6 +126,26 @@ def solve(kinds, target, iters=400):
     <li><b>서 있는 창이 사라지거나 움직이면</b> <code>_stand()</code> 가 매 프레임 창 사각형을 다시 읽어 발바닥 높이를 따라가고, 가로 범위를 벗어나면 <code>FALL</code>.</li>
     <li><b>낙하</b> <code>vy += G·scale·dt</code>; 아래로 떨어지는 동안 <code>surfaces_below</code> 중 첫 발판을 통과하는 프레임에 <code>_land(top, hwnd)</code>. 새 바닥이 위로 올라와 고양이가 바닥 아래에 있게 되면 즉시 착지.</li>
   </ul>
+
+  <h3>깃털 놀이 — 마우스 커서를 쫓는 두뇌 (<code>S.TEASE</code>)</h3>
+  <p>메뉴 <b>놀아주기 (깃털)</b> → <code>brain.command_tease()</code>. 두뇌는 마우스 위치를 <code>brain.cursor_fn()</code> (cat.py 가 <code>QCursor.pos()</code> 로 연결)으로만 알고, 커서 모양은 모릅니다. cat.py 가 매 프레임 <code>brain.tease_active()</code> 를 보고 <code>FeatherCursor</code> 를 켜고 끕니다 — <b>어떤 이유로 놀이가 끝나도</b>(집어 올림·경비 경보·전체 화면·시간 종료) 같은 한 곳에서 커서가 되돌아옵니다.</p>
+  <div class="tbl-wrap"><table class="tbl fit"><thead><tr><th>상황</th><th>하는 일</th><th>값</th></tr></thead><tbody>
+    <tr><td>쫓기 (run)</td><td>목표 x 로 비례 제어: <code>v = min(VMAX, 7·(거리−9) + 30)</code>, 가속 <code>TEASE_ACC</code>. 목표를 지나치지 않고, 걸음 단계(stand·walk·trot·run)는 올라갈 때와 내려갈 때 경계를 달리해 깜빡이지 않게</td><td>VMAX 420 px/s · ACC 3200 px/s²</td></tr>
+    <tr><td>동작 시작 조건</td><td>가로 거리 ≤ 34(이미 하는 중이면 58, 떨림 방지) 이고 속도 &lt; 70</td><td>k = scale/0.8</td></tr>
+    <tr><td>나비가 높다 (r ≥ 100k)</td><td><code>crouch</code> 0.11초 → <code>air</code>: 높이 <code>h = clamp(r − 110k, 18k, 430k)</code>, 중력 <code>g = max(3000k, 8h/0.85²)</code> (높이 뛸수록 세게 → 어느 높이든 공중에 약 0.85초), 초속 <code>√(2·g·h)</code>. 공중에서도 x 를 나비 쪽으로 따라간다. 컷: 박차기(1) → 쭉 뻗기(2, 꼭대기) → 앞발 들기(4) → 내려오며(5)</td><td>REACH_AIR 125 · LEAP_MAX 430 (앞발까지 약 555 = 화면 가운데)</td></tr>
+    <tr><td>앉은 키 높이 (25k ≤ r &lt; 100k)</td><td><code>swat</code> 0.74초 (앉아서 앞발로 툭툭)</td><td></td></tr>
+    <tr><td>바닥 근처 (r &lt; 25k)</td><td><code>wiggle</code> 0.24초 → <code>pounce</code> 0.26초(아치 22k) → <code>bat</code> 0.6초</td><td></td></tr>
+    <tr><td>나비가 높고 아이콘이 가까이 (r ≥ 150k)</td><td><code>_tease_pick_icon</code>: 바닥에서 30~230k 위, 나비까지 50~555k, 가로 120k 안, 창에 안 가린 아이콘을 고른다. 그 아래로 달려가 <code>step</code>(0.1초 웅크림 → 포물선 hop)으로 아이콘 윗면에 올라 <code>tz["icon"]</code> 로 기억. 아이콘 위에서는 발판이 아이콘이라 <code>_tease_stand</code> 가 발 높이를 아이콘 윗면으로 맞추고, 위에 또 아이콘이 있으면 같은 방법으로 계단처럼 한 칸 더. 아이콘에서 뛸 때는 x 를 자유롭게 날려 나비를 따라가고, 아이콘 밖에 내리면 떨어져 바닥에서 다시 쫓는다. 0.6초마다 아이콘이 그 자리에 있는지 확인(옮겨졌으면 떨어짐)</td><td>아이콘 위치는 3초에 한 번 다시 읽음</td></tr>
+    <tr><td>너무 높다 (r &gt; 580k)</td><td><code>_tease_climb</code>: <code>jump_targets</code> 중 나비에 가장 가까운 창 윗변으로 JUMP. 착지(<code>_land</code>)하면 놀이를 이어 감</td><td>1.2초에 한 번 시도</td></tr>
+    <tr><td>창 위인데 나비가 창 밖 아래</td><td>가까운 가장자리로 가서 <code>_start_fall</code>(뛰어내림), 착지하면 이어 감. 나비가 창 안쪽이면 윗변에서 내려다보며 논다</td><td>110k 이상 아래일 때</td></tr>
+  </tbody></table></div>
+  <ul>
+    <li><b>끝</b> <code>end = 시작 + 10초</code>. 뛰는 중이면 내려앉은 뒤(최대 한 동작) <code>_end_tease</code>: <code>pet.play()</code>(기분 +20), 앉아서 쉼, <code>on_played()</code>.</li>
+    <li><b>끼어들기 처리</b> <code>grab()</code>·<code>hunt()</code>·<code>reset()</code> 은 <code>tease=None</code>, 전체 화면은 <code>set_paused("full")</code> 에서 비움. 놀이 중에는 <code>_busy()</code> 가 참이라 쓰다듬기·런처·밥 주기는 대기(pending)하거나 무시.</li>
+    <li><b>그리기</b> 새 동작 이름 <code>leap</code>(컷 번호 <code>f</code> 를 두뇌가 직접 정함: <code>jump_up</code> 컷 0·1·2·4·5). 공중이면 <code>brain.airborne</code> 로 그림자·바닥 걸치기를 뺀다.</li>
+    <li><b>시험</b> <code>python tools/test_tease.py</code>: 가짜 커서·가짜 시계로 추적 오차, 최고 속도, 뛴 높이가 커서에 닿는지, 끝나는 때, 창 오르내리기, 끼어들기를 확인.</li>
+  </ul>
+  <div class="callout tip"><b>나비 낚싯대 (<code>feather_toy.py</code>)</b> 윈도우 커서는 점 그림만 받고 '마우스 포인터 크기' 설정이 크면 한 번 더 확대돼 거칠어지므로, 나비는 <b>마우스를 따라다니는 투명 창</b>(클릭 통과·포커스 안 가져감·항상 위)에 <code>QPainter</code> 로 <b>벡터</b>로 그립니다(10ms 간격으로 <code>QCursor.pos()</code> 를 따라가고, 날개 6장면을 0.07초마다 바꿔 퍼덕임, 화면 배율에 맞춰 한 번만 그려 둠). 진짜 커서(화살표·I 빔·손가락)는 <code>SetSystemCursor</code> 로 <b>투명 커서</b>로 바꿔 숨깁니다. 되돌릴 때는 <code>SystemParametersInfo(SPI_SETCURSORS)</code> 로 사용자가 정해 둔 커서를 레지스트리에서 다시 불러와서 <b>사용자 설정을 건드리지 않습니다</b>. 켜 둔 동안 데이터 폴더에 <code>cursor_swapped.flag</code> 를 두고, 갑자기 꺼졌으면 <b>다음 시작 때</b> <code>recover()</code> 가 되돌립니다.</div>
 
   <h3>쓰다듬기·집기·런처 생각하기·쥐 잡기</h3>
   <div class="grid g2">

@@ -20,6 +20,17 @@ G = 1800.0
 V_WALK, V_TROT, V_RUN, V_SNEAK = 70.0, 150.0, 300.0, 38.0
 # 출발·멈춤: 실제 고양이처럼 한두 걸음에 걸쳐 빨라지고 느려진다 (예전에는 첫 순간부터 최고 속도, 멈출 때도 한 번에 섰다).
 # 걸음 위상은 이동 거리만큼 넘어가므로 속도를 바꿔도 다리 움직임이 같이 느려져 발이 미끄러지지 않는다.
+# 놀아주기(깃털): 마우스 커서가 나비 장난감이 되고 고양이가 쫓아다니며 잡으려 뛴다 (모든 수치는 scale=0.8 기준을 k = scale/0.8 로 환산해서 쓴다)
+TEASE_SEC = 10.0                         # 초: 놀아 주는 시간
+TEASE_VMAX = 420.0                       # px/s: 쫓아갈 때 최고 속도 (평소 달리기 300 보다 확실히 빠르다)
+TEASE_ACC = 3200.0                       # px/s²: 가속·감속 (재빠르게 방향을 바꾼다)
+TEASE_G = 3000.0                         # 뛰어오를 때 중력 (평소 낙하 1800 보다 세게: 도약이 짧고 날쌔다)
+TEASE_REACH_STAND = 100.0                # px: 서서·앉아서 앞발로 닿는 높이 (발바닥 기준)
+TEASE_REACH_AIR = 125.0                  # px: 뛰어올라 몸을 쭉 폈을 때 앞발이 발바닥보다 위로 닿는 높이
+TEASE_LEAP_MAX = 430.0                   # px: 한 번에 뛰어오르는 최대 높이 (앞발까지 합치면 발바닥 위 약 555px: 화면 가운데쯤)
+TEASE_AIR_T = 0.85                       # 초: 가장 높이 뛸 때 공중에 떠 있는 시간 (높이 뛸수록 중력을 세게 해서 이 시간 안에 오르내린다)
+MOTION_SPEED = 1.10                      # 움직임·동작 재생 속도 배율 (10% 빠르게). 나비잡기(깃털 놀이)와 종종걸음은 지금 속도가 좋아서 뺀다 (_motion_speed)
+EAT_SEC = 11.0                          # 초: 밥 먹는 시간 (예전 4.5초는 너무 짧았다. 채터링 소리 길이와도 비슷하다)
 ACCEL_T, DECEL_T = 0.35, 0.30            # 초: 최고 속도까지 / 멈출 때까지 걸리는 시간
 STOP_MAX = 0.6                           # 초: 걷기가 끝나고 멈추는 데 쓰는 최대 시간
 
@@ -39,6 +50,7 @@ SAYINGS = (
     "😋 맛있당..옹~",
     "🐾 에잇냐옹!",
     "🧶 털실이다냐옹~!",
+    "🦋 나비다냐옹!",
     "😸 재밌냐옹~",
     "배부르당..옹~ 😾",
     "🐟 냠냠냥~",
@@ -80,12 +92,13 @@ class S(Enum):
     KNEAD = auto()
     TAILPLAY = auto()
     HUNT = auto()                    # 쥐 잡기 (경비 경보 연출)
+    TEASE = auto()                   # 놀아주기(깃털): 커서 나비를 쫓아다니며 잡으려 뛴다
     HELD = auto()
 
 
 REST_STATES = {S.IDLE, S.SIT, S.SITTILT, S.LOAF, S.SLEEP, S.GROOM, S.GROOMLEG, S.SCRATCHNECK, S.GROOMFACE, S.YAWN, S.STRETCH, S.SCRATCH, S.KNEAD, S.TAILPLAY,
                S.EAT, S.STROKE}
-GROUND_MOVE = {S.WALK, S.RUN, S.SNEAK, S.KICK_WALK, S.PLAY, S.HUNT}
+GROUND_MOVE = {S.WALK, S.RUN, S.SNEAK, S.KICK_WALK, S.PLAY, S.HUNT, S.TEASE}
 STATE_ANIM = {
     S.IDLE: "stand", S.SIT: "sit", S.SITTILT: "sit_tilt", S.LOAF: "loaf", S.GROOM: "groom", S.YAWN: "yawn", S.STRETCH: "stretch",
     S.SCRATCH: "scratch", S.GROOMLEG: "groom_leg", S.SCRATCHNECK: "scratch_neck", S.GROOMFACE: "groom_face", S.KNEAD: "knead", S.TAILPLAY: "tail_play", S.EAT: "eat", S.STROKE: "stroke",
@@ -339,6 +352,8 @@ class CatBrain:
         self.on_fed = None                  # 밥을 다 먹었을 때 부르는 함수 (밥 시간 기록용)
         self.on_played = None               # 놀아주기가 끝났을 때 부르는 함수
         self.meal = False                   # 지금 먹는 것이 '밥 시간 밥'인가
+        self.cursor_fn = None               # 마우스 커서의 화면 좌표 (x, y) 를 돌려주는 함수 (놀아주기(깃털)에서 쓴다. cat.py 가 정해 준다)
+        self.tease = None                   # 놀아주기(깃털) 진행 정보 (없으면 None)
         self.mouse = None                   # 쥐 잡기 연출 중인 쥐 {x, dir, t0, fade, caught} (고양이 창이 그린다)
         self._hunt = None
         self._hunt_cb = None
@@ -368,7 +383,7 @@ class CatBrain:
 
     def reset(self):
         """꼬이면 진행 중이던 일을 모두 버리고 현재 모니터 바닥에서 가만히 서 있는 상태로 되돌린다."""
-        self._kick = self.ball = self.play = self.pending = self._travel = self._seg = None
+        self._kick = self.ball = self.play = self.pending = self._travel = self._seg = self.tease = None
         self.on = None
         self.vx = self.vy = 0.0
         w = self.world
@@ -396,20 +411,31 @@ class CatBrain:
         w = self.world
         self.x = min(max(self.x, w.left + self.cw * 0.3), w.right - self.cw * 0.3)
 
+    def _motion_speed(self):
+        """동작 시간 배율: 평소 MOTION_SPEED(1.1). 나비잡기 놀이(그 사이의 점프·낙하 포함)와 종종걸음은 1.0 (속도를 그대로 둔다)."""
+        if self.tease is not None or self.state is S.TEASE:
+            return 1.0
+        if self.state is S.WALK and self.gait is S.RUN:
+            return 1.0
+        return MOTION_SPEED
+
     # --- 매 프레임 -----------------------------------------------------
     def update(self, dt):
         w = self.world
         if not (math.isfinite(self.x) and math.isfinite(self.feet)) or self.feet > w.bbox[3] + 300 or self.feet < -600:
             self.reset()                            # 안전장치: 좌표가 화면 밖으로 멀리 벗어났거나 깨졌으면 현재 바닥에 다시 세운다
         self.world.refresh()
-        self.pet.tick(dt)
+        self.pet.tick(dt)                           # 배고픔·기분은 실제 시간대로 (동작만 빠르게 한다)
         self.field.update(dt)
+        dt *= self._motion_speed()
         self.t += dt
         self.life += dt
         self.landing = max(0.0, self.landing - dt)
         self._chat()
         prev_x = self.x
         getattr(self, "_st_" + self.state.name.lower())(dt)
+        if self.tease is not None and self.state not in (S.TEASE, S.FALL, S.JUMP) and time.monotonic() >= self.tease["end"]:
+            self.tease = None               # 놀아 주는 시간이 끝났는데 다른 동작 중(떨어지는 중 등)이면 그냥 끝낸다
         self._ball_update(dt)
         dist = abs(self.x - prev_x) if self.state in GROUND_MOVE else 0.0
         name, param, blend = self._anim_choice()
@@ -446,6 +472,8 @@ class CatBrain:
             return "swat", {}, 0.08
         if s is S.HUNT:
             return {"spot": ("sit_tilt", {}, 0.2), "chase": ("run", {}, 0.15), "pounce": ("swat", {}, 0.06), "proud": ("sit", {}, 0.3)}[self._hunt["phase"]]
+        if s is S.TEASE:
+            return self._tease_anim()
         if s is S.PLAY:
             ph = self.play["phase"]
             return {"wiggle": ("wiggle", {}, 0.25), "pounce": ("hop", {"p": min(1.0, self.t_phase() / 0.5)}, 0.06),
@@ -492,6 +520,12 @@ class CatBrain:
     def _land(self, top, hwnd):
         self.feet, self.on, self.vx, self.vy = top, hwnd, 0.0, 0.0
         self.landing = 0.3
+        if self.tease is not None:                          # 놀아주던 중 떨어졌다(또는 아이콘에서 내려왔다) 내려앉았으면: 시간이 남았으면 다시 나비를 쫓고, 끝났으면 마무리
+            if time.monotonic() < self.tease["end"]:
+                self.tease.update(ph="run", pt=0.0, vx=0.0)
+                self.go(S.TEASE)
+                return
+            return self._end_tease()
         self.go(S.IDLE, 0.4)
 
     # --- 쉬는/제자리 상태 ----------------------------------------------
@@ -874,9 +908,388 @@ class CatBrain:
             if tp >= 3.6:
                 self._end_play()
 
+    # --- 놀아주기(깃털): 마우스 커서가 나비 장난감이 되어 고양이가 쫓아다닌다 ----------------------
+    # 단계(tease["ph"]): run(쫓기) → 나비가 가까워지면 높이에 따라 ─ 높다: crouch → air → land (뛰어올라 잡기, 화면 가운데 높이까지)
+    #                                                           ─ 앉은 키 높이: swat (앞발로 툭툭)
+    #                                                           ─ 낮다: wiggle → pounce → bat (엉덩이 씰룩 → 덮치기 → 바닥 치기)
+    #                   나비가 높고 가까이에 바탕화면 아이콘이 있으면: 아이콘으로 뛰어올라(step) 아이콘을 밟고 거기서 다시 뛴다.
+    def command_tease(self):
+        if self._busy():
+            self.pending = "tease"
+            return
+        self._start_tease()
+
+    def tease_active(self):
+        """놀아 주는 중이고 시간이 남았나 (cat.py 가 이 동안 마우스 커서를 나비로 바꿔 둔다)."""
+        return self.tease is not None and time.monotonic() < self.tease["end"]
+
+    @property
+    def airborne(self):
+        """발이 바닥에서 떠 있나 (그리개가 그림자·바닥 걸치기를 빼는 데 쓴다)."""
+        return self.state in (S.JUMP, S.KICK_LEAP, S.FALL, S.HELD) or (self.state is S.TEASE and self.tease is not None and self.tease["ph"] in ("air", "step"))
+
+    def _start_tease(self):
+        if self.cursor_fn is None:
+            return self._start_play()                       # 커서 위치를 알 수 없으면 공놀이로 대신
+        self._kick = None
+        self.ball = self.play = None
+        self.thinking = False
+        self.bubble = None
+        self.mouse = self._hunt = None
+        self.tease = {"end": time.monotonic() + TEASE_SEC, "ph": "run", "pt": 0.0, "vx": 0.0, "gait": "stand", "cool": 0.25, "plat": 0.0,
+                      "engaged": False, "f": 0, "dur": 0.26, "h": 0.0, "base": self.feet, "vy": 0.0, "T": 1.0, "g": TEASE_G,
+                      "icon": None, "goto": None, "icon_cool": 0.0, "icons": [], "icons_t": -9.0, "chk": 0.0, "seg": None}
+        self.say("🦋 나비다냐옹!", 2.0)
+        self.go(S.TEASE)
+
+    def _end_tease(self):
+        self.tease = None
+        self.pet.play()
+        self.say("😸 재밌냐옹~", 2.5)
+        self.last_kind = "play"
+        self.go(S.SIT, random.uniform(3, 5))
+        if self.on_played:
+            self.on_played()
+
+    def _tease_anim(self):
+        tz = self.tease
+        if tz is None:
+            return "stand", {}, 0.2
+        ph = tz["ph"]
+        if ph == "crouch":
+            return "leap", {"f": 0}, 0.05
+        if ph in ("air", "step"):
+            return "leap", {"f": tz["f"]}, 0.03
+        if ph == "land":
+            return "land", {}, 0.05
+        if ph == "wiggle":
+            return "wiggle", {}, 0.08
+        if ph == "pounce":
+            return "hop", {"p": min(1.0, tz["pt"] / tz["dur"])}, 0.04
+        if ph == "bat":
+            return "bat", {}, 0.05
+        if ph == "swat":
+            return "swat", {}, 0.05
+        return tz["gait"], {}, 0.12                         # "run" / "trot" / "walk" / "stand"
+
+    def _tease_face(self, cx):
+        d = cx - self.x
+        if abs(d) > 6 * self.sc / 0.8:
+            self.facing = 1 if d > 0 else -1
+
+    def _tease_move(self, dt, k, tx, lo, hi):
+        """목표 x 로 재빠르게 달려간다: 멀수록 빠르고(최고 TEASE_VMAX), 가까워지면 부드럽게 서고, 목표를 지나치지 않는다."""
+        tz = self.tease
+        dx = tx - self.x
+        adx = abs(dx)
+        dead = 9 * k
+        vt = math.copysign(min(TEASE_VMAX * k, 7.0 * (adx - dead) + 30 * k), dx) if adx > dead else 0.0
+        a = TEASE_ACC * k * dt
+        vx = tz["vx"] + max(-a, min(a, vt - tz["vx"]))
+        nx = self.x + vx * dt
+        if (tx - self.x) * (tx - nx) < 0:                   # 목표를 지나치려 하면 거기서 선다
+            nx, vx = tx, 0.0
+        if nx < lo or nx > hi:
+            nx, vx = min(max(nx, lo), hi), 0.0
+        self.x, tz["vx"] = nx, vx
+        if abs(vx) > 20 * k:
+            self.facing = 1 if vx > 0 else -1               # 달리는 방향을 본다
+        elif adx > 14 * k:
+            self.facing = 1 if dx > 0 else -1
+        sp, g = abs(vx) / k, tz["gait"]                     # 걸음 단계: 속도가 경계 근처에서 깜빡이지 않게 올라갈 때와 내려갈 때 경계를 다르게
+        if sp > 235 or (g == "run" and sp > 175):
+            tz["gait"] = "run"
+        elif sp > 115 or (g == "trot" and sp > 75):
+            tz["gait"] = "trot"
+        elif sp > 14 or (g == "walk" and sp > 8):
+            tz["gait"] = "walk"
+        else:
+            tz["gait"] = "stand"
+
+    # --- 아이콘 디딤돌 ---------------------------------------------------------
+    def _tease_icons(self):
+        """밟고 뛸 수 있는 바탕화면 아이콘들: [(가운데 x, 윗면 y, 아이콘 번호, 칸 x, 칸 y)] (창에 가려진 것은 뺀다). 아이콘 위치를 읽는 일이라 3초에 한 번만 다시 읽는다."""
+        tz = self.tease
+        now = time.monotonic()
+        if now - tz["icons_t"] < 3.0:
+            return tz["icons"]
+        tz["icons_t"] = now
+        tz["icons"] = []
+        f = self.field
+        try:
+            if not f.enabled:
+                return tz["icons"]
+            f.scan()
+            cw, chh = f.cell
+            for it in f.items:
+                if it["index"] in f.moving:
+                    continue
+                ix, top = it["x"] + cw / 2, it["y"] + 0.1 * chh      # 아이콘 그림의 윗면 (칸 위쪽 조금 안쪽)
+                if any(w.left <= ix <= w.right and w.top <= top <= w.bottom for w in self.world.wins):
+                    continue                                        # 창이 가린 아이콘은 밟지 않는다
+                tz["icons"].append((ix, top, it["index"], it["x"], it["y"]))
+        except Exception:
+            tz["icons"] = []
+        return tz["icons"]
+
+    def _tease_pick_icon(self, k, cx, cy, skip=None):
+        """나비가 높이 있을 때 발판으로 삼을 아이콘: 오를 수 있는 높이에 있고, 나비 쪽으로 더 가까워지고, 나비 아래 가까이에 있는 것."""
+        best = None
+        lo, hi = self._range()
+        for ix, top, idx, gx, gy in self._tease_icons():
+            if idx == skip:
+                continue
+            up, rem = self.feet - top, top - cy                     # 지금 발에서 아이콘까지 / 아이콘에서 나비까지
+            if not (30 * k <= up <= 230 * k and 50 * k <= rem <= (TEASE_LEAP_MAX + TEASE_REACH_AIR) * k and abs(ix - cx) <= 120 * k and lo <= ix <= hi):
+                continue
+            score = abs(ix - cx) + 0.3 * abs(ix - self.x)
+            if best is None or score < best[0]:
+                best = (score, ix, top, idx, gx, gy)
+        return best[1:] if best else None
+
+    def _tease_start_step(self, k, pick):
+        """아이콘 pick=(가운데 x, 윗면 y, 번호, 칸 x, 칸 y) 으로 뛰어오른다."""
+        ix, top, idx, gx, gy = pick
+        up = self.feet - top
+        self.tease.update(ph="step", pt=0.0, f=0, goto=None, vx=0.0, gait="stand",
+                          seg={"x0": self.x, "f0": self.feet, "x1": ix, "f1": top, "arc": 0.3 * up + 28 * k, "dur": 0.4 + up / 1300.0,
+                               "ic": {"ix": ix, "top": top, "idx": idx, "gx": gx, "gy": gy}})
+
+    def _tease_icon_ok(self, ic):
+        """밟고 있는 아이콘이 아직 그 자리에 있나 (사용자가 옮겼으면 False)."""
+        f = self.field
+        icons = getattr(f, "icons", None)
+        if icons is None:
+            return True
+        try:
+            px, py = icons.position(ic["idx"])
+            x, y = px / f.dpr + f.origin[0], py / f.dpr + f.origin[1]
+            return abs(x - ic["gx"]) <= 6 and abs(y - ic["gy"]) <= 6
+        except Exception:
+            return False
+
+    def _tease_stand(self):
+        """서 있는 발판을 따라간다: 아이콘 위면 아이콘 윗면, 아니면 바닥·창 윗변."""
+        tz = self.tease
+        ic = tz["icon"]
+        if ic is None:
+            return self._stand()
+        self.feet = ic["top"]
+        tz["chk"] += 1
+        if tz["chk"] % 12 == 0 and not self._tease_icon_ok(ic):   # 아이콘이 없어졌거나 옮겨졌다 → 떨어진다
+            tz["icon"] = None
+            self._start_fall(vx=0.0, vy=-60 * self.sc / 0.8)
+            return False
+        return True
+
+    def _tease_range(self):
+        ic = self.tease["icon"]
+        if ic is not None:
+            k = self.sc / 0.8
+            return ic["ix"] - 16 * k, ic["ix"] + 16 * k
+        return self._range()
+
+    def _tease_leave_icon(self, side):
+        tz = self.tease
+        k = self.sc / 0.8
+        tz["icon"] = None
+        tz["icon_cool"] = 1.5
+        self.facing = side
+        self._start_fall(vx=side * 140 * k, vy=-100 * k)
+
+    # --- 한 프레임 ---------------------------------------------------------------
+    def _st_tease(self, dt):
+        tz = self.tease
+        if tz is None or self.cursor_fn is None:
+            return self._end_tease()
+        k = self.sc / 0.8
+        tz["pt"] += dt
+        tz["cool"] = max(0.0, tz["cool"] - dt)
+        tz["plat"] = max(0.0, tz["plat"] - dt)
+        tz["icon_cool"] = max(0.0, tz["icon_cool"] - dt)
+        ph = tz["ph"]
+        if ph == "air":
+            return self._tease_air(dt, k)
+        if ph == "step":
+            return self._tease_step(k)
+        if not self._tease_stand():                         # 서 있던 창·아이콘이 사라졌다 → 떨어진다 (내려앉으면 _land 가 다시 이어 준다)
+            return
+        if time.monotonic() >= tz["end"] and ph in ("run", "land"):
+            if tz["icon"] is not None:                      # 아이콘 위에서 시간이 끝났다: 먼저 바닥으로 내려온 뒤 마무리한다 (_land)
+                return self._tease_leave_icon(self.facing or 1)
+            return self._end_tease()                        # 시간이 다 됐다 (뛰는 중이면 내려앉은 뒤에)
+        cx, cy = self.cursor_fn()
+        lo, hi = self._tease_range()
+        if ph == "crouch":                                  # 뛰기 직전 웅크림
+            self._tease_face(cx)
+            if tz["pt"] >= 0.11:
+                h = tz["h"]
+                g = max(TEASE_G * k, 8.0 * h / TEASE_AIR_T ** 2)       # 높이 뛸수록 중력도 세게: 아무리 높이 뛰어도 공중에 0.85초쯤만 떠 있어 날쌔다
+                tz.update(ph="air", pt=0.0, vy=-math.sqrt(2 * g * h), base=self.feet, T=2 * math.sqrt(2 * h / g), f=1, g=g)
+            return
+        if ph == "land":
+            if tz["pt"] >= 0.16:
+                tz.update(ph="run", pt=0.0, cool=0.08)
+            return
+        if ph in ("wiggle", "pounce", "bat", "swat"):
+            return self._tease_action(k, cx, hi, lo)
+        self._tease_chase(dt, k, cx, cy, lo, hi)
+
+    def _tease_chase(self, dt, k, cx, cy, lo, hi):
+        tz = self.tease
+        r = self.feet - cy                                  # 양수: 나비가 발바닥보다 위에 있다
+        # (0) 아이콘 위에 서 있으면: 나비가 아직 높이 있고 가까이 있을 때만 머물며 뛴다. 아니면 나비 쪽으로 뛰어내린다
+        ic = tz["icon"]
+        if ic is not None:
+            if r < 90 * k or abs(cx - ic["ix"]) > 130 * k:
+                return self._tease_leave_icon(1 if cx > self.x else -1)
+            if tz["cool"] <= 0 and r >= 150 * k:                # 위에 또 밟을 아이콘이 있으면 계단처럼 한 칸 더 올라간다
+                nxt = self._tease_pick_icon(k, cx, cy, skip=ic["idx"])
+                if nxt is not None:
+                    return self._tease_start_step(k, nxt)
+            self._tease_move(dt, k, min(max(cx, lo), hi), lo, hi)
+            if tz["cool"] <= 0:
+                self._tease_begin_action(k, cx, r)
+            return
+        # (1) 창 위에 있는데 나비가 창 밖 아래쪽에 있으면: 가까운 가장자리로 가서 뛰어내린다
+        if self.on is not None and cy - self.feet > 110 * k:
+            wr = self.world.rect_of(self.on)
+            if wr is not None and not (wr[0] <= cx <= wr[2] and cy <= wr[3]):
+                side = (1 if (hi - self.x) < (self.x - lo) else -1) if lo <= cx <= hi else (1 if cx > hi else -1)
+                tx = hi - 4 * k if side > 0 else lo + 4 * k
+                self._tease_move(dt, k, tx, lo, hi)
+                if abs(self.x - tx) < 10 * k:
+                    self.facing = side
+                    self._start_fall(vx=side * 150 * k, vy=-130 * k)
+                return
+        # (2) 뛰어도 닿지 않을 만큼 높이 있으면 나비에 더 가까운 창 위로 올라간다
+        if r > (TEASE_LEAP_MAX + TEASE_REACH_AIR + 20) * k and tz["plat"] <= 0:
+            tz["plat"] = 1.2
+            if self._tease_climb(cx, cy):
+                return
+        # (3) 나비가 높고 가까이에 바탕화면 아이콘이 있으면 그것을 밟고 뛴다 (바닥에 있을 때만)
+        if self.on is None and r >= 150 * k and tz["icon_cool"] <= 0:
+            goto = tz["goto"]
+            pick = self._tease_pick_icon(k, cx, cy)
+            if pick is None:
+                tz["goto"], tz["icon_cool"] = None, 0.4
+            else:
+                if goto is None or goto[2] != pick[2]:
+                    tz["goto"] = goto = pick
+                ix, top = goto[0], goto[1]
+                self._tease_move(dt, k, ix, lo, hi)
+                if abs(self.x - ix) <= 14 * k and abs(tz["vx"]) < 80 * k:
+                    self._tease_start_step(k, goto)
+                return
+        else:
+            tz["goto"] = None
+        # (4) 나비 아래로 달려간다. 가까워지면(들어갈 때 34, 나갈 때 58 로 경계를 달리해서 떨리지 않게) 높이에 맞는 동작을 한다
+        self._tease_move(dt, k, cx, lo, hi)
+        adx = abs(cx - self.x)
+        band = (58 if tz["engaged"] else 34) * k
+        tz["engaged"] = adx <= band
+        if tz["engaged"] and abs(tz["vx"]) < 70 * k and tz["cool"] <= 0:
+            self._tease_begin_action(k, cx, r)
+
+    def _tease_begin_action(self, k, cx, r):
+        tz = self.tease
+        self._tease_face(cx)
+        tz["vx"], tz["gait"] = 0.0, "stand"
+        if r >= TEASE_REACH_STAND * k:                      # 높다 → 뛴다 (앞발이 나비에 닿을 높이만큼만)
+            tz.update(ph="crouch", pt=0.0, h=max(18 * k, min(TEASE_LEAP_MAX * k, r - (TEASE_REACH_AIR - 15) * k)))
+        elif r >= 25 * k:                                   # 앉은 키 높이 → 앞발로 툭툭
+            tz.update(ph="swat", pt=0.0)
+        else:                                               # 바닥 근처 → 엉덩이 씰룩, 덮치기
+            tz.update(ph="wiggle", pt=0.0)
+
+    def _tease_action(self, k, cx, hi, lo):
+        tz = self.tease
+        ph, pt = tz["ph"], tz["pt"]
+        self._tease_face(cx)
+        if ph != "pounce" and abs(cx - self.x) > 110 * k:   # 나비가 멀리 달아났다: 하던 동작을 접고 다시 쫓는다
+            tz.update(ph="run", pt=0.0)
+            return
+        if ph == "wiggle":
+            if pt >= 0.24:
+                tz.update(ph="pounce", pt=0.0, x0=self.x, x1=min(max(cx - self.facing * 28 * k, lo), hi), dur=0.26)
+        elif ph == "pounce":
+            p = min(1.0, pt / tz["dur"])
+            self.x = tz["x0"] + (tz["x1"] - tz["x0"]) * (1.0 - (1.0 - p) ** 2)
+            self.feet -= 4 * 22 * k * p * (1 - p)           # 살짝 뛰어 덮친다
+            if p >= 1.0:
+                tz.update(ph="bat", pt=0.0)
+        elif ph == "bat":
+            if pt >= 0.6:
+                tz.update(ph="run", pt=0.0, cool=0.12)
+        elif ph == "swat":
+            if pt >= 0.74:
+                tz.update(ph="run", pt=0.0, cool=0.1)
+
+    def _tease_air(self, dt, k):
+        tz = self.tease
+        cx, cy = self.cursor_fn()
+        tz["vy"] += tz["g"] * dt
+        self.feet += tz["vy"] * dt
+        u = tz["pt"] / max(tz["T"], 0.2)
+        tz["f"] = 1 if u < 0.14 else 2 if u < 0.64 else 4 if u < 0.82 else 5       # 사진 컷: 박차기 → 쭉 뻗기 → 앞발 들기 → 내려오며 앞발 들기
+        on_icon = tz["icon"] is not None
+        lo, hi = (self.world.left + 20 * k, self.world.right - 20 * k) if on_icon else self._range()     # 아이콘에서 뛸 때는 나비 쪽으로 몸이 자유롭게 날아간다
+        dx = cx - self.x
+        self.x = min(max(self.x + max(-320 * k, min(320 * k, dx * 7.0)) * dt, lo), hi)     # 공중에서도 나비 쪽으로 몸을 틀어 따라간다
+        if abs(dx) > 8 * k:
+            self.facing = 1 if dx > 0 else -1
+        if tz["vy"] > 0 and self.feet >= tz["base"]:
+            self.feet = tz["base"]
+            if on_icon:
+                ic = tz["icon"]
+                if abs(self.x - ic["ix"]) > 20 * k:         # 아이콘에서 벗어난 곳에 내려왔다: 아이콘 옆으로 떨어져 바닥으로
+                    tz["icon"] = None
+                    tz.update(ph="run", pt=0.0, vx=0.0)
+                    self._start_fall(vx=0.0, vy=0.0)
+                    return
+                self.x = min(max(self.x, ic["ix"] - 16 * k), ic["ix"] + 16 * k)
+            tz.update(ph="land", pt=0.0, vx=0.0)
+
+    def _tease_step(self, k):
+        """아이콘 윗면으로 뛰어오른다: 웅크렸다가(0.1초) 포물선으로 날아가 아이콘 가운데에 내려앉는다."""
+        tz = self.tease
+        sg = tz["seg"]
+        t = tz["pt"] - 0.1
+        self._tease_face(sg["x1"])
+        if t < 0:                                           # 웅크림
+            tz["f"] = 0
+            return
+        p = min(1.0, t / sg["dur"])
+        self.x = sg["x0"] + (sg["x1"] - sg["x0"]) * p
+        self.feet = sg["f0"] + (sg["f1"] - sg["f0"]) * p - 4 * sg["arc"] * p * (1 - p)
+        tz["f"] = 1 if p < 0.2 else 2 if p < 0.75 else 4
+        if p >= 1.0:
+            self.feet = sg["f1"]
+            tz.update(ph="land", pt=0.0, vx=0.0, icon=sg["ic"], seg=None, cool=0.0)
+
+    def _tease_climb(self, cx, cy):
+        """나비가 너무 높으면: 나비에 가까운 높이의 창 윗변으로 뛰어오른다. 올라갈 곳이 없으면 False."""
+        best = None
+        for lx, top, hwnd in self.world.jump_targets(self.x, self.feet):
+            w = next((w for w in self.world.wins if w.hwnd == hwnd), None)
+            if w is None:
+                continue
+            gap = abs(top - cy)
+            if gap < (self.feet - cy) * 0.75:               # 지금보다 확실히 나비에 가까워지는 곳만
+                score = gap + 0.6 * max(0.0, w.left - cx, cx - w.right)
+                if best is None or score < best[0]:
+                    best = (score, lx, top, hwnd)
+        if best is None:
+            return False
+        _, lx, top, hwnd = best
+        rise = self.feet - top
+        self.tease.update(ph="run", pt=0.0, vx=0.0)
+        self._begin_seg(S.JUMP, lx, top, 0.5 + rise / 2200, 60 + 0.2 * rise, hwnd, prep=0.15)
+        return True
+
     # --- 사용자 명령 ---------------------------------------------------
     def _busy(self):
-        return self.state in (S.HELD, S.FALL, S.JUMP, S.KICK_LEAP, S.KICK_HIT)
+        return self.state in (S.HELD, S.FALL, S.JUMP, S.KICK_LEAP, S.KICK_HIT, S.TEASE)
 
     def is_busy(self):
         return self._busy()
@@ -902,8 +1315,8 @@ class CatBrain:
         self.meal = force
         self._kick = None
         self.ball = self.play = None
-        self.say("🐟 냠냠냥~", 3.4)
-        self.go(S.EAT, 4.5)
+        self.say("🐟 냠냠냥~", 4.0)
+        self.go(S.EAT, EAT_SEC)
 
     def stroke(self):
         """쓰다듬기 (클릭 또는 마우스를 몸 위에서 쓱쓱). 호출될 때마다 골골송 시간이 늘어난다."""
@@ -912,7 +1325,7 @@ class CatBrain:
             self.pet.stroke()
             self._last_stroke_mood = now
         self.stroke_until = now + 1.3
-        if self.state in (S.HELD, S.FALL, S.JUMP, S.KICK_LEAP, S.KICK_HIT, S.PLAY, S.EAT):
+        if self.state in (S.HELD, S.FALL, S.JUMP, S.KICK_LEAP, S.KICK_HIT, S.PLAY, S.EAT, S.TEASE):
             return
         if self.state is not S.STROKE:
             if self.state is S.SLEEP:
@@ -923,7 +1336,7 @@ class CatBrain:
 
     def hover(self, moved_px: float, inside: bool, dt: float):
         """마우스가 고양이 몸 위에서 움직이는 양으로 쓰다듬기를 감지한다."""
-        if self.thinking:
+        if self.thinking or self.state is S.TEASE:
             return                          # 런처로 마우스를 옮기느라 몸 위를 지날 때 쓰다듬기로 오인하지 않게
         self._pet_energy = max(0.0, self._pet_energy - 260 * dt)
         if inside and self.state is not S.HELD:
@@ -950,7 +1363,7 @@ class CatBrain:
 
     # --- 집어 올리기 ---------------------------------------------------
     def grab(self):
-        self.mouse = self._hunt = None
+        self.mouse = self._hunt = self.tease = None
         self.thinking = False
         self._kick = None
         self.ball = self.play = None
@@ -979,6 +1392,7 @@ class CatBrain:
             return
         self._kick = None
         self.ball = self.play = None
+        self.tease = None                                   # 놀아주던 중이면 그만두고 쥐부터 (경보가 먼저)
         self.thinking = False
         self.bubble = None
         lo, hi = self._range()
@@ -1037,7 +1451,7 @@ class CatBrain:
         if mode == self.mode:
             return
         self.mode = mode
-        if self.thinking or self.state in (S.HELD, S.FALL, S.JUMP, S.KICK_LEAP, S.KICK_HIT, S.PLAY, S.EAT, S.STROKE):
+        if self.thinking or self.state in (S.HELD, S.FALL, S.JUMP, S.KICK_LEAP, S.KICK_HIT, S.PLAY, S.EAT, S.STROKE, S.TEASE):
             return                          # 이 동작들이 끝나면 자연스럽게 새 모드로 간다
         self._kick = None
         self.ball = self.play = None
@@ -1101,6 +1515,8 @@ class CatBrain:
                 return self._start_eat(force)
             if cmd == "play":
                 return self._start_play()
+            if cmd == "tease":
+                return self._start_tease()
             if cmd == "hunt":
                 return self.hunt(self._hunt_cb)
         if self.mode and not self._go_to_corner():

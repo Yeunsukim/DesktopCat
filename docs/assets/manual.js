@@ -16,7 +16,7 @@
     const S = { x: 0, b: FLOOR, vx: 0, vy: 0, mode: "idle", held: false, energy: 0, hist: [], launcherOpen: false, rest: false, fed: [] };
     const W = () => desk.clientWidth, H = () => desk.clientHeight, CW = 120;
     function setPos() { catEl.style.left = (S.x - CW / 2) + "px"; catEl.style.bottom = S.b + "px"; }
-    function reset() { S.x = W() * 0.6; S.b = FLOOR; S.vx = S.vy = 0; S.mode = "idle"; S.rest = false; closeLauncher(); m.mood = "normal"; ball.style.display = fish.style.display = "none"; setPos(); note("고양이를 <b>클릭</b>하면 앱 런처가 열려요. <b>끌어서 놓으면</b> 떨어지고, 몸 위에서 <b>쓱쓱</b> 문지르면 좋아해요."); }
+    function reset() { S.tease = null; desk.style.cursor = ""; if (typeof toy !== "undefined") { toy.style.display = "none"; } S.x = W() * 0.6; S.b = FLOOR; S.vx = S.vy = 0; S.mode = "idle"; S.rest = false; closeLauncher(); m.mood = "normal"; ball.style.display = fish.style.display = "none"; setPos(); note("고양이를 <b>클릭</b>하면 앱 런처가 열려요. <b>끌어서 놓으면</b> 떨어지고, 몸 위에서 <b>쓱쓱</b> 문지르면 좋아해요."); }
     const note = (h) => (cap.innerHTML = h);
     let moodT = 0; const mood = (k, secs = 1.6) => { m.mood = k; clearTimeout(moodT); moodT = setTimeout(() => { m.mood = S.rest ? "sleep" : "normal"; }, secs * 1000); };
 
@@ -80,9 +80,29 @@
         else if (S.b <= FLOOR) { S.b = FLOOR; S.mode = "idle"; S.vy = 0; m.say("착지냥~", 1.2); }
         setPos();
       } else if (S.mode === "idle" && S.b > FLOOR && !(S.x > WIN.l + 8 && S.x < WIN.r - 8 && S.b >= H() - WIN.top - 1)) { S.mode = "fall"; }
+      if (S.tease) { teaseStep(dt, now); }
       positionLauncher();
       requestAnimationFrame(loop);
     })(last);
+
+    /* 깃털 놀이 (실제 고양이와 같은 규칙을 단순하게): 연습장 위의 마우스가 나비가 된다 */
+    const mouse = { x: -1, y: -1, in: false };
+    desk.addEventListener("pointermove", (e) => { const r = desk.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = H() - (e.clientY - r.top); mouse.in = true; });
+    desk.addEventListener("pointerleave", () => { mouse.in = false; });
+    const toy = document.createElement("div"); toy.textContent = "\u{1F98B}"; toy.style.cssText = "position:absolute;display:none;font-size:34px;pointer-events:none;transform:translate(-50%,50%);z-index:5"; desk.appendChild(toy);
+    function endTease() { S.tease = null; toy.style.display = "none"; desk.style.cursor = ""; m.mood = "happy"; m.say("\u{1F638} 재밌냐옹~", 2.2); note("놀이 끝! 실제로는 이때 마우스 커서도 원래 모양으로 돌아와요. 기분 +20%."); setTimeout(() => { if (!S.tease) { m.mood = S.rest ? "sleep" : "normal"; } }, 2000); }
+    function teaseStep(dt, now) {
+      const T = S.tease;
+      if (now >= T.end && S.mode === "idle") { endTease(); return; }
+      if (mouse.in) { toy.style.display = "block"; toy.style.left = mouse.x + "px"; toy.style.bottom = mouse.y + "px"; }
+      if (!mouse.in || S.mode !== "idle") { return; }
+      const dx = mouse.x - S.x, adx = Math.abs(dx), rise = mouse.y - S.b;          // rise: 나비가 발바닥보다 얼마나 위인가
+      if (T.cool > 0) { T.cool -= dt; }
+      if (adx > 12) { S.x = clamp(S.x + Math.sign(dx) * Math.min(420, 7 * (adx - 9) + 30) * dt, CW / 2, W() - CW / 2); setPos(); }
+      if (adx < 40 && T.cool <= 0 && rise > 70) {                                     // 높이 있다 → 뛰어오른다 (앞발이 닿을 만큼)
+        const h = clamp(rise - 110, 18, 200); S.vy = Math.sqrt(2 * 1080 * h); S.vx = clamp(dx * 4, -200, 200); S.mode = "fall"; T.cool = 0.5; m.say("냐앗!", 0.6);
+      }
+    }
 
     /* 버튼 */
     const go = (x, ms, done) => { catEl.style.transition = `left ${ms}ms ease`; S.x = clamp(x, CW / 2, W() - CW / 2); setPos(); setTimeout(() => { catEl.style.transition = ""; if (done) { done(); } }, ms + 30); };
@@ -95,6 +115,11 @@
         if (S.fed.length > 3) { m.say("배부르당..옹~ 😾", 2); note("너무 많이 줬어요! 배고픔이 10% 아래(배부름)면 간식을 거절해요."); return; }
         fish.style.left = clamp(S.x + 50, 10, W() - 60) + "px"; fish.style.display = "block"; m.say("🐟 냠냠냥~", 2.2); mood("happy", 2.4);
         setTimeout(() => { fish.style.display = "none"; m.say("😋 맛있당..옹~", 1.8); }, 2400); note("밥을 줬어요. 먹고 나면 세수(그루밍)를 하고 쉬어요. 배고픔 −45%, 기분 +5%.");
+      }
+      if (a === "tease") {
+        S.tease = { end: performance.now() + 10000, cool: 0 }; m.mood = "normal"; m.say("\u{1F98B} 나비다냐옹!", 2); fish.style.display = ball.style.display = "none";
+        toy.style.display = "block"; toy.style.left = W() * 0.35 + "px"; toy.style.bottom = (FLOOR + 140) + "px"; desk.style.cursor = "none";
+        note("<b>10초 동안</b> 이 연습장 위의 마우스가 나비예요(실제로는 화면 전체의 마우스 커서가 나비 낚싯대로 바뀌어요). 나비를 <b>높이</b> 올려 보세요 — 고양이가 뛰어올라요!"); return;
       }
       if (a === "play") {
         const bx = S.x < W() / 2 ? S.x + 170 : S.x - 170; ball.style.left = clamp(bx, 10, W() - 40) + "px"; ball.style.display = "block"; m.say("🧶 털실이다냐옹~!", 1.8);
@@ -115,7 +140,8 @@
     const list = $("#menu-items"), desc = $("#menu-desc"); if (!list) { return; }
     const I = [
       ["밥 주기", "간식을 줘요. 배고픔 −45%. 배고픔이 10% 아래(배부름)면 거절해요. 밥 시간에 조를 때는 배불러도 먹어요."],
-      ["놀아주기", "털실공 놀이를 시작해요. 기분 +20%. 점프·낙하 중이면 끝난 뒤에 시작해요."],
+      ["놀아주기 (공)", "털실공 놀이를 시작해요. 기분 +20%. 점프·낙하 중이면 끝난 뒤에 시작해요."],
+      ["놀아주기 (깃털)", "10초 동안 마우스 커서가 나비를 단 깃털 낚싯대로 바뀌고, 고양이가 쫓아다니며 높으면(화면 가운데까지) 뛰어올라 잡으려 하고, 바탕화면 아이콘을 밟고 올라가기도 해요. 끝나면 커서가 원래대로 돌아와요. 기분 +20%."],
       ["한쪽에서 쉬기", "체크하면 구석으로 가서 얌전히 쉬어요(체크 해제하면 다시 놀러 다녀요). 일하는 중에 방해될 때 쓰세요.", "check"],
       ["—"],
       ["고양이 색  ▸", "갈색 줄무늬 · 회색 · 검은색 · 흰색 · 치즈(주황) · 삼색(흰·주황·검정). 고른 색은 기억해요. 눈과 귀 안쪽 분홍은 그대로예요."],

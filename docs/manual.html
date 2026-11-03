@@ -114,7 +114,7 @@ DesktopCat_Setup.exe --silent --no-startup --desktop --no-run
   <p class="lead">고양이는 혼자서도 잘 놀아요. 하지만 여러분이 해 줄 수 있는 일도 많아요. 아래 <b>연습장</b>에서 먼저 눌러 보고 끌어 보세요 — 실제 고양이와 같은 방식이에요.</p>
 
   <div class="diagram" id="pg">
-    <div class="bar"><b>조작 연습장</b><button class="btn" data-act="feed">밥 주기</button><button class="btn" data-act="play">놀아주기</button><button class="btn" data-act="rest">한쪽에서 쉬기</button><button class="btn" data-act="reset">처음으로</button></div>
+    <div class="bar"><b>조작 연습장</b><button class="btn" data-act="feed">밥 주기</button><button class="btn" data-act="play">놀아주기(공)</button><button class="btn" data-act="tease">놀아주기(깃털)</button><button class="btn" data-act="rest">한쪽에서 쉬기</button><button class="btn" data-act="reset">처음으로</button></div>
     <div id="pg-desk" style="position:relative;height:300px;background:linear-gradient(#FFE6EE,#FFD3E0);overflow:hidden;touch-action:none;user-select:none">
       <div style="position:absolute;left:18px;top:14px;width:170px;height:92px;background:#fff;border:3px solid #5A3A47;border-radius:12px;opacity:.85"><div style="height:20px;border-bottom:3px solid #5A3A47;background:#FFF7FA;border-radius:8px 8px 0 0"></div><div style="padding:6px 10px;font-size:12px;color:#A8728A">내 작업 창 (고양이가 올라설 수 있어요)</div></div>
       <div style="position:absolute;left:0;right:0;bottom:0;height:34px;background:#5A3A47;opacity:.9"></div>
@@ -139,7 +139,8 @@ DesktopCat_Setup.exe --silent --no-startup --desktop --no-run
   <p>고양이는 <b>배고픔</b>과 <b>기분</b>이 있어요(메뉴 맨 위에 퍼센트로 보여요). 시간이 지나면 배고파지고, 배가 고프면 기분이 나빠지고 걸음이 느려져요. 밥을 주면 좋아지고, 놀아 주면 기분이 크게 올라요.</p>
   <div class="grid g3">
     <div class="card"><h4>밥 주기</h4><p>간식은 배고픔이 10% 아래(배부름)면 거절해요("배부르당..옹~"). <b>밥 시간에 조를 때</b>는 배불러도 먹어요(정식 식사는 더 많이 먹어요).</p></div>
-    <div class="card"><h4>놀아주기 (털실공)</h4><p>엉덩이를 씰룩하다 털실공을 덮치고, 툭 치고, 쫓아가고, 세 번 놀면 끌어안고 뒷발킥! 끝나면 기분이 크게 올라요.</p></div>
+    <div class="card"><h4>놀아주기 (깃털) — 마우스가 나비가 돼요</h4><p>우클릭 → <b>놀아주기 (깃털)</b> 을 누르면 <b>10초 동안</b> 마우스 커서가 나비를 단 낚싯대로 바뀌고 고양이가 쫓아다녀요. 나비가 높으면 <b>화면 가운데 높이까지도 뛰어올라</b> 낚아채고, 낮으면 덮쳐요. 가까이에 <b>바탕화면 아이콘</b>이 있으면 아이콘을 <b>밟고 계단처럼 올라가서</b> 뛰어요. 끝나면 커서는 원래 모양으로 돌아와요.</p></div>
+    <div class="card"><h4>놀아주기 (공) — 털실공</h4><p>엉덩이를 씰룩하다 털실공을 덮치고, 툭 치고, 쫓아가고, 세 번 놀면 끌어안고 뒷발킥! 끝나면 기분이 크게 올라요.</p></div>
     <div class="card"><h4>꺼 둔 동안</h4><p>컴퓨터를 꺼 둔 동안에도 시간이 흘러요. 단 굶어 죽지는 않아요(배고픔 최대 85%).</p></div>
   </div>
   <div class="callout tip"><b>고양이가 가끔 말을 걸어요</b> 40~90초 간격으로 기분에 맞는 혼잣말을 해요. 배고프면 "밥 줘랑..옹~", 기분이 좋으면 "♪ 랄라냐옹~", 우울하면 "… 냐앙…".</div>
@@ -318,6 +319,7 @@ DesktopCat_Setup.exe --silent --no-startup --desktop --no-run
     <div class="card"><span class="tag pink">놀아주기</span><h4>기본 60분마다</h4><p>마지막으로 논 뒤 정해 둔 시간(10~240분)이 지나면 "놀아줘라옹~ 🧶" 하고 졸라요. <b>일하는 사람도 잠깐 쉬라</b>는 뜻이에요. 안 놀아 주면 3분마다 최대 10번. 놀아 주거나 메뉴에서 "한쪽에서 쉬기"를 켜면 한 주기 미뤄져요.</p></div>
     <div class="card"><span class="tag pink">한쪽에서 쉬기</span><h4>일에 방해될 때</h4><p>우클릭 메뉴의 <b>한쪽에서 쉬기</b>를 체크하면 고양이가 <b>구석으로 가서 얌전히 쉬어요</b>(앉기·식빵·그루밍·낮잠). 돌아다니지 않아요. 구석은 설정에서 오른쪽/왼쪽 선택. 놀아 달라고 조를 때만 잠깐 나와요.</p></div>
   </div>
+  <div class="card" style="margin-top:12px"><span class="tag pink">고양이 소리</span><h4>생활 탭의 "고양이 소리"</h4><p>고양이가 행동할 때 <b>소리</b>를 내요. 잠잘 때(동그랗게·옆으로 잘 때) <b>골골</b>, 털실공·밥 먹기·종종걸음·나비잡기 놀이 때 <b>채터링</b>(달리기는 소리가 없어요), 꾹꾹이·꼬리 놀이·쓰다듬기 때 <b>트릴</b>. 행동을 시작할 때 <b>한 번만</b> 내고, 행동이 끝나면 소리가 남았어도 <b>바로 멈춰요</b>. <b>잠자는 시간</b>에는 내지 않아요. 체크를 끄거나 <b>음량</b>(0~100%)을 줄일 수 있어요. 알림 "냐옹~"도 같은 음량이에요.</p><p><b>냐옹이 우선</b>: 냐옹이 나는 동안에는 행동 소리를 내지 않아서 소리가 겹치지 않아요.</p><p><b>냐옹</b>: 밥·놀이 졸라대기, 1시간마다 쉬라는 요구, 알림, 경보에는 긴 냐옹(약 10초)이 끝까지 나오고, 고양이를 <b>누르거나 집어 올리면</b> 짧은 냐옹(약 2초)이 나와요.</p></div>
   <div class="callout tip"><b>설정을 저장하면 바로 반영돼요.</b> 예를 들어 잠자는 시간을 지금 시각 안으로 바꿔 저장하면 고양이가 곧바로 구석으로 가서 자요.</div>
 </section>
 

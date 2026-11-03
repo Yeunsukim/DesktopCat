@@ -43,7 +43,7 @@ window.DOCDATA = {
   },
   {
    "file": "animations.py",
-   "lines": 565,
+   "lines": 577,
    "group": "draw",
    "role": "뼈대 방식의 동작 라이브러리 (예전/비상용): f(a) → pose"
   },
@@ -67,13 +67,13 @@ window.DOCDATA = {
   },
   {
    "file": "behavior.py",
-   "lines": 1154,
+   "lines": 1570,
    "group": "brain",
    "role": "행동 두뇌: CatBrain 상태머신, World(바닥·창 발판), IconField(차인 아이콘의 물리)"
   },
   {
    "file": "build_installer.py",
-   "lines": 96,
+   "lines": 97,
    "group": "pack",
    "role": "PyInstaller 로 본체·삭제기·설치기(exe)를 만들어 하나로 묶기"
   },
@@ -85,7 +85,7 @@ window.DOCDATA = {
   },
   {
    "file": "cat.py",
-   "lines": 1168,
+   "lines": 1249,
    "group": "run",
    "role": "본체: 투명 창(Overlay)·메뉴·트레이를 만들고 모든 부품을 조립해 24fps 프레임 루프를 돌린다"
   },
@@ -97,9 +97,9 @@ window.DOCDATA = {
   },
   {
    "file": "catsound.py",
-   "lines": 72,
+   "lines": 389,
    "group": "notify",
-   "role": "울음소리 합성(numpy → wav)과 재생(winsound)"
+   "role": "고양이 소리: mp3 를 MCI 로 재생(안 되면 wav 를 메모리에서 PlaySound 로 대신), 냐옹 10초·반응 2초·골골·채터링·트릴, 행동 소리는 시작 때 한 번만 틀고 끝나면 끊기"
   },
   {
    "file": "coats.py",
@@ -109,7 +109,7 @@ window.DOCDATA = {
   },
   {
    "file": "config_store.py",
-   "lines": 138,
+   "lines": 139,
    "group": "store",
    "role": "설정(launcher_config.json)과 비밀 값(DPAPI, secrets.json) 저장소"
   },
@@ -130,6 +130,12 @@ window.DOCDATA = {
    "lines": 173,
    "group": "notify",
    "role": "웹 주소의 사이트 아이콘 받기·보관"
+  },
+  {
+   "file": "feather_toy.py",
+   "lines": 294,
+   "group": "draw",
+   "role": "놀아주기(깃털): 마우스 커서를 나비 낚싯대로 바꿨다 되돌리기 (SetSystemCursor)"
   },
   {
    "file": "flow.py",
@@ -193,7 +199,7 @@ window.DOCDATA = {
   },
   {
    "file": "photocat.py",
-   "lines": 507,
+   "lines": 513,
    "group": "draw",
    "role": "기본 그리개: 동작에 맞는 사진 컷을 골라 섞어 그림, 바닥 걸치기, 소품·그림자"
   },
@@ -271,13 +277,13 @@ window.DOCDATA = {
   },
   {
    "file": "settings_dialog.py",
-   "lines": 1037,
+   "lines": 1056,
    "group": "ui",
    "role": "설정 창 6개 탭과 부품(FoldCard, StatusLabel, TimesEditor)"
   },
   {
    "file": "theme.py",
-   "lines": 163,
+   "lines": 220,
    "group": "ui",
    "role": "공통 스타일시트(QSS)와 분홍 색 토큰"
   },
@@ -421,6 +427,11 @@ window.DOCDATA = {
   {
    "from": "cat.py",
    "to": "desktop_icons.py",
+   "lazy": false
+  },
+  {
+   "from": "cat.py",
+   "to": "feather_toy.py",
    "lazy": false
   },
   {
@@ -680,8 +691,8 @@ window.DOCDATA = {
   }
  ],
  "totals": {
-  "files": 46,
-  "lines": 13472
+  "files": 47,
+  "lines": 14676
  },
  "missingRoles": [],
  "flow": {

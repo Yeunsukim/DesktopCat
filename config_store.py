@@ -32,6 +32,7 @@ DEFAULTS = {
         "meals": {"enabled": True, "times": ["08:00", "13:00", "19:00"]},    # 밥 시간(하루 세 번): 안 주면 냐옹~ 냐옹~
         "play": {"enabled": True, "every_min": 60},                          # 이 간격마다 놀아 달라고 한다
         "corner": {"side": "right"},                                         # '한쪽에서 쉬기'의 구석: right / left
+        "sound": {"enabled": True, "volume": 80},                            # 행동 소리(골골·채터링·트릴)를 낼까, 전체 음량 0~100 (알림 냐옹도 이 음량)
     },
     "security": {                                 # 경비 고양이 (랜섬웨어·스파이웨어 조기 경보, 자세한 설명은 README)
         "enabled": True,

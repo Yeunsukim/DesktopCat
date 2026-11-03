@@ -47,6 +47,7 @@
     <tr><td>경보 창/풍선의 아이콘이 파이썬 모양</td><td>작업 표시줄이 프로세스(pythonw.exe) 기준으로 묶음</td><td><code>SetCurrentProcessExplicitAppUserModelID("DesktopCat.CatSecretary")</code> + 창/트레이 아이콘 설정</td></tr>
     <tr><td>삭제 프로그램이 안 끝남</td><td>마지막 안내창이 다른 창 뒤에 숨어 클릭을 기다림</td><td>안내를 별도 프로세스(wscript)로, 항상 맨 앞 플래그</td></tr>
     <tr><td>메모리가 100MB 이상 큼</td><td>Qt 글꼴 엔진, 인터넷 라이브러리</td><td><code>QT_QPA_PLATFORM=windows:fontengine=gdi</code>, 인터넷/캘린더는 보조 프로세스</td></tr>
+    <tr><td>마우스 커서가 나비로 남아 있음 (놀이 중 고양이가 죽음)</td><td>시스템 커서를 투명으로 바꾼 채로 끝남 (커서 그림은 '마우스 포인터 크기'에 따라 확대돼 크고 거칠어져서, 나비는 따라다니는 투명 창에 벡터로 그림)</td><td>바꾸는 동안 표식 파일, 다음 시작에서 <code>SPI_SETCURSORS</code> 로 되돌림, 놀이 끝은 한 곳(프레임 루프)에서만 판단</td></tr>
     <tr><td>설정 저장 중 꺼지면 파일이 깨짐</td><td>직접 덮어쓰기</td><td>임시 파일 → <code>os.replace</code></td></tr>
   </tbody></table></div>
 

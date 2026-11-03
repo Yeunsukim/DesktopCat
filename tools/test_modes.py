@@ -87,7 +87,7 @@ b.pet.hunger = 5.0
 b.command_feed()
 check("배부르면 간식은 거절 (밥 안 먹음)", b.state is not B.S.EAT and not fed)
 b.command_feed(force=True)
-run(b, 6)
+run(b, 11)                       # 밥 먹는 시간이 10초로 늘었다
 check("밥 시간이면 배불러도 먹고 on_fed 가 불림", fed == [1] and b.pet.hunger < 5)
 run(b, 60)
 check("먹고 난 뒤 흐름이 이어짐 (세수·앉기·식빵·잠 중 하나)", True)

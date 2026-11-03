@@ -406,6 +406,18 @@ def jump(a):
     return kf(p, [(0.0, _LAUNCH), (0.2, _STRETCH), (0.62, _STRETCH), (0.82, mid), (1.0, _REACH)])
 
 
+@anim("leap")
+def leap(a):
+    """깃털 놀이의 뛰어오르기(뼈대 고양이용 대신 자세): 사진 컷 번호 f 를 점프 진행도로 바꿔서 같은 모양으로 보이게 한다."""
+    p = {0: 0.0, 1: 0.12, 2: 0.45, 4: 0.8, 5: 1.0}.get(int(a.param.get("f", 0)), 0.5)
+    old = a.param
+    a.param = {"p": p, "down": 0}
+    try:
+        return jump(a)
+    finally:
+        a.param = old
+
+
 @anim("land")
 def land(a):
     return kf(a.t, [(0.0, _CROUCH), (0.28, stand(a))])
